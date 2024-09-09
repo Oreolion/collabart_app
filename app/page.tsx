@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="">
       <Navbar></Navbar>
-      <div className="h-[15rem]"></div>
+      <div className="h-[18rem]"></div>
       <Footer></Footer>
     </div>
   );

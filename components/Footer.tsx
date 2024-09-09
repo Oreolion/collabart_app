@@ -9,11 +9,8 @@ const Footer = () => {
         <div className={`${styles.logo} ${styles.link}`}>
           <Link href="/">
             <h3 className={styles.h3}>
-              THE <span className={styles.span}>RA</span> APP
+              <span className={styles.span}>Collab</span>ART
             </h3>
-            <p className={`${styles.p} text-[#e67e22]`}>
-              The <span className={styles.span}>Read Along</span> APP
-            </p>
           </Link>
         </div>
         {/* <div className={styles.boxes}>
@@ -24,14 +21,13 @@ const Footer = () => {
           <ul>
             <li className={styles.li}>Community</li>
             <li className={styles.li}>Trending Blogs</li>
-            <li className={styles.li}>Read Along for teams</li>
           </ul>
         </div>
         <div className={styles.box1}>
           <h5 className={styles.h5}>Support</h5>
           <ul>
             <li className={styles.li}>Support Docs</li>
-            <li className={styles.li}>Join Slack</li>
+            <li className={styles.li}>Join Forum</li>
             <li className={styles.li}>Contact</li>
           </ul>
         </div>
@@ -43,7 +39,7 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <p className={styles.p1}>Term of Service | Security | the RA APP 2024</p>
+      <p className={styles.p1}>Term of Service | Security | the CollabART APP 2024</p>
     </footer>
   );
 };
