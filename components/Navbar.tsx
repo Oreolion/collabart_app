@@ -15,16 +15,13 @@ const Navbar = () => {
       <div className={`${styles.logo} ${styles.link}`}>
         <Link href="/">
           <h3 className={styles.h3}>
-             <span>Collab</span>ART
+            <span className={styles.span}>Collab</span><span className="text-red-600 font-bold bg-slate-200">@</span><span className="text-yellow-300">RT</span>
           </h3>
-         
         </Link>
       </div>
 
       <nav className={styles.right__nav}>
         <div className={styles.nav__icons}>
-        
-
           {toggleNavbar ? (
             <svg
               className={styles.svg}
@@ -46,7 +43,7 @@ const Navbar = () => {
             </div>
           )}
         </div>
-      
+
         <ul className={styles.navlist}>
           <li>
             <Link className={styles.li} href="/">

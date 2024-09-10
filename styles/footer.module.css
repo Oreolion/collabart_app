@@ -30,11 +30,8 @@
     "Lucida Sans", Arial, sans-serif;
 }
 
-
-
-
 .footer {
-background: rgba(001, 001, 0, 0.4);
+  background: rgba(001, 001, 0, 0.4);
   height: 18rem;
   margin: 0 auto;
   margin-bottom: -8rem;
@@ -79,7 +76,7 @@ background: rgba(001, 001, 0, 0.4);
   margin-right: 8rem;
   margin-bottom: 0.3rem;
   font-size: 0.8rem;
-  color: green;
+  color: #e67e22;
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,32 @@
+.hero__container {
+  margin-top: 2rem;
+  height: 30rem;
+  margin-bottom: 2rem;
+}
+
+
+.h1 {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #eee;
+}
+
+.h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color:#ccc;
+}
+
+.p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-style: bold;
+  color:#ccc;
+
+}
+
+.btnbox {
+  display: flex;
+  gap: 1rem;
+}

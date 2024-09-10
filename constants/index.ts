@@ -1,0 +1,48 @@
+export const mySlides = [
+  {
+    id: 1,
+    h1: "SONGWRITERS",
+    h3: "Collaborate and Hire musicians to produce your demos",
+    p: "Find the best recording artists and audio engineers to make your music come to life",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+    imageUrl: "/assets/images/rachel-loughman-EjmcT09e3Jg-unsplash.jpg",
+  },
+  {
+    id: 2,
+    h1: "ARTISTS",
+    h3: "Collaborate Online anywhere, anytime",
+    p: "Find like-minded musicians to co-write, record, and produce original music",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+    imageUrl: "/assets/images/daniel-chekalov-rRVGpLI5ceo-unsplash.jpg",
+  },
+  {
+    id: 3,
+    h1: "PRODUCERS",
+    h3: "Manage your music project using a private workspace",
+    p: "Work with talented mixing and mastering engineers, artists, and musicians from around the world",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+    imageUrl: "/assets/images/producer.webp",
+  },
+  {
+    id: 4,
+    h1: "MUSICIANS",
+    h3: "Create online from your own home studio",
+    p: "Using popular DAWs like ProTools, Cubase, Logic, Sonar and others",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+    imageUrl: "/assets/images/istockphoto-1199243596-612x612.webp",
+  },
+  {
+    id: 5,
+    h1: "STUDIOS",
+    h3: "Hire professional session musicians",
+    p: "Vocalists, guitarists, drummers, bassists, pianists, strings, horns, brass and more",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+
+    imageUrl: "/assets/images/caught-in-joy-ptVBlniJi50-unsplash.jpg",
+  },
+];

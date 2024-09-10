@@ -9,13 +9,13 @@ const Footer = () => {
         <div className={`${styles.logo} ${styles.link}`}>
           <Link href="/">
             <h3 className={styles.h3}>
-              <span className={styles.span}>Collab</span>ART
+              <span className={styles.span}>Collab</span>
+              <span className="text-red-600  bg-slate-200 font-bold">@</span>
+              <span className="text-yellow-300">RT</span>
             </h3>
           </Link>
         </div>
-        {/* <div className={styles.boxes}>
-            
-        </div> */}
+      
         <div className={styles.box1}>
           <h5 className={styles.h5}>Explore</h5>
           <ul>
@@ -39,7 +39,9 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <p className={styles.p1}>Term of Service | Security | the CollabART APP 2024</p>
+      <p className={styles.p1}>
+        Term of Service | Security | the CollabART APP 2024
+      </p>
     </footer>
   );
 };

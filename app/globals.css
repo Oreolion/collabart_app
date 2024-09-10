@@ -31,7 +31,6 @@ html {
 
 body {
   background: rgba(000, 05, 095, 0.6);
-
 }
 
 ul {
@@ -40,90 +39,89 @@ ul {
 
 section {
   padding: 2rem 7%;
-}
+} 
 
 button {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(248, 137, 10, 0.9);
   color: #fff;
-  padding: 1.5rem;
-  border-radius: 4rem;
+  padding: 1rem;
+  border-radius: 1rem;
   cursor: pointer;
   font-weight: bold;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
   &:hover {
     background: rgba(256, 256, 256, 0.8);
-    color: #000;
-    border: 4px solid #000;
+    color: #333;
+    border: 4px solid #e67e22;
   }
 }
 .arrowup {
-    position: fixed;
-    bottom: 5%;
-    right: 3%;
-    cursor: pointer;
-    &:hover {
-      transform: rotate(360deg);
-      transition-duration: 1s;
-    }
-    &:active {
-        height: 70px;
-        width: 70px;
-
-    }
+  position: fixed;
+  bottom: 5%;
+  right: 3%;
+  cursor: pointer;
+  &:hover {
+    transform: rotate(360deg);
+    transition-duration: 1s;
   }
+  &:active {
+    height: 70px;
+    width: 70px;
+  }
+}
 
 .glassmorphism {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .glassmorphism-auth {
-    background: rgba(6, 3, 3, 0.711);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .glassmorphism-black {
-    background: rgba(18, 18, 18, 0.64);
-    backdrop-filter: blur(37px);
-    -webkit-backdrop-filter: blur(37px);
-  }
-  
-  /* ======= clerk overrides ======== */
-  .cl-socialButtonsIconButton {
-    border: 2px solid #222429;
-  }
-  .cl-button {
-    color: white;
-  }
-  .cl-socialButtonsProviderIcon__github {
-    filter: invert(1);
-  }
-  .cl-internal-b3fm6y {
-    background: #f97535;
-  }
-  .cl-formButtonPrimary {
-    background: #f97535;
-  }
-  .cl-footerActionLink {
-    color: #f97535;
-  }
-  .cl-headerSubtitle {
-    color: #c5d0e6;
-  }
-  .cl-logoImage {
-    width: 10rem;
-    height: 3rem;
-  }
-  .cl-internal-4a7e9l {
-    color: white;
-  }
-  
-  .cl-userButtonPopoverActionButtonIcon {
-    color: white;
-  }
-  .cl-internal-wkkub3 {
-    color: #f97535;
-  }
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.glassmorphism-auth {
+  background: rgba(6, 3, 3, 0.711);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.glassmorphism-black {
+  background: rgba(18, 18, 18, 0.64);
+  backdrop-filter: blur(37px);
+  -webkit-backdrop-filter: blur(37px);
+}
+
+/* ======= clerk overrides ======== */
+.cl-socialButtonsIconButton {
+  border: 2px solid #222429;
+}
+.cl-button {
+  color: white;
+}
+.cl-socialButtonsProviderIcon__github {
+  filter: invert(1);
+}
+.cl-internal-b3fm6y {
+  background: #f97535;
+}
+.cl-formButtonPrimary {
+  background: #f97535;
+}
+.cl-footerActionLink {
+  color: #f97535;
+}
+.cl-headerSubtitle {
+  color: #c5d0e6;
+}
+.cl-logoImage {
+  width: 10rem;
+  height: 3rem;
+}
+.cl-internal-4a7e9l {
+  color: white;
+}
+
+.cl-userButtonPopoverActionButtonIcon {
+  color: white;
+}
+.cl-internal-wkkub3 {
+  color: #f97535;
+}
 
 @layer utilities {
   .text-balance {
@@ -141,13 +139,11 @@ button {
     color: #d1d1d1;
     border: none;
   }
-  
+
   .input-class::placeholder {
     font-size: 16px;
     color: #a1a1a1;
   }
-
- 
 }
 
 @layer base {
