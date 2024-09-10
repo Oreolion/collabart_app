@@ -41,16 +41,17 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
               backgroundImage: `url(${item.imageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              opacity: '.85',
             }}
             className="relative h-[28rem] cursor-pointer flex items-center justify-center text-center"
           >
-            <div className="relative z-10 mt-[4rem] flex flex-col rounded-b-xl p-4 w-[56rem] h-[28rem]">
+            <div className="relative z-10 mt-[6rem] flex flex-col rounded-b-xl p-4 w-[56rem] h-[32rem]">
               <h1 className={styles.h1}>{item.h1}</h1>
               <h3 className={styles.h3}>{item.h3}</h3>
               <p className={styles.p}>{item.p}</p>
-              <div className="flex gap-[1rem] items-center justify-center">
-                <Button>SIGN UP FOR FREE</Button>
-                <Button>LEARN MORE</Button>
+              <div className="flex gap-[1rem] items-center justify-center max-md:ml-[-3rem] max-md:flex-col">
+                <Button className="p-[1.5rem] font-bold">SIGN UP FOR FREE</Button>
+                <Button className="p-[1.5rem] font-bold">LEARN MORE</Button>
               </div>
             </div>
           </figure>

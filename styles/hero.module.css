@@ -6,22 +6,26 @@
 
 
 .h1 {
-  font-size: 4rem;
+  font-size: 5.5rem;
   font-weight: bold;
-  color: #eee;
+  color:rgba(227,123,66, .8); 
+  
 }
 
 .h3 {
   font-size: 2rem;
   margin-bottom: 1rem;
+  max-width: 65rem;
   font-weight: bold;
   color:#ccc;
 }
 
 .p {
   font-size: 1rem;
-  margin-bottom: 1rem;
-  font-style: bold;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  max-width: 65rem;
+
   color:#ccc;
 
 }
