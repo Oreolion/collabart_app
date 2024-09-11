@@ -1,27 +1,95 @@
-
 .about__section {
-    /* padding: 4rem; */
-    background-color: #000;
-    color: #DDD;
-
+  padding: 5rem;
+  background-color: #000;
+  color: #ddd;
 }
 
-
 .p {
-    margin-bottom: 1rem;
-    text-align: center;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
-.topbox {
-
+.main {
+  display: flex;
+  gap: 2rem;
 }
 
-.btmbox {
+.leftbox {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  flex: 1 1 20%;
+}
 
+.toggleicon {
+  border-radius: 50%;
+  width: 6rem;
+  height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 5px solid rgb(244, 84, 15);
+  background: rgb(244, 84, 15);
+  &:hover {
+    background: #fff;
+  }
+  .svg {
+    fill: #fff;
+    &:hover {
+      fill: rgb(244, 84, 15);
+    }
+  }
+}
+
+.toggleicon:nth-child(2) {
+  border: 6px solid rgb(210, 253, 56);
+  background: rgb(210, 253, 56);
+  &:hover {
+    background: #fff;
+  }
+  .svg {
+    fill: #fff;
+    &:hover {
+      fill: yellow;
+    }
+  }
+}
+.toggleicon:nth-child(3) {
+  border: 6px solid blue;
+  background: blue;
+  &:hover {
+    background: #fff;
+  }
+  .svg {
+    fill: #fff;
+    &:hover {
+      fill: blue;
+    }
+  }
+}
+.toggleicon:nth-child(4) {
+  border: 6px solid rgb(244, 50, 82);
+  background: rgb(244, 50, 82);
+  &:hover {
+    background: #eee;
+  }
+  .svg {
+    fill: #fff;
+    &:hover {
+      fill: rgb(244, 50, 82);
+    }
+  }
+}
+
+.rightbox {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1 1 80%;
 }
