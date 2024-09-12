@@ -15,7 +15,9 @@ const Navbar = () => {
       <div className={`${styles.logo} ${styles.link}`}>
         <Link href="/">
           <h3 className={styles.h3}>
-            <span className={styles.span}>Collab</span><span className="text-red-600 font-bold bg-slate-200">@</span><span className="text-yellow-300">RT</span>
+            <span className={styles.span}>Collab</span>
+            <span className="text-red-600 font-bold bg-slate-200">@</span>
+            <span className="text-yellow-300">RT</span>
           </h3>
         </Link>
       </div>
@@ -24,6 +26,7 @@ const Navbar = () => {
         <div className={styles.nav__icons}>
           {toggleNavbar ? (
             <svg
+              fill="#ddd"
               className={styles.svg}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 384 512"
@@ -34,6 +37,7 @@ const Navbar = () => {
           ) : (
             <div onClick={toggleMenu} className={styles.menu_bar}>
               <svg
+                fill="#ddd"
                 className={styles.svg}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
@@ -52,7 +56,7 @@ const Navbar = () => {
           </li>
           <li>
             <Link className={styles.li} href="/sign-in">
-              Write
+              About
             </Link>
           </li>
           <li>
@@ -78,7 +82,7 @@ const Navbar = () => {
             </li>
             <li>
               <Link className={styles.li} href="/sign-in">
-                Write
+                About
               </Link>
             </li>
             <li>

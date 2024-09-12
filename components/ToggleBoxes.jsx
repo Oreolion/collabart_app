@@ -1,0 +1,448 @@
+"use client";
+import { useState } from "react";
+import Image from "next/image"; // Assuming you're using next/image for image handling
+import IconMusic from "./IconMusic";
+import IconMix from "./IconMix";
+import IconPc from "./IconPc";
+import IconSave from "./IconSave";
+import styles from "../styles/about.module.css";
+
+export default function ToggleBoxes() {
+  // Manage which icon is active
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleToggle = (index) => {
+    setActiveIndex(index === activeIndex ? null : index); // Toggle the active box
+  };
+
+  return (
+    <main className={styles.main}>
+      <div className={styles.leftbox}>
+        <div className={styles.toggleicon} onClick={() => handleToggle(0)}>
+          <svg
+            className={styles.svg}
+            viewBox="0 0 1024 1024"
+            fill="currentColor"
+            height="4rem"
+            width="4rem"
+          >
+            <title>Start a project</title>
+            <path d="M928 444H820V330.4c0-17.7-14.3-32-32-32H473L355.7 186.2a8.15 8.15 0 00-5.5-2.2H96c-17.7 0-32 14.3-32 32v592c0 17.7 14.3 32 32 32h698c13 0 24.8-7.9 29.7-20l134-332c1.5-3.8 2.3-7.9 2.3-12 0-17.7-14.3-32-32-32zm-180 0H238c-13 0-24.8 7.9-29.7 20L136 643.2V256h188.5l119.6 114.4H748V444z" />
+          </svg>
+        </div>
+        <div className={styles.toggleicon} onClick={() => handleToggle(1)}>
+          <IconMusic />
+        </div>
+        <div className={styles.toggleicon} onClick={() => handleToggle(2)}>
+          <IconMix />
+        </div>
+        <div className={styles.toggleicon} onClick={() => handleToggle(3)}>
+          <svg
+            viewBox="0 0 1024 1024"
+            fill="currentColor"
+            height="4rem"
+            width="4rem"
+            className={styles.svg}
+          >
+            <title>Publish, license and sell</title>
+            <path d="M120 160H72c-4.4 0-8 3.6-8 8v688c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8zm833 0h-48c-4.4 0-8 3.6-8 8v688c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8zM200 736h112c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm321 0h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm126 0h178c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8H647c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm-255 0h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm-79 64H201c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm257 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm256 0H648c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h178c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm-385 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Right Boxes */}
+      <div className={styles.rightbox}>
+        {activeIndex === 0 && (
+          <div className={styles.content}>
+            <div className={styles.imgbox}>
+              <Image
+                src="/assets/images/william-hall-36WpSIixex0-unsplash-removebg-preview.png"
+                alt="pic"
+                className="z-10 ml-[4rem]"
+                height={500}
+                width={600}
+              ></Image>
+            </div>
+            <div className={styles.textbox}>
+              <h3 className="text-2xl text-center mb-[1rem]">
+                It all starts with an idea
+              </h3>
+              <h4 className="font-bold text-center mb-[.5rem]">
+                Start or join a collaboration project
+              </h4>
+              <p className="mb-[1rem] text-sm">
+                Whether it's a guitar riff, drum loop, a vocal a cappella or
+                lyrics - just start your own music collaboration project and
+                upload your idea. Then, wait for others to join in, or send
+                invites to other members. You can also jump in on any other open
+                project by uploading your idea as an audition.
+              </p>
+              <h4 className="mb-[1rem] font-bold">
+                Here's what you can expect as a ProCollabs member
+              </h4>
+
+              <ul className="flex flex-col gap-[.4rem]">
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/music-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>{" "}
+                  </div>
+                  <p className="text-sm">
+                    Opportunities to co-write and produce music in all genres
+                    and styles
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <IconSave></IconSave>
+                  </div>
+                  <p className="text-sm">
+                    A like-minded community bubbling with experience and talent
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/headphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Privacy options and flexibilty in managing your
+                    collaboration projects
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/microphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    A safe and private environment to share and exchange ideas
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/copyright-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Transparency in song ownership and production credits
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/world-1-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    A secure, reliable, and feature filled platform for online
+                    music collaboration
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+        {activeIndex === 1 && (
+          <div className={styles.content}>
+            <div className={styles.imgbox}>
+              <Image
+                src="/assets/images/vadim-artyukhin-IB1rjfAZQDk-unsplash-removebg-preview.png"
+                alt="pic"
+                className="z-10 ml-[6rem]"
+                height={450}
+                width={500}
+              ></Image>
+            </div>
+            <div className={styles.textbox}>
+              <h3 className="text-2xl text-center mb-[1rem]">
+                Write and record your music
+              </h3>
+              <h4 className="font-bold text-center mb-[.5rem]">
+                Collaborate with other writers and musicians
+              </h4>
+              <p className="mb-[1rem] text-sm">
+                All you need is a passion for music, some basic recording
+                equipment, and a willingness to interact and learn.
+              </p>
+              <p className="mb-[1rem] text-sm">
+                You'll collaborate with others to write the lyrics and music,
+                then record and upload your individual performance to the
+                project area.{" "}
+              </p>
+              <h4 className="mb-[1rem] font-bold">
+                Some essentials you'll need:{" "}
+              </h4>
+              <ul className="flex flex-col gap-[.4rem]">
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <IconPc></IconPc>
+                  </div>
+                  <p className="text-sm">
+                    PC or Mac computer with a good quality audio interface
+                    styles
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <IconSave></IconSave>
+                  </div>
+                  <p className="text-sm">
+                    Digital Audio Workstation (DAW) recording software{" "}
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/headphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Studio monitors or a good pair of headphones
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/microphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Microphone (if recording vocals or acoustic audio){" "}
+                  </p>
+                </li>
+
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/discover.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">A recording room or quiet space</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+        {activeIndex === 2 && (
+          <div className={styles.content}>
+            <div className={styles.imgbox}>
+              <Image
+                src="/assets/images/pexels-studioideahd-8568090-removebg-preview.png"
+                alt="pic"
+                className="z-10 ml-[6rem]"
+                height={450}
+                width={500}
+              ></Image>
+            </div>
+            <div className={styles.textbox}>
+              <h3 className="text-2xl text-center mb-[1rem]">
+                Mix and produce your song
+              </h3>
+              <h4 className="font-bold text-center mb-[.5rem]">
+                Mix, master, and polish your songs to perfection!
+              </h4>
+              <p className="mb-[1rem] text-sm">
+                Once a song has taken shape and all collaborators have uploaded
+                and fined tuned their contributions, it's time to mix! And if
+                that ain't your specialty, no worries, you'll find many talented
+                audio engineers on ProCollabs who'll be more than happy to
+                participate.
+              </p>
+
+              <h4 className="mb-[1rem] font-bold">
+                Completing your collaboration project on ProCollabs
+              </h4>
+              <ul className="flex flex-col gap-[.4rem]">
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/like-shapes-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Collaborator agreement and final sign off
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/chart-pie-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Song datasheets for track information and collaborator
+                    splits
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/padlock-outlined-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Option to protect your songs with audio watermarking
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/dollar-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Publish to the ProCollabs Music Library and pursue
+                    commercial interest
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/file-check-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Or, allow pre-approved uses with a Creative Commons license
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+        {activeIndex === 3 && (
+          <div className={styles.content}>
+            <div className={styles.imgbox}>
+              <Image
+                src="/assets/images/publish.png"
+                alt="pic"
+                className="z-10 ml-[6rem]"
+                height={450}
+                width={300}
+              ></Image>
+            </div>
+            <div className={styles.textbox}>
+              <h3 className="text-2xl text-center mb-[1rem]">
+                Publish, license and sell your work
+              </h3>
+              <h4 className="font-bold text-center mb-[.5rem]">
+                Free to Use Anywhere
+              </h4>
+              <p className="mb-[1rem] text-sm">
+                Once your song is completed, you and your collaborators are free
+                to sell your song, give it away, or shop it around to music
+                publishers and licensors.
+              </p>
+
+              <h4 className="mb-[1rem] font-bold">Retain 100% Ownership</h4>
+              <p className="mb-[1rem] text-sm">
+                Songwriting and sound recording copyrights remain wholly owned
+                by collaborators.
+              </p>
+              <ul className="flex flex-col gap-[.4rem]">
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <IconPc></IconPc>
+                  </div>
+                  <p className="text-sm">
+                    PC or Mac computer with a good quality audio interface
+                    styles
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <IconSave></IconSave>
+                  </div>
+                  <p className="text-sm">
+                    Digital Audio Workstation (DAW) recording software{" "}
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/headphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Studio monitors or a good pair of headphones
+                  </p>
+                </li>
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/microphone.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">
+                    Microphone (if recording vocals or acoustic audio){" "}
+                  </p>
+                </li>
+
+                <li className="flex gap-[1rem]">
+                  <div className={styles.icon}>
+                    <Image
+                      src="/assets/icons/discover.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
+                  </div>
+                  <p className="text-sm">A recording room or quiet space</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}

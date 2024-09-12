@@ -9,6 +9,7 @@
     align-items: center;
     padding: 1.2rem 4%;
     height: 6rem;
+    z-index: 1111;
   }
   
   .header .logo {
@@ -62,7 +63,7 @@
   }
   
   .mobile__nav {
-    background-color: rgba(350, 350, 350, 0.8);
+    background-color: rgba(350, 350, 350, 0.7);
     width: 34rem;
     height: 100vh;
     position: absolute;
