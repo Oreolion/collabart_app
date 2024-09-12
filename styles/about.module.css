@@ -5,7 +5,7 @@
 }
 
 .p {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
@@ -50,8 +50,16 @@
   }
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
 .active {
-    background: #fff;
+  background: #fff;
 }
 
 .toggleicon:nth-child(2) {
@@ -100,4 +108,3 @@
   gap: 2rem;
   flex: 1 1 80%;
 }
-
