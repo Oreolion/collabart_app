@@ -1,12 +1,10 @@
-"use client"
+"use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import 'animate.css';
-
+import "animate.css";
 
 const ScrollToTop = () => {
-    const [hideButton, setHideButton] = useState(true);
-
+  const [hideButton, setHideButton] = useState(true);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -36,7 +34,7 @@ const ScrollToTop = () => {
         onClick={scrollToTop}
         style={{ display: hideButton ? "none" : "block" }}
         className="arrowup animate__animated animate__backInRight"
-        src="/icons/icons8-slide-up-48.png"
+        src="/assets/icons/up-arrow-upload-svgrepo-com.svg"
         width={60}
         height={60}
         alt="arrowup"

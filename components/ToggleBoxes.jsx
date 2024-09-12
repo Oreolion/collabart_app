@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image"; // Assuming you're using next/image for image handling
+import Image from "next/image";
+import { motion } from "framer-motion";
 import IconMusic from "./IconMusic";
 import IconMix from "./IconMix";
 import IconPc from "./IconPc";
@@ -8,11 +9,15 @@ import IconSave from "./IconSave";
 import styles from "../styles/about.module.css";
 
 export default function ToggleBoxes() {
-  // Manage which icon is active
   const [activeIndex, setActiveIndex] = useState(0);
+  const contentVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -50 },
+  };
 
   const handleToggle = (index) => {
-    setActiveIndex(index === activeIndex ? null : index); // Toggle the active box
+    setActiveIndex(index === activeIndex ? null : index);
   };
 
   return (
@@ -53,7 +58,15 @@ export default function ToggleBoxes() {
       {/* Right Boxes */}
       <div className={styles.rightbox}>
         {activeIndex === 0 && (
-          <div className={styles.content}>
+          <motion.div
+            className={styles.content}
+            key={0}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}
+            transition={{ duration: 0.5 }}
+          >
             <div className={styles.imgbox}>
               <Image
                 src="/assets/images/william-hall-36WpSIixex0-unsplash-removebg-preview.png"
@@ -98,7 +111,12 @@ export default function ToggleBoxes() {
                 </li>
                 <li className="flex gap-[1rem]">
                   <div className={styles.icon}>
-                    <IconSave></IconSave>
+                  <Image
+                      src="/assets/icons/group-svgrepo-com.svg"
+                      alt="icon"
+                      height={20}
+                      width={20}
+                    ></Image>
                   </div>
                   <p className="text-sm">
                     A like-minded community bubbling with experience and talent
@@ -160,10 +178,18 @@ export default function ToggleBoxes() {
                 </li>
               </ul>
             </div>
-          </div>
+          </motion.div>
         )}
         {activeIndex === 1 && (
-          <div className={styles.content}>
+          <motion.div
+            className={styles.content}
+            key={0}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}
+            transition={{ duration: 0.5 }}
+          >
             <div className={styles.imgbox}>
               <Image
                 src="/assets/images/vadim-artyukhin-IB1rjfAZQDk-unsplash-removebg-preview.png"
@@ -250,10 +276,18 @@ export default function ToggleBoxes() {
                 </li>
               </ul>
             </div>
-          </div>
+          </motion.div>
         )}
         {activeIndex === 2 && (
-          <div className={styles.content}>
+          <motion.div
+            className={styles.content}
+            key={0}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}
+            transition={{ duration: 0.5 }}
+          >
             <div className={styles.imgbox}>
               <Image
                 src="/assets/images/pexels-studioideahd-8568090-removebg-preview.png"
@@ -351,10 +385,18 @@ export default function ToggleBoxes() {
                 </li>
               </ul>
             </div>
-          </div>
+          </motion.div>
         )}
         {activeIndex === 3 && (
-          <div className={styles.content}>
+          <motion.div
+            className={styles.content}
+            key={0}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}
+            transition={{ duration: 0.5 }}
+          >
             <div className={styles.imgbox}>
               <Image
                 src="/assets/images/publish.png"
@@ -440,7 +482,7 @@ export default function ToggleBoxes() {
                 </li>
               </ul>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </main>

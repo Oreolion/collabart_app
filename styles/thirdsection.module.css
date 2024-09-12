@@ -1,0 +1,25 @@
+.h2 {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.h4 {
+    font-weight: bold;
+    &:hover {
+        color: #ccc;
+    }
+}
+
+
+.ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.li {
+    flex: 1 1 20rem;
+    display: flex;
+    gap: 1rem;
+    padding: 2rem;
+}
