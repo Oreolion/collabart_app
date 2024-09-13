@@ -71,27 +71,26 @@ export default function ToggleBoxes() {
               <Image
                 src="/assets/images/william-hall-36WpSIixex0-unsplash-removebg-preview.png"
                 alt="pic"
-                className="z-10 ml-[4rem]"
                 height={500}
                 width={600}
               ></Image>
             </div>
             <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem]">
+              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
                 It all starts with an idea
               </h3>
-              <h4 className="font-bold text-center mb-[.5rem]">
+              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
                 Start or join a collaboration project
               </h4>
               <p className="mb-[1rem] text-sm">
-                Whether it's a guitar riff, drum loop, a vocal a cappella or
-                lyrics - just start your own music collaboration project and
+                Whether it&apos;s a guitar riff, drum loop, a vocal a cappella
+                or lyrics - just start your own music collaboration project and
                 upload your idea. Then, wait for others to join in, or send
                 invites to other members. You can also jump in on any other open
                 project by uploading your idea as an audition.
               </p>
-              <h4 className="mb-[1rem] font-bold">
-                Here's what you can expect as a ProCollabs member
+              <h4 className="mb-[1rem] font-bold max-md:ml-[0rem] max-md:max-w-[17rem]">
+                Here&apos;s what you can expect as a ProCollabs member
               </h4>
 
               <ul className="flex flex-col gap-[.4rem]">
@@ -104,21 +103,21 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>{" "}
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Opportunities to co-write and produce music in all genres
                     and styles
                   </p>
                 </li>
                 <li className="flex gap-[1rem]">
                   <div className={styles.icon}>
-                  <Image
+                    <Image
                       src="/assets/icons/group-svgrepo-com.svg"
                       alt="icon"
                       height={20}
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     A like-minded community bubbling with experience and talent
                   </p>
                 </li>
@@ -131,7 +130,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Privacy options and flexibilty in managing your
                     collaboration projects
                   </p>
@@ -145,7 +144,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     A safe and private environment to share and exchange ideas
                   </p>
                 </li>
@@ -158,7 +157,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Transparency in song ownership and production credits
                   </p>
                 </li>
@@ -171,7 +170,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     A secure, reliable, and feature filled platform for online
                     music collaboration
                   </p>
@@ -194,36 +193,35 @@ export default function ToggleBoxes() {
               <Image
                 src="/assets/images/vadim-artyukhin-IB1rjfAZQDk-unsplash-removebg-preview.png"
                 alt="pic"
-                className="z-10 ml-[6rem]"
                 height={450}
                 width={500}
               ></Image>
             </div>
             <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem]">
+              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
                 Write and record your music
               </h3>
-              <h4 className="font-bold text-center mb-[.5rem]">
+              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
                 Collaborate with other writers and musicians
               </h4>
-              <p className="mb-[1rem] text-sm">
+              <p className="mb-[1rem] text-sm max-md:max-w-[14rem]">
                 All you need is a passion for music, some basic recording
                 equipment, and a willingness to interact and learn.
               </p>
-              <p className="mb-[1rem] text-sm">
-                You'll collaborate with others to write the lyrics and music,
-                then record and upload your individual performance to the
+              <p className="mb-[1rem] text-sm max-md:max-w-[14rem]">
+                You&apos;ll collaborate with others to write the lyrics and
+                music, then record and upload your individual performance to the
                 project area.{" "}
               </p>
-              <h4 className="mb-[1rem] font-bold">
-                Some essentials you'll need:{" "}
+              <h4 className="mb-[1rem] font-bold max-md:ml-[-2rem] max-md:max-w-[19rem]">
+                Some essentials you&apos;ll need:{" "}
               </h4>
               <ul className="flex flex-col gap-[.4rem]">
                 <li className="flex gap-[1rem]">
                   <div className={styles.icon}>
                     <IconPc></IconPc>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     PC or Mac computer with a good quality audio interface
                     styles
                   </p>
@@ -232,7 +230,7 @@ export default function ToggleBoxes() {
                   <div className={styles.icon}>
                     <IconSave></IconSave>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Digital Audio Workstation (DAW) recording software{" "}
                   </p>
                 </li>
@@ -245,7 +243,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Studio monitors or a good pair of headphones
                   </p>
                 </li>
@@ -258,7 +256,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Microphone (if recording vocals or acoustic audio){" "}
                   </p>
                 </li>
@@ -272,7 +270,9 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">A recording room or quiet space</p>
+                  <p className="text-sm max-md:max-w-[14rem]">
+                    A recording room or quiet space
+                  </p>
                 </li>
               </ul>
             </div>
@@ -292,27 +292,26 @@ export default function ToggleBoxes() {
               <Image
                 src="/assets/images/pexels-studioideahd-8568090-removebg-preview.png"
                 alt="pic"
-                className="z-10 ml-[6rem]"
                 height={450}
                 width={500}
               ></Image>
             </div>
             <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem]">
+              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
                 Mix and produce your song
               </h3>
-              <h4 className="font-bold text-center mb-[.5rem]">
+              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
                 Mix, master, and polish your songs to perfection!
               </h4>
               <p className="mb-[1rem] text-sm">
                 Once a song has taken shape and all collaborators have uploaded
-                and fined tuned their contributions, it's time to mix! And if
-                that ain't your specialty, no worries, you'll find many talented
-                audio engineers on ProCollabs who'll be more than happy to
-                participate.
+                and fined tuned their contributions, it&apos;s time to mix! And
+                if that ain&apos;t your specialty, no worries, you&apos;ll find
+                many talented audio engineers on ProCollabs who&apos;ll be more
+                than happy to participate.
               </p>
 
-              <h4 className="mb-[1rem] font-bold">
+              <h4 className="mb-[1rem] font-bold max-md:ml-[-2rem] max-md:max-w-[19rem]">
                 Completing your collaboration project on ProCollabs
               </h4>
               <ul className="flex flex-col gap-[.4rem]">
@@ -401,13 +400,12 @@ export default function ToggleBoxes() {
               <Image
                 src="/assets/images/publish.png"
                 alt="pic"
-                className="z-10 ml-[6rem]"
                 height={450}
                 width={300}
               ></Image>
             </div>
             <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem]">
+              <h3 className="text-2xl text-center mb-[1rem] max-md:text-sm max-md:mb-[.5rem] max-md:ml-[-2rem]">
                 Publish, license and sell your work
               </h3>
               <h4 className="font-bold text-center mb-[.5rem]">
@@ -429,7 +427,7 @@ export default function ToggleBoxes() {
                   <div className={styles.icon}>
                     <IconPc></IconPc>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     PC or Mac computer with a good quality audio interface
                     styles
                   </p>
@@ -438,7 +436,7 @@ export default function ToggleBoxes() {
                   <div className={styles.icon}>
                     <IconSave></IconSave>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Digital Audio Workstation (DAW) recording software{" "}
                   </p>
                 </li>
@@ -451,7 +449,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Studio monitors or a good pair of headphones
                   </p>
                 </li>
@@ -464,7 +462,7 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">
+                  <p className="text-sm max-md:max-w-[14rem]">
                     Microphone (if recording vocals or acoustic audio){" "}
                   </p>
                 </li>
@@ -478,7 +476,9 @@ export default function ToggleBoxes() {
                       width={20}
                     ></Image>
                   </div>
-                  <p className="text-sm">A recording room or quiet space</p>
+                  <p className="text-sm max-md:max-w-[14rem]">
+                    A recording room or quiet space
+                  </p>
                 </li>
               </ul>
             </div>

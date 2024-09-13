@@ -12,11 +12,11 @@ const About = () => {
       <p className={styles.p}>
         ProCollabs is an online music collaboration service that gives you
         access to experienced and talented songwriters, musicians, audio
-        engineers, and music producers from all around the world. It's a place
+        engineers, and music producers from all around the world. It&apos;s a place
         to unite, socialize, and collaborate in the writing and production of
         original music, all from the comfort of your own home studio.
       </p>
-      <p className="mb-[1rem] text-center font-bold">
+      <p className="mb-[1rem] text-center font-bold max-md:text-sm max-md:mb-[.5rem]">
         Click the icons below for details
       </p>
       <ToggleBoxes></ToggleBoxes>

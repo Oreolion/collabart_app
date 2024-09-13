@@ -4,12 +4,14 @@
   margin-bottom: 2rem;
 }
 
+.spancolor {
+  color: rgb(244, 84, 15);
+}
 
 .h1 {
   font-size: 5.5rem;
   font-weight: bold;
-  color:rgba(227,123,66, .8); 
-  
+  color: rgba(227, 123, 66, 0.9);
 }
 
 .h3 {
@@ -17,7 +19,7 @@
   margin-bottom: 1rem;
   max-width: 65rem;
   font-weight: bold;
-  color:#ccc;
+  color: #eee;
 }
 
 .p {
@@ -25,12 +27,33 @@
   margin-bottom: 2rem;
   font-weight: bold;
   max-width: 65rem;
-
-  color:#ccc;
-
+  color: #eee;
 }
 
 .btnbox {
   display: flex;
   gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .h1 {
+    font-size: 3.5rem;
+  }
+
+  .h3 {
+    font-size: 1.8rem;
+  }
+}
+@media (max-width: 320px) {
+  .h1 {
+    font-size: 2.5rem;
+  }
+
+  .h3 {
+    font-size: 1.5rem;
+  }
+
+  .p {
+    font-size: 0.8rem;
+  }
 }

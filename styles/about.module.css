@@ -108,3 +108,64 @@
   gap: 2rem;
   flex: 1 1 80%;
 }
+
+@media (max-width: 640px) {
+  .leftbox {
+    margin-left: -2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    gap: 1rem;
+  }
+  .toggleicon {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .h2 {
+    font-size: 1.8rem;
+  }
+
+  .leftbox {
+    margin-left: -5rem;
+  }
+
+  .rightbox {
+    min-width: 19rem;
+  }
+
+  .content {
+    gap: 1rem;
+  }
+
+  .svg {
+    height: 3rem;
+    width: 3rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .toggleicon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .h2 {
+    font-size: 1.4rem;
+  }
+
+  .about__section .p {
+    min-width: 19rem;
+    margin-left: -4rem;
+    text-align: left;
+
+
+}
+
+  .svg {
+    height: 2rem;
+    width: 2rem;
+  }
+}

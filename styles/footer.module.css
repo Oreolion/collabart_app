@@ -116,4 +116,13 @@
     flex-direction: column;
     text-align: center;
   }
+
+  .footer .p1 {
+    text-align: center;
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+    color: #e67e22;
+    white-space: nowrap;
+  }
+  
 }
