@@ -19,39 +19,36 @@ export const getUserById = query({
 });
 
 // this query is used to get the top user by podcast count. first the podcast is sorted by views and then the user is sorted by total podcasts, so the user with the most podcasts will be at the top.
-export const getTopUserByPodcastCount = query({
-  args: {},
-  handler: async (ctx, args) => {
-    const user = await ctx.db.query("users").collect();
+// export const getTopUserByPodcastCount = query({
+//   args: {},
+//   handler: async (ctx, args) => {
+//     const user = await ctx.db.query("users").collect();
 
-    const userData = await Promise.all(
-      user.map(async (u) => {
-        const podcasts = await ctx.db
-          // @ts-ignore
+//     const userData = await Promise.all(
+//       user.map(async (u) => {
+//         const podcasts = await ctx.db
 
-          .query("podcasts")
-          .filter((q) => q.eq(q.field("authorId"), u.clerkId))
-          .collect();
+//           .query("podcasts")
+//           .filter((q) => q.eq(q.field("authorId"), u.clerkId))
+//           .collect();
 
-        // @ts-ignore
-        const sortedPodcasts = podcasts.sort((a, b) => b.views - a.views);
+//         const sortedPodcasts = podcasts.sort((a, b) => b.views - a.views);
 
-        return {
-          ...u,
-          totalPodcasts: podcasts.length,
-          podcast: sortedPodcasts.map((p) => ({
-            // @ts-ignore
+//         return {
+//           ...u,
+//           totalPodcasts: podcasts.length,
+//           podcast: sortedPodcasts.map((p) => ({
 
-            podcastTitle: p.podcastTitle,
-            pocastId: p._id,
-          })),
-        };
-      })
-    );
+//             podcastTitle: p.podcastTitle,
+//             pocastId: p._id,
+//           })),
+//         };
+//       })
+//     );
 
-    return userData.sort((a, b) => b.totalPodcasts - a.totalPodcasts);
-  },
-});
+//     return userData.sort((a, b) => b.totalPodcasts - a.totalPodcasts);
+//   },
+// });
 
 export const createUser = internalMutation({
   args: {
@@ -92,7 +89,6 @@ export const updateUser = internalMutation({
     });
 
     const podcast = await ctx.db
-      // @ts-ignore
 
       .query("podcasts")
       .filter((q) => q.eq(q.field("authorId"), args.clerkId))

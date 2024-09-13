@@ -97,13 +97,13 @@ button {
   filter: invert(1);
 }
 .cl-internal-b3fm6y {
-  background: #f97535;
+  background: #ef4444;
 }
 .cl-formButtonPrimary {
-  background: #f97535;
+  background: #ef4444;
 }
 .cl-footerActionLink {
-  color: #f97535;
+  color: #ef4444;
 }
 .cl-headerSubtitle {
   color: #c5d0e6;
@@ -120,7 +120,7 @@ button {
   color: white;
 }
 .cl-internal-wkkub3 {
-  color: #f97535;
+  color: #ef4444;
 }
 
 @layer utilities {
