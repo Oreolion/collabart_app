@@ -42,7 +42,7 @@ section {
 } 
 
 button {
-  background: rgba(248, 137, 10, 0.9);
+  background: rgba(248, 137, 10, 0.4);
   color: #fff;
   padding: 1rem;
   border-radius: 1rem;
@@ -52,7 +52,7 @@ button {
   &:hover {
     background: rgba(256, 256, 256, 0.8);
     color: #333;
-    border: 4px solid #e67e22;
+    border: 4px solid rgba(248, 137, 10, 0.4);
   }
 }
 .arrowup {
@@ -76,7 +76,7 @@ button {
   -webkit-backdrop-filter: blur(4px);
 }
 .glassmorphism-auth {
-  background: rgba(6, 3, 3, 0.711);
+  background: rgba(6, 3, 3, 0.611);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
