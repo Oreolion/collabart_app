@@ -26,7 +26,7 @@ const MobileDashBoardNav = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-    //@ts-expect-error
+    //@ts-expect-error type-error
       myRef?.current?.classList.remove("active");
       setToggle(false);
     };

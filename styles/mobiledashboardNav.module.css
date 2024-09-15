@@ -113,7 +113,7 @@
   fill: #ef4444;
 }
 
-.spanheader svg {
+.spanheader .svg {
   height: 1rem;
   width: 1rem;
   fill: #ef4444;
@@ -147,7 +147,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 7%;
-  height: 7rem;
+  height: 6rem;
 }
 
 .innerdashboard__container .header .logo {
