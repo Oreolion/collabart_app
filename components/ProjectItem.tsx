@@ -125,9 +125,9 @@ const ProjectItem = () => {
           </Link>
           <div className="flex w-[160px] flex-col">
             <h2 className="text-14 truncate font-semibold text-white-1">
-              'Title Here'
+              Title Here
             </h2>
-            <p className="text-12 font-normal text-white-2">"author here"</p>
+            <p className="text-12 font-normal text-white-2">author here</p>
           </div>
         </div>
         <div className="flex-center cursor-pointer gap-3 md:gap-6">

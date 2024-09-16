@@ -157,8 +157,8 @@
 
 .close_btn {
   cursor: pointer;
-  border-top-left-radius: 2rem;
-  border-bottom-left-radius: 2rem;
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   padding: 0.5rem;
@@ -166,33 +166,39 @@
   position: absolute;
   top: 50%;
   z-index: 11111;
-  right: 79.6%;
+  right: 79.7%;
   position: fixed;
-  background-color: rgb(80, 83, 80);
+  background-color: rgb(34, 36, 34);
   color: #ef4444;
   border: none;
   transition-duration: 0.5s;
   transition-timing-function: ease-in-out;
+  &:hover {
+    border-color: #ef4444;
+  }
 }
 
 .onclose_btn {
   cursor: pointer;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-top-right-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
   padding: 0.5rem;
   font-size: 1.3rem;
   position: absolute;
   top: 50%;
   z-index: 11111;
-  right: 92.2%;
+  right: 92.3%;
   position: fixed;
-  background-color: rgb(80, 83, 80);
+  background-color: rgb(26, 28, 26);
   color: #ef4444;
   border: none;
   transition-duration: 0.5s;
   transition-timing-function: ease-in-out;
+  &:hover {
+    border-color: #ef4444;
+  }
 }
 
 .collapseblock {
