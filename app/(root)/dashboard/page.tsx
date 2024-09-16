@@ -1,17 +1,21 @@
 "use client";
 import React from "react";
-import styles from "@/styles/dashboardnav.module.css";
-import { SignedIn, useUser, useClerk } from "@clerk/nextjs";
+import styles from "@/styles/dashboard.module.css";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import ProjectItem from "@/components/ProjectItem";
+import SearchBar from "@/components/SearchBar";
 
 const Page = () => {
-  const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();
 
   return (
-    <section className="mt-[8rem]">
-      <h1>This is the dashboard page</h1>
+    <section className={styles.dashboard__feeds}>
+      <SearchBar />
+      <main className={styles.content__box}>
+        <ProjectItem />
+      </main>
     </section>
   );
 };

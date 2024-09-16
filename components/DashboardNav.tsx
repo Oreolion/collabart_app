@@ -98,12 +98,12 @@ const DashboardNav = () => {
               <path d="M211.2 96a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM32 256c0 17.7 14.3 32 32 32h85.6c10.1-39.4 38.6-71.5 75.8-86.6c-9.7-6-21.2-9.4-33.4-9.4H96c-35.3 0-64 28.7-64 64zm461.6 32H576c17.7 0 32-14.3 32-32c0-35.3-28.7-64-64-64H448c-11.7 0-22.7 3.1-32.1 8.6c38.1 14.8 67.4 47.3 77.7 87.4zM391.2 226.4c-6.9-1.6-14.2-2.4-21.6-2.4h-96c-8.5 0-16.7 1.1-24.5 3.1c-30.8 8.1-55.6 31.1-66.1 60.9c-3.5 10-5.5 20.8-5.5 32c0 17.7 14.3 32 32 32h224c17.7 0 32-14.3 32-32c0-11.2-1.9-22-5.5-32c-10.8-30.7-36.8-54.2-68.9-61.6zM563.2 96a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM321.6 192a80 80 0 1 0 0-160 80 80 0 1 0 0 160zM32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H32z"/>
             </svg>`}
               />
-              <p className={styles.linktext}>Homefeeds</p>
+              <p className={styles.linktext}>Projects</p>
             </Link>
           </li>
-          <li className={styles.li} key="Create Post">
+          <li className={styles.li} key="Create project">
             <Link
-              href="/create-post"
+              href="/create-project"
               className={`${styles.link} ${isLinkActive("/create-post") ? styles.active_link : ""}`}
             >
               <SVGIcon
@@ -112,7 +112,7 @@ const DashboardNav = () => {
               <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
             </svg>`}
               />
-              <p className={styles.linktext}>Create Post</p>
+              <p className={styles.linktext}>Create Project</p>
             </Link>
           </li>
           <li className={styles.li} key="Bookmarks">
@@ -126,7 +126,7 @@ const DashboardNav = () => {
               <path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"/>
             </svg>`}
               />
-              <p className={styles.linktext}>Bookmarks</p>
+              <p className={styles.linktext}>My Projects</p>
             </Link>
           </li>
 
