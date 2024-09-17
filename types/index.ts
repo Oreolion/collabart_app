@@ -11,8 +11,8 @@ export interface ProjectProps {
   user: Id<"users">;
   projectTitle: string;
   projectType: string;
+  projectPrivacy: string;
   postContent: string;
-  projectType: string;
   audioUrl: string | null;
   imageUrl: string | null;
   imageStorageId: Id<"_storage"> | null;
@@ -53,6 +53,7 @@ export type projectType = "Public" | "Member" | "Private (Premium Add-on)";
 
 export interface GenerateProjectProps {
   projectType: projectType;
+  projectPrivacy: string;
   //   setAudio: Dispatch<SetStateAction<string>>;
   //   audio: string;
   //   setAudioStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>;

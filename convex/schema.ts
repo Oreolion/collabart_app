@@ -7,6 +7,7 @@ export default defineSchema({
     projectTitle: v.string(),
     projectContent: v.string(),
     projectType: v.string(),
+    projectPrivacy: v.string(),
     projectDescription: v.string(),
     audioUrl: v.optional(v.string()),
     imageStorageId: v.optional(v.id("_storage")),

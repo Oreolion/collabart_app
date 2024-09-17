@@ -134,7 +134,7 @@ const audio = {}
         <div className="flex-center cursor-pointer gap-3 md:gap-6">
           <div className="flex items-center gap-1.5">
             <Image
-              src={"/icons/reverse.svg"}
+              src={"/assets/icons/reverse.svg"}
               width={24}
               height={24}
               alt="rewind"
@@ -143,7 +143,7 @@ const audio = {}
             <h2 className="text-12 font-bold text-white-4">-5</h2>
           </div>
           <Image
-            src={isPlaying ? "/icons/Pause.svg" : "/icons/Play.svg"}
+            src={isPlaying ? "/assets/icons/Pause.svg" : "/assets/icons/Play.svg"}
             width={30}
             height={30}
             alt="play"
@@ -152,7 +152,7 @@ const audio = {}
           <div className="flex items-center gap-1.5">
             <h2 className="text-12 font-bold text-white-4">+5</h2>
             <Image
-              src={"/icons/forward.svg"}
+              src={"/assets/icons/forward.svg"}
               width={24}
               height={24}
               alt="forward"
@@ -166,7 +166,7 @@ const audio = {}
           </h2>
           <div className="flex w-full gap-2">
             <Image
-              src={isMuted ? "/icons/unmute.svg" : "/icons/mute.svg"}
+              src={isMuted ? "/assets/icons/unmute.svg" : "/assets/icons/mute.svg"}
               width={24}
               height={24}
               alt="mute unmute"

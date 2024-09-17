@@ -31,6 +31,8 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 
+import Image from "next/image";
+
 const formSchema = z.object({
   projectTitle: z.string().min(2, "Title must be at least 2 characters"),
   projectDescription: z
@@ -49,6 +51,7 @@ export default function AddProject() {
     null
   );
   const [projectType, setProjectType] = useState<string | null>(null);
+  const [projectPrivacy, setProjectPrivacy] = useState<string | null>(null);
   const [projectContent, setProjectContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
@@ -82,10 +85,11 @@ export default function AddProject() {
         projectDescription: data.projectDescription,
         projectContent,
         projectType,
-        // audioUrl,
+        projectPrivacy,
         imageUrl,
         views: 0,
         likes: 0,
+        // audioUrl,
         // audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
@@ -106,6 +110,20 @@ export default function AddProject() {
   }
 
   const projectTypes = ["Public", "Member", "Private (Premium Add-on)"];
+  const projectAuditionPrivacies = [
+    "Keep auditions private [recommended]",
+    "Keep auditions visible to the community",
+  ];
+  const projectBitDepth = ["8 bits", "16 bits", "24 bits", "32 bits"];
+  const projectSampleRate = [
+    "22.05KHz",
+    "44.1KHz",
+    "48KHz",
+    "88.2KHz",
+    "96KHz",
+    "176.4KHz",
+    "192KHz",
+  ];
 
   return (
     <section className={styles.bloginput__box}>
@@ -188,7 +206,7 @@ export default function AddProject() {
             />
             <FormField
               control={form.control}
-              name="projectDescription"
+              name="projectBrief"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-2.5">
                   <FormLabel className="text-16 font-bold text-white-1">
@@ -207,11 +225,175 @@ export default function AddProject() {
               )}
             />
           </div>
-          <div className="flex flex-col pt-10"></div>
+          <div className="flex flex-col gap-2.5 mb-[1rem]">
+            <Label className="text-16 font-bold text-white-1">
+              Project Audio Preference:
+            </Label>
+            <div className="flex gap-[1rem]">
+              <Select onValueChange={(value) => setProjectPrivacy(value)}>
+                <SelectTrigger
+                  className={cn(
+                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  )}
+                >
+                  <SelectValue
+                    placeholder="Select"
+                    className="placeholder:text-gray-1"
+                  />
+                </SelectTrigger>
+                <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
+                  {projectAuditionPrivacies.map((type) => {
+                    return (
+                      <SelectItem
+                        className="capitalize focus:bg-orange-1"
+                        key={type}
+                        value={type}
+                      >
+                        {type}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+
+              <Select onValueChange={(value) => setProjectPrivacy(value)}>
+                <SelectTrigger
+                  className={cn(
+                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  )}
+                >
+                  <SelectValue
+                    placeholder="Select"
+                    className="placeholder:text-gray-1"
+                  />
+                </SelectTrigger>
+                <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
+                  {projectBitDepth.map((type) => {
+                    return (
+                      <SelectItem
+                        className="capitalize focus:bg-orange-1"
+                        key={type}
+                        value={type}
+                      >
+                        {type}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <Label className="text-16 font-bold text-white-1">
+              Audition Privacy:
+            </Label>
+            <Select onValueChange={(value) => setProjectPrivacy(value)}>
+              <SelectTrigger
+                className={cn(
+                  "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                )}
+              >
+                <SelectValue
+                  placeholder="Select"
+                  className="placeholder:text-gray-1"
+                />
+              </SelectTrigger>
+              <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
+                {projectSampleRate.map((type) => {
+                  return (
+                    <SelectItem
+                      className="capitalize focus:bg-orange-1"
+                      key={type}
+                      value={type}
+                    >
+                      {type}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col pt-10">
+            <h3 className="font-bold text-base mb-3">Collaborator Uploads</h3>
+            <p className="mb-2">
+              How will members collaborate in this project? Select at least one:
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+                <Image
+                  src={"/assets/icons/headphone.svg"}
+                  width={24}
+                  height={24}
+                  alt="rewind"
+                />{" "}
+                <label htmlFor="checkbox">
+                  <input type="checkbox" />
+                </label>
+                <div className="text">
+                  <h5 className="font-bold text-xs">Joint Work</h5>
+                  <h6 className="text-xs font-bold">
+                    Allow members to audition and contribute as joint
+                    collaborators
+                  </h6>
+                  <p className="text-sm">
+                    select this option if you will share ownership in the
+                    song&apos;s composition (music/lyrics) and/or sound
+                    recording copyrights
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+                <Image
+                  src={"/assets/icons/discover.svg"}
+                  width={24}
+                  height={24}
+                  alt="rewind"
+                />
+                <label htmlFor="checkbox">
+                  <input type="checkbox" />
+                </label>
+                <div className="flex flex-col gap-3">
+                  <h5 className="font-bold text-xs">Work for Hire</h5>
+                  <h6 className="text-xs font-bold">
+                    Allow members to contribute work under contract and in
+                    exchange for an agreed fee.
+                  </h6>
+                  <p className="text-xs">
+                    Select this option if you prefer to retain ownership in the
+                    song's copyrights. All rights to the contributed work will
+                    be transferred to the project owner.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+                <Image
+                  src={"/assets/icons/home.svg"}
+                  width={24}
+                  height={24}
+                  alt="rewind"
+                />{" "}
+                <label htmlFor="checkbox">
+                  <input type="checkbox" />
+                </label>
+                <div className="text">
+                  <h5 className="font-bold text-xs">Creative Commons</h5>
+                  <h6 className="text-xs font-bold">
+                    Allow members to audition and contribute work under a
+                    predefined Creative Commons license.
+                  </h6>
+                  <p className="text-xs">
+                    The contributor offers their work for use under the terms of
+                    the specified license. Ideal for sound effects and other
+                    abstract contributions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="mt-10 w-full">
             <Button
               type="submit"
-              className="text-16 h-20 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+              className="text-16 h-15 w-full bg-orange-1 py-4 mb-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
             >
               {isSubmitting ? (
                 <>
@@ -221,6 +403,12 @@ export default function AddProject() {
               ) : (
                 "Submit & Publish project"
               )}
+            </Button>
+            <Button
+              type="submit"
+              className="text-16 h-15 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+            >
+              Save as Draft
             </Button>
           </div>
         </form>
