@@ -15,6 +15,10 @@ const Page = () => {
       <SearchBar />
       <main className={styles.content__box}>
         <ProjectItem />
+        <ProjectItem />
+        <ProjectItem />
+        <ProjectItem />
+        <ProjectItem />
       </main>
     </section>
   );

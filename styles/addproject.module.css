@@ -1,0 +1,151 @@
+.bloginput__box {
+  width: 70%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 auto;
+  margin-top: 10rem;
+  margin-left: 15rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+}
+
+.bloginput__box > .svg {
+  height: 2rem;
+  width: 2rem;
+  position: absolute;
+  top: 5rem;
+  left: 30%;
+  cursor: pointer;
+}
+
+.inner__container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
+  margin-left: 0rem;
+  position: relative;
+}
+
+.bloginput__box .button {
+  width: 16rem;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.blog__title,
+.blog__post,
+.otherblog__post,
+.otherblog__posttitle {
+  height: 6rem;
+  font-size: 2.2rem;
+  padding-left: 1rem;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: aliceblue;
+  border: none;
+}
+
+.otherblog__post {
+  position: absolute;
+  top: 27rem;
+  margin-left: 6rem;
+}
+
+.otherblog__posttitle {
+  position: absolute;
+  top: 22rem;
+  margin-top: 1rem;
+  padding-bottom: 2rem;
+  margin-left: 6rem;
+}
+.hidden {
+  display: none;
+}
+
+.imgbox {
+  width: 50rem;
+  height: 25rem;
+  position: absolute;
+  top: -3rem;
+  left: 7rem;
+  margin-bottom: 20rem;
+}
+
+.imgbox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  color: #666;
+}
+
+.blog__title:first-child,
+.otherblog__posttitle {
+  font-weight: bold;
+  font-size: 2.4rem;
+}
+
+.blog__content {
+  height: 90%;
+  width: 90%;
+  margin-top: 10rem;
+  margin-bottom: 4rem;
+}
+
+.bloginput__box .inputbox {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+  z-index: 11;
+}
+
+.icons__box {
+  display: flex;
+  gap: 1rem;
+  border-right: 1px solid #ccc;
+  padding-top: 4rem;
+  padding-right: 2rem;
+  margin-left: -4rem;
+}
+
+.box {
+  display: flex;
+  padding-top: 4rem;
+}
+
+.icons__box .svg,
+.box .svg {
+  height: 3rem;
+  width: 3rem;
+  color: #fff;
+  padding: 0.5rem;
+  margin: 1rem;
+  border: 1px solid #e67e22;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .inner__container {
+    margin-left: 0rem;
+  }
+
+  .bloginput__box {
+    margin-left: 5rem;
+  }
+
+  .imgbox {
+    width: 35rem;
+    height: 22rem;
+    top: -1rem;
+  }
+
+  .bloginput__box > .svg {
+    top: 5rem;
+    left: 12%;
+  }
+}
