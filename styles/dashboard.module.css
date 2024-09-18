@@ -35,9 +35,7 @@
 }
 
 @media (max-width: 480px) {
-  .dashboardfeeds__nav {
-    display: none;
-  }
+
   .dashboard__feeds {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
