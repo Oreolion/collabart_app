@@ -8,7 +8,7 @@ import { Info } from "lucide-react"
 
 export default function MemberProfile() {
   return (
-    <div className="container mx-auto p-4 space-y-8 ">
+    <div className="container mx-auto p-4 space-y-8">
       <h1 className="text-2xl font-bold mb-4">Member Profile</h1>
 
       <section className="space-y-4">

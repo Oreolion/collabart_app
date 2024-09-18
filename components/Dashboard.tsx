@@ -24,7 +24,7 @@ export default function Dashboard() {
     <>
       <section className={styles.dashboard__feeds}>
         <main className=''>
-          <div className="mb-5 text-center bg-slate-900 py-2">
+          <div className="mb-5 text-center bg-slate-900 py-4">
             <Avatar className="w-24 h-24 mx-auto mb-4">
               <AvatarImage src="/assets/icons/avatar.svg" alt="remyoreo" />
               <AvatarFallback>RO</AvatarFallback>
@@ -51,9 +51,9 @@ export default function Dashboard() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
-              <Card>
+              <Card className='bg-slate-600'>
                 <CardHeader>
-                  <CardTitle>Member Dashboard</CardTitle>
+                  <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Member Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Accordion type="single" collapsible>
@@ -88,9 +88,9 @@ export default function Dashboard() {
           </Tabs>
 
           <div className="flex flex-col gap-8 mb-4">
-            <Card>
+            <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle>Work for Hire</CardTitle>
+                <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Work for Hire</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -116,9 +116,9 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className='bg-slate-600'>
               <CardHeader>
-                <CardTitle>Royalty Statement</CardTitle>
+                <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Royalty Statement</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
