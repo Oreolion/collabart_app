@@ -127,7 +127,7 @@ export default function AddProject() {
 
   return (
     <section className={styles.bloginput__box}>
-      <h1 className="text-3xl font-bold text-white-1"> Create post</h1>
+      <h1 className="text-3xl font-bold text-white-1"> Create New Project</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -319,7 +319,7 @@ export default function AddProject() {
               How will members collaborate in this project? Select at least one:
             </p>
             <div className="flex flex-col gap-4">
-              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+              <div className="flex gap-4 items-center bg-zinc-300 p-4">
                 <Image
                   src={"/assets/icons/headphone.svg"}
                   width={24}
@@ -329,7 +329,7 @@ export default function AddProject() {
                 <label htmlFor="checkbox">
                   <input type="checkbox" />
                 </label>
-                <div className="text">
+                <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Joint Work</h5>
                   <h6 className="text-xs font-bold">
                     Allow members to audition and contribute as joint
@@ -342,7 +342,7 @@ export default function AddProject() {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+              <div className="flex gap-4 items-center bg-zinc-300 p-4">
                 <Image
                   src={"/assets/icons/discover.svg"}
                   width={24}
@@ -352,7 +352,7 @@ export default function AddProject() {
                 <label htmlFor="checkbox">
                   <input type="checkbox" />
                 </label>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Work for Hire</h5>
                   <h6 className="text-xs font-bold">
                     Allow members to contribute work under contract and in
@@ -360,12 +360,12 @@ export default function AddProject() {
                   </h6>
                   <p className="text-xs">
                     Select this option if you prefer to retain ownership in the
-                    song's copyrights. All rights to the contributed work will
+                    song&apos;s copyrights. All rights to the contributed work will
                     be transferred to the project owner.
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4 items-center bg-zinc-500 p-4">
+              <div className="flex gap-4 items-center bg-zinc-300 p-4 ">
                 <Image
                   src={"/assets/icons/home.svg"}
                   width={24}
@@ -375,7 +375,7 @@ export default function AddProject() {
                 <label htmlFor="checkbox">
                   <input type="checkbox" />
                 </label>
-                <div className="text">
+                <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Creative Commons</h5>
                   <h6 className="text-xs font-bold">
                     Allow members to audition and contribute work under a

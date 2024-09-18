@@ -1,27 +1,28 @@
-"use client";
-import React from "react";
-import styles from "@/styles/dashboard.module.css";
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import ProjectItem from "@/components/ProjectItem";
-import SearchBar from "@/components/SearchBar";
+import Dashboard from "@/components/Dashboard";
+import BioSection from "@/components/BioSection";
+import Table from "@/components/Table";
 
-const Page = () => {
-  const { user } = useUser();
-  const router = useRouter();
+export default function Home() {
+  // Example data for the tables
+  const projectsData = [
+    {
+      contractNo: "001",
+      date: "2024-09-17",
+      artist: "remyoreo",
+      project: "Songwriting",
+      scopeOfWork: "Write lyrics",
+      status: "Open",
+      amount: "$200",
+    },
+  ];
 
   return (
-    <section className={styles.dashboard__feeds}>
-      <SearchBar />
-      <main className={styles.content__box}>
-        <ProjectItem />
-        <ProjectItem />
-        <ProjectItem />
-        <ProjectItem />
-        <ProjectItem />
-      </main>
+    <section className="min-h-screen ">
+      <Dashboard />
+      {/* 
+        <section className="mt-6 sm:mt-8">
+          <BioSection />
+        </section> */}
     </section>
   );
-};
-
-export default Page;
+}

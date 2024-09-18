@@ -1,5 +1,5 @@
 .bloginput__box {
-  width: 70%;
+  /* width: 70%; */
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -135,7 +135,7 @@
   }
 
   .bloginput__box {
-    margin-left: 5rem;
+    margin-left: 2rem;
   }
 
   .imgbox {

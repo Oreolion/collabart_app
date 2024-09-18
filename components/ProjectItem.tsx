@@ -116,7 +116,7 @@ const ProjectItem = () => {
         <div className="flex items-center gap-4 max-md:hidden">
           <Link href={`/podcast/${audio?.podcastId}`}>
             <Image
-              src="/assets/images/player1.png"
+              src="/assets/images/daniel-chekalov-rRVGpLI5ceo-unsplash.jpg"
               width={64}
               height={64}
               alt="player1"

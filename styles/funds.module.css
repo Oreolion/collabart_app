@@ -1,59 +1,45 @@
-.h1 {
-  margin-bottom: 2rem;
-}
-
-.dashboard__feeds {
-  margin-top: 8rem;
-  margin-left: 10rem;
+.funds__feeds {
+  margin-top: 7rem;
+  margin-left: 14rem;
+  margin-right: 4rem;
   font-weight: bold;
   font-size: 1rem;
-  padding: 2rem ;
+  padding: 2rem;
   border-radius: 2rem;
-  background: rgba(225, 255, 255, 0.2);
   color: aliceblue;
   min-width: 36rem;
   display: flex;
   flex-direction: column;
 }
 
-.content__box {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
+.funds__feeds button {
+    background: #333;
 }
 
 @media (max-width: 767px) {
-  .dashboard__feeds {
-    margin-left: -.5rem;
+  .funds__feeds {
+    margin-left: -0.5rem;
   }
 }
 
 @media (max-width: 640px) {
-  .dashboard__feeds {
+  .funds__feeds {
     width: 36rem;
   }
 }
 
 @media (max-width: 480px) {
-  .dashboardfeeds__nav {
-    display: none;
-  }
-  .dashboard__feeds {
+  .funds__feeds {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     border: none;
     padding: 2rem 1rem;
     width: 32rem;
   }
-
-  .content__box {
-    gap: 4rem;
-    width: 90%;
-  }
 }
 
 @media (max-width: 320px) {
-  .dashboard__feeds {
+  .funds__feeds {
     width: 29rem;
     padding: 1rem;
     margin-left: -2rem;
