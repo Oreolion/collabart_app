@@ -21,8 +21,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
@@ -30,8 +32,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
-
 import Image from "next/image";
+import { Card, CardContent } from "./ui/card";
 
 const formSchema = z.object({
   projectTitle: z.string().min(2, "Title must be at least 2 characters"),
@@ -39,6 +41,7 @@ const formSchema = z.object({
     .string()
     .min(2, "Description must be at least 2 characters"),
 });
+
 
 export default function AddProject() {
   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
@@ -51,7 +54,17 @@ export default function AddProject() {
     null
   );
   const [projectType, setProjectType] = useState<string | null>(null);
-  const [projectPrivacy, setProjectPrivacy] = useState<string | null>(null);
+  const [projectAuditionPrivacy, setProjectAuditionPrivacy] = useState<
+    string | null
+  >(null);
+  const [projectBitDepth, setProjectBitDepth] = useState<string | null>(null);
+  const [projectSampleRate, setProjectSampleRate] = useState<string | null>(
+    null
+  );
+  const [collaborationAgreement, setCollaborationAgreement] = useState<
+    string | null
+  >(null);
+
   const [projectContent, setProjectContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
@@ -85,7 +98,9 @@ export default function AddProject() {
         projectDescription: data.projectDescription,
         projectContent,
         projectType,
-        projectPrivacy,
+        projectBitDepth,
+        projectSampleRate,
+        projectAuditionPrivacy,
         imageUrl,
         views: 0,
         likes: 0,
@@ -114,8 +129,8 @@ export default function AddProject() {
     "Keep auditions private [recommended]",
     "Keep auditions visible to the community",
   ];
-  const projectBitDepth = ["8 bits", "16 bits", "24 bits", "32 bits"];
-  const projectSampleRate = [
+  const projectBitDepths = ["8 bits", "16 bits", "24 bits", "32 bits"];
+  const projectSampleRates = [
     "22.05KHz",
     "44.1KHz",
     "48KHz",
@@ -133,12 +148,12 @@ export default function AddProject() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="mt-12 flex w-full flex-col"
         >
-          <div className="flex flex-col gap-[30px] border-b border-black-5 pb-10">
+          <div className="flex gap-2.5 items-center border-b border-black-5 pb-10 max-md:flex-col">
             <FormField
               control={form.control}
               name="projectTitle"
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-2.5">
+                <FormItem className="flex flex-col gap-2.5 md:w-[50%]">
                   <FormLabel className="text-16 font-bold text-white-1">
                     Project Title:
                   </FormLabel>
@@ -151,14 +166,33 @@ export default function AddProject() {
                   </FormControl>
 
                   <FormMessage className="text-red-300" />
+                  <div className="space-x-2 flex items-center">
+                    <Label>Is this a cover song?</Label>
+                    <RadioGroup
+                      defaultValue="no"
+                      className="inline-flex space-x-2"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="no" id="no" />
+                        <Label htmlFor="no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="yes" id="yes" />
+                        <Label htmlFor="yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
                 </FormItem>
               )}
             />
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 md:w-[50%]">
               <Label className="text-16 font-bold text-white-1">
                 Select Project Type:
               </Label>
-              <Select onValueChange={(value) => setProjectType(value)}>
+              <Select
+                value={projectType}
+                onValueChange={(value) => setProjectType(value)}
+              >
                 <SelectTrigger
                   className={cn(
                     "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
@@ -183,66 +217,41 @@ export default function AddProject() {
                   })}
                 </SelectContent>
               </Select>
+              <div className="flex gap-2.5">
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="invite-only" />
+                  <Label htmlFor="invite-only">By invite only</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="hide-project" />
+                  <Label htmlFor="hide-project">
+                    Hide this project (secret)
+                  </Label>
+                </div>
+              </div>
             </div>
-            <FormField
-              control={form.control}
-              name="projectDescription"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2.5">
-                  <FormLabel className="text-16 font-bold text-white-1">
-                    Project Description:
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className="input-class focus-visible:ring-offset-orange-1"
-                      placeholder="Describe your inspiration for this song"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage className="text-red-300" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="projectBrief"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2.5">
-                  <FormLabel className="text-16 font-bold text-white-1">
-                    Project Brief:
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className="input-class-b focus-visible:ring-offset-orange-1"
-                      placeholder="Describe your requirements, expectations, or provide direction for potential collaborators"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage className="text-red-300" />
-                </FormItem>
-              )}
-            />
           </div>
           <div className="flex flex-col gap-2.5 mb-[1rem]">
             <Label className="text-16 font-bold text-white-1">
               Project Audio Preference:
             </Label>
-            <div className="flex gap-[1rem]">
-              <Select onValueChange={(value) => setProjectPrivacy(value)}>
+            <div className="flex gap-[1rem] max-md:flex-col">
+              <Select
+                value={projectBitDepth}
+                onValueChange={(value) => setProjectBitDepth(value)}
+              >
                 <SelectTrigger
                   className={cn(
                     "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
                   )}
                 >
                   <SelectValue
-                    placeholder="Select"
+                    placeholder="Bit Depth"
                     className="placeholder:text-gray-1"
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                  {projectAuditionPrivacies.map((type) => {
+                  {projectBitDepths.map((type) => {
                     return (
                       <SelectItem
                         className="capitalize focus:bg-orange-1"
@@ -256,19 +265,22 @@ export default function AddProject() {
                 </SelectContent>
               </Select>
 
-              <Select onValueChange={(value) => setProjectPrivacy(value)}>
+              <Select
+                value={projectSampleRate}
+                onValueChange={(value) => setProjectSampleRate(value)}
+              >
                 <SelectTrigger
                   className={cn(
                     "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
                   )}
                 >
                   <SelectValue
-                    placeholder="Select"
+                    placeholder="Sample Rate"
                     className="placeholder:text-gray-1"
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                  {projectBitDepth.map((type) => {
+                  {projectSampleRates.map((type) => {
                     return (
                       <SelectItem
                         className="capitalize focus:bg-orange-1"
@@ -283,11 +295,55 @@ export default function AddProject() {
               </Select>
             </div>
           </div>
+          <FormField
+            control={form.control}
+            name="projectDescription"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2.5">
+                <FormLabel className="text-16 font-bold text-white-1">
+                  Project Description:
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="input-class focus-visible:ring-offset-orange-1"
+                    placeholder="Describe your inspiration for this song"
+                    {...field}
+                  />
+                </FormControl>
+
+                <FormMessage className="text-red-300" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="projectBrief"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2.5">
+                <FormLabel className="text-16 font-bold text-white-1">
+                  Project Brief:
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="input-class-b focus-visible:ring-offset-orange-1"
+                    placeholder="Describe your requirements, expectations, or provide direction for potential collaborators"
+                    {...field}
+                  />
+                </FormControl>
+
+                <FormMessage className="text-red-300" />
+              </FormItem>
+            )}
+          />
+
           <div className="flex flex-col gap-2.5">
             <Label className="text-16 font-bold text-white-1">
               Audition Privacy:
             </Label>
-            <Select onValueChange={(value) => setProjectPrivacy(value)}>
+            <Select
+              value={projectAuditionPrivacy}
+              onValueChange={(value) => setProjectAuditionPrivacy(value)}
+            >
               <SelectTrigger
                 className={cn(
                   "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
@@ -299,7 +355,7 @@ export default function AddProject() {
                 />
               </SelectTrigger>
               <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                {projectSampleRate.map((type) => {
+                {projectAuditionPrivacies.map((type) => {
                   return (
                     <SelectItem
                       className="capitalize focus:bg-orange-1"
@@ -326,9 +382,9 @@ export default function AddProject() {
                   height={24}
                   alt="rewind"
                 />{" "}
-                <label htmlFor="checkbox">
-                  <input type="checkbox" />
-                </label>
+                <Label htmlFor="Joint Work">
+                  <Checkbox id="Joint Work" />{" "}
+                </Label>
                 <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Joint Work</h5>
                   <h6 className="text-xs font-bold">
@@ -349,9 +405,9 @@ export default function AddProject() {
                   height={24}
                   alt="rewind"
                 />
-                <label htmlFor="checkbox">
-                  <input type="checkbox" />
-                </label>
+                <Label htmlFor="Work for Hire">
+                  <Checkbox id="Work for Hire" />
+                </Label>
                 <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Work for Hire</h5>
                   <h6 className="text-xs font-bold">
@@ -360,8 +416,8 @@ export default function AddProject() {
                   </h6>
                   <p className="text-xs">
                     Select this option if you prefer to retain ownership in the
-                    song&apos;s copyrights. All rights to the contributed work will
-                    be transferred to the project owner.
+                    song&apos;s copyrights. All rights to the contributed work
+                    will be transferred to the project owner.
                   </p>
                 </div>
               </div>
@@ -372,9 +428,9 @@ export default function AddProject() {
                   height={24}
                   alt="rewind"
                 />{" "}
-                <label htmlFor="checkbox">
-                  <input type="checkbox" />
-                </label>
+                <Label htmlFor="Creative Commons">
+                  <Checkbox id="Creative Commons" />{" "}
+                </Label>
                 <div className="flex flex-col gap-2">
                   <h5 className="font-bold text-xs">Creative Commons</h5>
                   <h6 className="text-xs font-bold">
@@ -390,6 +446,208 @@ export default function AddProject() {
               </div>
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="collaboration-agreement">
+              Select a joint-work collaboration agreement for this project:
+            </Label>
+            <Select
+              // className={styles.select__content}
+              value={collaborationAgreement}
+              onValueChange={(value) => setCollaborationAgreement(value)}
+            >
+              <SelectTrigger id="collaboration-agreement">
+                <SelectValue placeholder="Songwriters Agreement" />
+              </SelectTrigger>
+              <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
+                <SelectItem value="songwriters">
+                  <h3 className="text-lg font-semibold">
+                    Joint Work Collaboration Agreement
+                  </h3>
+                  <Card className="bg-gray-50">
+                    <CardContent className="p-4 text-sm">
+                      <p>
+                        Standard Songwriter Agreement (project manager version).
+                        Version 2. Last updated 24 January, 2016.
+                      </p>
+                      <p className="mt-2">
+                        I&apos;m a songwriter (or I represent a songwriter) and
+                        have a song that I would like to produce in
+                        collaboration with others. I understand and accept that
+                        others may offer to collaborate with me on my song
+                        either by submitting an audition for my consideration,
+                        or otherwise by accepting an invitation directly from
+                        me. Acceptance of any contribution to my project will
+                        remain at my sole discretion as the project manager.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </SelectItem>
+
+                <SelectItem value="producers">
+                  <h3 className="text-lg font-semibold">
+                    Joint Work Collaboration Agreement
+                  </h3>
+
+                  <p>
+                    Standard: Fair Shares Agreement (project manager version).
+                    Version 2. Last updated 24 January, 2016
+                  </p>
+                  <p>
+                    I am starting a new collaboration and intend to share in the
+                    resulting &apos;songwriting&apos; and &apos;sound
+                    recording&apos; copyright ownership. The assignment of these
+                    shares will be at my discretion but will be based on fair
+                    and unbiased consideration of each collaborator&apos;s
+                    individual contribution, as well as the time and effort
+                    invested into the completed song. I understand and accept
+                    that others may offer to collaborate with me on the song
+                    either by submitting an audition for my consideration, or
+                    otherwise by accepting an invitation directly from me.
+                    Acceptance of any collaboration on the project will remain
+                    at my sole discretion as the project manager. As the project
+                    manager, I understand that collaborators whom I have
+                    accepted have the right to leave my project at any time
+                    prior to the song&apos;s completion. In this case, I agree
+                    not to use, and to remove from my project any sound
+                    recording and any written music or lyric that has been
+                    contributed by the collaborator unless otherwise agreed in
+                    writing. I understand, agree, and accept that after such
+                    time that the project is completed, all individual
+                    contributions used in the writing of the song will become
+                    joined as inseparable or interdependent parts of a unitary
+                    whole - which is legal jargon to say that songwriters will
+                    jointly own &apos;the song&apos;; whilst those involved in
+                    the production of the song will jointly own the sound
+                    recording. Prior to the completion of the project,
+                    collaborators shall retain 100% of the authorship/ownership
+                    of their original work/contribution. A project is not
+                    considered to be &apos;complete&apos; until a) the project
+                    manager closes the project so that no further changes can be
+                    made to the song, and b) the song&apos;s completion and
+                    shares in the song are agreed by its collaborators. As an
+                    outcome of this collaboration: Shares in the copyright of
+                    the composition (music and lyrics) will be agreed and
+                    divided fairly between songwriters; Shares in the copyright
+                    of the master sound recording will be agreed and divided
+                    fairly between those involved in the production of the
+                    recording (e.g. performers and mix engineers). Wherever
+                    practical, the exact assignment of shares will be agreed as
+                    early as possible within the project and prior to the
+                    project being closed. I understand that I am bound by the
+                    terms and conditions of my membership on ProCollabs which
+                    includes a commitment to respecting the legal, ethical, and
+                    moral rights of all members and copyright owners, and in
+                    particular, those of my collaborators.
+                  </p>
+                </SelectItem>
+                <SelectItem value="producers">
+                  <h3 className="text-lg font-semibold">
+                    Joint Work Collaboration Agreement
+                  </h3>
+
+                  <p>
+                    Standard: Equal Shares Agreement (project manager version).
+                    Version 2. Last updated 24 January, 2016
+                  </p>
+                  <p>
+                    I am starting a new collaboration and intend to share
+                    equally in the resulting &apos;songwriting&apos; and
+                    &apos;master sound recording&apos; copyright ownership. I
+                    understand and accept that others may offer to collaborate
+                    with me on the song either by submitting an audition for my
+                    consideration, or otherwise by accepting an invitation
+                    directly from me. Acceptance of any collaboration on the
+                    project will remain at my sole discretion as the project
+                    manager. As the project manager, I understand that
+                    collaborators whom I have accepted have the right to leave
+                    my project at any time prior to the song&apos;s completion.
+                    In this case, I agree not to use, and to remove from my
+                    project any sound recording and any written music or lyric
+                    that has been contributed by the collaborator unless
+                    otherwise agreed in writing. I understand, agree, and accept
+                    that after such time that the project is complete, all
+                    individual contributions used in the song will become joined
+                    as inseparable or interdependent parts of a unitary whole -
+                    which is legal jargon to say: all collaborators will jointly
+                    own &apos;the song&apos;. Prior to the completion of the
+                    project, collaborators shall retain 100% of the
+                    authorship/ownership of their original work/contribution. A
+                    project is not considered to be &apos;complete&apos; until
+                    a) the project manager closes the project so that no further
+                    changes can be made to the song, and b) the song&apos;s
+                    completion and shares in the song are agreed by its
+                    collaborators. As an outcome of this collaboration: Shares
+                    in the copyright of the composition (music and lyrics) will
+                    be divided equally between all songwriters. Shares in the
+                    copyright of the master sound recording will be divided
+                    equally between all recording artists (performers) and audio
+                    engineers. I understand that I am bound by the terms and
+                    conditions of my membership on ProCollabs which includes a
+                    commitment to respecting the legal, ethical, and moral
+                    rights of all members and copyright owners, and in
+                    particular, those of my collaborators.
+                  </p>
+                </SelectItem>
+                <SelectItem value="producers">
+                  <h3 className="text-lg font-semibold">
+                    No Collaboration Agreement
+                  </h3>{" "}
+                  {/* Add more agreement text here */}
+                  <p>
+                    You are choosing not to have a collaborator agreement in
+                    place for this project.
+                  </p>
+                  <p>
+                    A collaboration agreement can help to clarify the intentions
+                    of the project manager and to align expectations of all
+                    collaborators prior to commiting unwarrented time and
+                    effort. Having a collaboration agreement in place can also
+                    help to avoid confusion between collaborators and reduce the
+                    risk of disputes arising due to uncertainty. Please be aware
+                    that without a Collaborator Agreement in place, ProCollabs
+                    will not be able to investigate or provide assistance in the
+                    event of project related collaboration disputes, should they
+                    arise. &apos;Nuff said. You will manage this project soley
+                    in accordance with applicable copyright laws and in
+                    accordance with the terms and conditions of membership on
+                    CollabArt&apos;s, which includes a commitment to respecting
+                    the legal, ethical, and moral rights of all members and
+                    copyright owners.
+                  </p>
+                </SelectItem>
+                <SelectItem value="custom">
+                  Customize Agreement
+                  {/* Add more agreement text here */}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">
+              Joint Work Collaboration Agreement
+            </h3>
+            <Card className="bg-gray-50">
+              <CardContent className="p-4 text-sm">
+                <p>
+                  Standard Songwriter Agreement (project manager version).
+                  Version 2. Last updated 24 January, 2016.
+                </p>
+                <p className="mt-2">
+                  I&apos;m a songwriter (or I represent a songwriter) and have a
+                  song that I would like to produce in collaboration with
+                  others. I understand and accept that others may offer to
+                  collaborate with me on my song either by submitting an
+                  audition for my consideration, or otherwise by accepting an
+                  invitation directly from me. Acceptance of any contribution to
+                  my project will remain at my sole discretion as the project
+                  manager.
+                </p>
+                {/* Add more agreement text here */}
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="mt-10 w-full">
             <Button
               type="submit"

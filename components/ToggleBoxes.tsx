@@ -15,7 +15,7 @@ export default function ToggleBoxes() {
     visible: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -50 },
   };
-
+// @ts-expect-error type-error
   const handleToggle = (index) => {
     setActiveIndex(index === activeIndex ? null : index);
   };

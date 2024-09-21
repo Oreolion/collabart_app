@@ -7,7 +7,9 @@ export default defineSchema({
     projectTitle: v.string(),
     projectContent: v.string(),
     projectType: v.string(),
-    projectPrivacy: v.string(),
+    projectAuditionPrivacy: v.string(),
+    projectBitDepth: v.string(),
+    projectSampleRate: v.string(),
     projectDescription: v.string(),
     audioUrl: v.optional(v.string()),
     imageStorageId: v.optional(v.id("_storage")),
@@ -30,21 +32,21 @@ export default defineSchema({
     name: v.string(),
   }),
   // comment tables ...
-  comments: defineTable({
-    projectId: v.id("projects"),
-    userId: v.id("users"),
-    commentUserImage: v.optional(v.string()),
-    commentId: v.optional(v.id("comment")),
-    content: v.string(),
-    username: v.optional(v.string()),
-    createdAt: v.number(),
-  }).index("by_project", ["projectId"]),
+//   comments: defineTable({
+//     projectId: v.id("projects"),
+//     userId: v.id("users"),
+//     commentUserImage: v.optional(v.string()),
+//     commentId: v.optional(v.id("comment")),
+//     content: v.string(),
+//     username: v.optional(v.string()),
+//     createdAt: v.number(),
+//   }).index("by_project", ["projectId"]),
 
   // user open ai call count table...
-  userCallCounts: defineTable({
-    userId: v.string(),
-    count: v.number(),
-  }).index("by_userId", ["userId"]),
+//   userCallCounts: defineTable({
+//     userId: v.string(),
+//     count: v.number(),
+//   }).index("by_userId", ["userId"]),
 
   // bookmarks tables for schema ...
   savedProjects: defineTable({

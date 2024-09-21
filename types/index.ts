@@ -12,6 +12,8 @@ export interface ProjectProps {
   projectTitle: string;
   projectType: string;
   projectPrivacy: string;
+  projectBitDepth: string;
+  projectSampleRate: string;
   postContent: string;
   audioUrl: string | null;
   imageUrl: string | null;
@@ -50,6 +52,18 @@ export interface ProfileProjectProps {
 }
 
 export type projectType = "Public" | "Member" | "Private (Premium Add-on)";
+export type projectSampleRate =
+  | "22.05KHz"
+  | "44.1KHz"
+  | "48KHz"
+  | "88.2KHz"
+  | "96KHz"
+  | "176.4KHz"
+  | "192KHz";
+export type projectBitDepth = "8 bits" | "16 bits" | "24 bits" | "32 bits";
+export type projectAuditionPrivacy =
+  | "Keep auditions private [recommended]"
+  | "Keep auditions visible to the community";
 
 export interface GenerateProjectProps {
   projectType: projectType;
