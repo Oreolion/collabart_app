@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import styles from "@/styles/dashboardnav.module.css";
 import { SignedIn, useUser, useClerk } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 import { navbarLinks } from "@/constants";
 import SVGIcon from "@/components/SVGIcon";
 
-const DashboardNav = () => {
+const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void }) => {
   const [showNav, setShowNav] = useState(true);
   const { signOut } = useClerk();
   const { user } = useUser();
@@ -18,9 +18,12 @@ const DashboardNav = () => {
     return pathname === href || pathname.startsWith(href);
   };
 
-  const handleShowNavbar = () => {
-    setShowNav(!showNav);
-  };
+  const handleShowNavbar = useCallback(() => {
+    const newShowNav = !showNav;
+    setShowNav(newShowNav);
+    onNavToggle(newShowNav);
+  }, [showNav, onNavToggle]);
+
 
   return (
     <div className={styles.dashboard__navcontainer}>

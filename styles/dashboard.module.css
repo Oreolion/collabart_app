@@ -4,7 +4,8 @@
 
 .dashboard__feeds {
   margin-top: 8rem;
-  margin-left: 10rem;
+  margin-left: 2rem;
+  margin-right: 6rem;
   font-weight: bold;
   font-size: 1rem;
   padding: 2rem ;
@@ -16,6 +17,8 @@
   flex-direction: column;
 }
 
+
+
 .content__box {
   display: flex;
   flex-direction: column;
@@ -25,7 +28,9 @@
 @media (max-width: 767px) {
   .dashboard__feeds {
     margin-left: -.5rem;
+    margin-right: 0rem;
   }
+
 }
 
 @media (max-width: 640px) {

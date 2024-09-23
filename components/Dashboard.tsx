@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -23,7 +22,7 @@ export default function Dashboard() {
   return (
     <>
       <section className={styles.dashboard__feeds}>
-        <main className=''>
+        <main className={styles.dashboard__content}>
           <div className="mb-5 text-center bg-slate-900 py-4">
             <Avatar className="w-24 h-24 mx-auto mb-4">
               <AvatarImage src="/assets/icons/avatar.svg" alt="remyoreo" />
@@ -51,9 +50,11 @@ export default function Dashboard() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
-              <Card className='bg-slate-600'>
+              <Card className="bg-slate-600">
                 <CardHeader>
-                  <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Member Dashboard</CardTitle>
+                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                    Member Dashboard
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Accordion type="single" collapsible>
@@ -65,6 +66,22 @@ export default function Dashboard() {
                           Welcome, remyoreo! Your free membership plan has been
                           activated allowing you access to many of the community
                           and collaboration features of the site for free.
+                        </p>
+                        <p>
+                          With the free membership plan you will be able to
+                          start and manage a project, collaborate with others,
+                          and publish and sell your music in our Music Library,
+                          and you can also get involved with our community in
+                          the forums, discussions and by supporting others with
+                          their projects. If at any time you need more space, or
+                          want to run more concurrent projects, then you can
+                          easily upgrade your account at any time to one of our
+                          premium membership plans or purchase addons (such as
+                          more space) to best suit your needs. To upgrade or
+                          purchase addons for your current membership plan, go
+                          to your membership account page. If you have any
+                          questions or need help, please don&apos;t hesitate to
+                          contact us at anytime. Upgrade now
                         </p>
                       </AccordionContent>
                     </AccordionItem>
@@ -79,6 +96,37 @@ export default function Dashboard() {
                           interact more effectively with other members in the
                           community and on projects.
                         </p>
+                        <p>
+                          You can adjust these and other settings for your
+                          account and profile at any time by clicking the Edit
+                          Profile button. Once your account has been setup, this
+                          entire section will disapear.
+                        </p>
+                        <h4> What styles of music do you love the most?</h4>
+                        <p>
+                          Obviously, most of us will have preferences about the
+                          style and genre of music that we enjoy the most, so
+                          why not identify with a couple of your preferences so
+                          that others can associate with you when looking for
+                          project partners. <strong>Set this up</strong>
+                        </p>
+                        <p>
+                          <h5>What next..?</h5>
+                          Check out the active projects section for members
+                          looking for your unique musical talents and upload an
+                          audition to their project. You&apos;ll also want to get
+                          involved in the community by posting to the member&apos;s
+                          forum and giving kudos and feedback to support your
+                          fellow collaborators in their projects. Interacting
+                          and getting to know other members is gonna be key to
+                          your success as a project manager, collaborator,
+                          engineer, or session artist. You can get started by
+                          letting everyone know that you&apos;ve arrived by posting
+                          to the introductions forum. Remember also to check out
+                          the tutorials for an introduction to the main features
+                          of the site. Thanks for being here. If you need
+                          anything, just sing! The ProCollabs Team
+                        </p>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -90,7 +138,9 @@ export default function Dashboard() {
           <div className="flex flex-col gap-8 mb-4">
             <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Work for Hire</CardTitle>
+                <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                  Work for Hire
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -116,9 +166,11 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className='bg-slate-600'>
+            <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className='text-lg font-semibold bg-slate-800 p-2'>Royalty Statement</CardTitle>
+                <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                  Royalty Statement
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>

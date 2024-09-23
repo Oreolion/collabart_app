@@ -1,7 +1,7 @@
 .funds__feeds {
   margin-top: 7rem;
-  margin-left: 14rem;
-  margin-right: 4rem;
+  margin-left: 8rem;
+  margin-right: 8rem;
   font-weight: bold;
   font-size: 1rem;
   padding: 2rem;
@@ -19,6 +19,7 @@
 @media (max-width: 767px) {
   .funds__feeds {
     margin-left: -0.5rem;
+    margin-right: 0rem;
   }
 }
 

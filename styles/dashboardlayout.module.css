@@ -1,0 +1,19 @@
+.dashboard_layout {
+    display: flex;
+  }
+  
+  .dashboard_content {
+    flex-grow: 1;
+    margin-left: 6rem; /* Adjust this value to match your sidebar width */
+    transition: margin-left 0.3s ease-in-out;
+  }
+  
+  .dashboard_content.expanded {
+    margin-left: 3rem;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard_content {
+      margin-left: 0;
+    }
+  }
