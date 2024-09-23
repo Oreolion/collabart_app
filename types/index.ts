@@ -11,7 +11,7 @@ export interface ProjectProps {
   user: Id<"users">;
   projectTitle: string;
   projectType: string;
-  projectPrivacy: string;
+  projectAuditionPrivacy: string;
   projectBitDepth: string;
   projectSampleRate: string;
   postContent: string;

@@ -8,8 +8,9 @@
   margin-right: 4rem;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2rem;
-  overflow-y: visible;
+  overflow-y: auto;
 }
+
 
 .bloginput__box > .svg {
   height: 2rem;
@@ -19,16 +20,6 @@
   left: 30%;
   cursor: pointer;
 }
-
-.select__content {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-height: 300px; /* Limit height to enable internal scrolling */
-    overflow-y: auto;
-    z-index: 1000; /* Ensure it's above other elements */
-  }
 
 .inner__container {
   display: flex;

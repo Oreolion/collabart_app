@@ -41,6 +41,10 @@ section {
   padding: 2rem 7%;
 } 
 
+select {
+  overflow-y: auto;
+}
+
 button {
   background: rgba(249, 120, 120, 0.6);
   color: #fff;
