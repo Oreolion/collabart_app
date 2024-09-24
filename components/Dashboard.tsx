@@ -23,7 +23,7 @@ export default function Dashboard() {
     <>
       <section className={styles.dashboard__feeds}>
         <main className={styles.dashboard__content}>
-          <div className="mb-5 text-center bg-slate-900 py-4">
+          <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl">
             <Avatar className="w-24 h-24 mx-auto mb-4">
               <AvatarImage src="/assets/icons/avatar.svg" alt="remyoreo" />
               <AvatarFallback>RO</AvatarFallback>

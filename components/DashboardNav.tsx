@@ -97,7 +97,7 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
           <li className={styles.li} key="Create project">
             <Link
               href="/create-project"
-              className={`${styles.link} ${isLinkActive("/create-post") ? styles.active_link : ""}`}
+              className={`${styles.link} ${isLinkActive("/create-project") ? styles.active_link : ""}`}
             >
               <SVGIcon
                 svgString={`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">

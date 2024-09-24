@@ -154,7 +154,6 @@ export default function AddProject() {
         title: "Project Created Successfully",
       });
       setIsSubmitting(false);
-      router.push("/dashboard");
       if (projectId) {
         router.push(`/project/${projectId}`, {
           scroll: true,

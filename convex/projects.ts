@@ -69,13 +69,23 @@ export const getAllProjects = query({
 
 // this query will get the project by the projectId.
 export const getProjectById = query({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.projectId);
-  },
-});
+    args: {
+      projectId: v.id("projects"),
+    },
+    handler: async (ctx, args) => {
+      try {
+        const project = await ctx.db.get(args.projectId);
+        if (!project) {
+          console.warn(`Project with ID ${args.projectId} not found.`);
+          return null;
+        }
+        return project;
+      } catch (error) {
+        console.error("Error fetching project:", error);
+        return null;
+      }
+    },
+  });
 
 // this query will get the projects based on the views of the project , which we are showing in the Trending Projects section.
 export const getTrendingProjects = query({
