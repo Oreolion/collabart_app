@@ -1,0 +1,49 @@
+.projects__feeds {
+    margin-top: 7rem;
+    margin-left: 8rem;
+    margin-right: 8rem;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 2rem;
+    border-radius: 2rem;
+    color: aliceblue;
+    min-width: 36rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .projects__feeds button {
+      background: #333;
+  }
+  
+  @media (max-width: 767px) {
+    .projects__feeds {
+      margin-left: -0.5rem;
+      margin-right: 0rem;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .projects__feeds {
+      width: 36rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .projects__feeds {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+      border: none;
+      padding: 2rem 1rem;
+      width: 32rem;
+    }
+  }
+  
+  @media (max-width: 320px) {
+    .projects__feeds {
+      width: 29rem;
+      padding: 1rem;
+      margin-left: -2rem;
+    }
+  }
+  

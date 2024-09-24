@@ -110,8 +110,8 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
           </li>
           <li className={styles.li} key="Bookmarks">
             <Link
-              href="/my-project"
-              className={`${styles.link} ${isLinkActive("/my-project") ? styles.active_link : ""}`}
+              href="/my-projects"
+              className={`${styles.link} ${isLinkActive("/my-projects") ? styles.active_link : ""}`}
             >
               <SVGIcon
                 svgString={`<svg className="${styles.svg}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -125,7 +125,7 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
           <li className={styles.li} key="funds">
             <Link
               href="/my-balance"
-              className={`${styles.link} ${isLinkActive("/my-project") ? styles.active_link : ""}`}
+              className={`${styles.link} ${isLinkActive("/my-balance") ? styles.active_link : ""}`}
             >
               <SVGIcon
                 svgString={`<svg className="${styles.svg}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#ef4444">

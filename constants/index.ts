@@ -134,7 +134,7 @@ export const navbarLinks = [
                 </svg>`,
   },
   {
-    route: "/my-project",
+    route: "/my-projects",
     label: "My Projects",
     svg: `<svg
                   className={styles.svg}

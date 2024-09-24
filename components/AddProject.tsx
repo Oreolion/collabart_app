@@ -1,8 +1,6 @@
 "use client";
 import styles from "@/styles/addproject.module.css";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -30,39 +28,34 @@ import React, { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 
 import { Loader } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Card, CardContent } from "./ui/card";
 import CollaborationAgreement from "./CollaborationAgreement";
 
 export default function AddProject() {
-  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
-  const [audioUrl, setAudioUrl] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  //   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
+  //     null
+  //   );
+  //   const [audioUrl, setAudioUrl] = useState("");
   //   const [audioDuration, setAudioDuration] = useState(0);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
+  //   const [imageUrl, setImageUrl] = useState("");
+  //   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
+  //     null
+  //   );
   const [projectType, setProjectType] = useState<string | null>(null);
   const [projectAuditionPrivacy, setProjectAuditionPrivacy] = useState<
     string | null
   >(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [projectBitDepth, setProjectBitDepth] = useState<string | null>(null);
   const [projectSampleRate, setProjectSampleRate] = useState<string | null>(
     null
   );
-  const [collaborationAgreement, setCollaborationAgreement] = useState<
-    string | null
-  >(null);
+  const [collaborationAgreement, setCollaborationAgreement] = useState("");
 
-  const [projectContent, setProjectContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -75,66 +68,6 @@ export default function AddProject() {
       document.body.style.overflow = "auto";
     }
   }, [isDropdownOpen]);
-
-  const formSchema = z.object({
-    projectTitle: z.string().min(2, "Title must be at least 2 characters"),
-    projectDescription: z
-      .string()
-      .min(2, "Description must be at least 2 characters"),
-  });
-
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      projectTitle: "",
-      projectDescription: "",
-    },
-  });
-
-  // 2. Define a submit handler.
-  async function onSubmit(data: z.infer<typeof formSchema>) {
-    try {
-      setIsSubmitting(true);
-      if (!projectContent || !imageUrl || !projectType) {
-        toast({
-          title: "Please Create Post",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        throw new Error("Please Create Post and Add Thumbnail");
-      }
-
-      await createProject({
-        projectTitle: data.projectTitle,
-        projectDescription: data.projectDescription,
-        projectContent,
-        projectType,
-        projectBitDepth,
-        projectSampleRate,
-        projectAuditionPrivacy,
-        imageUrl,
-        views: 0,
-        likes: 0,
-        // audioUrl,
-        // audioDuration,
-        audioStorageId: audioStorageId!,
-        imageStorageId: imageStorageId!,
-      });
-      toast({
-        title: "Project Created Successfully",
-      });
-      setIsSubmitting(false);
-      router.push("/dashboard");
-    } catch (error) {
-      console.log(error);
-      toast({
-        title: "Error occured while Creating projec",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-    }
-  }
 
   const projectTypes = ["Public", "Member", "Private (Premium Add-on)"];
   const projectAuditionPrivacies = [
@@ -151,6 +84,93 @@ export default function AddProject() {
     "176.4KHz",
     "192KHz",
   ];
+
+  const handleCollaborationAgreementChange = (subtitle: string) => {
+    setCollaborationAgreement(subtitle);
+  };
+
+  const formSchema = z.object({
+    projectTitle: z.string().min(2, "Title must be at least 2 characters"),
+    projectDescription: z
+      .string()
+      .min(10, "Description must be at least 10 characters"),
+    projectBrief: z.string().min(10, "Brief must be at least 10 characters"),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      projectTitle: "",
+      projectDescription: "",
+      projectBrief: "",
+    },
+  });
+
+  const handleSaveAsDraft = () => {
+    // Implement draft-saving logic here
+    toast({ title: "Draft Saved Successfully" });
+  };
+
+  // 2. Define a submit handler.
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      setIsSubmitting(true);
+      console.log("projectType:", projectType);
+
+      if (
+        !projectType ||
+        !projectAuditionPrivacy ||
+        !projectBitDepth ||
+        !projectSampleRate
+      ) {
+        toast({
+          title: "Missing Information",
+          description: "Please ensure all required fields are filled.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        throw new Error("Missing required fields");
+      }
+
+      const projectData = {
+        projectTitle: data.projectTitle,
+        projectDescription: data.projectDescription,
+        projectBrief: data.projectBrief,
+        projectType: projectType,
+        projectBitDepth: projectBitDepth,
+        projectSampleRate: projectSampleRate,
+        projectAuditionPrivacy: projectAuditionPrivacy,
+        collaborationAgreement: collaborationAgreement,
+        views: 0,
+        likes: 0,
+      };
+
+      console.log("projectData:", projectData);
+
+      const projectId = await createProject(projectData);
+      console.log("projectId:", projectId);
+
+      toast({
+        title: "Project Created Successfully",
+      });
+      setIsSubmitting(false);
+      router.push("/dashboard");
+      if (projectId) {
+        router.push(`/project/${projectId}`, {
+          scroll: true,
+        });
+      } else {
+        console.error("projectId is undefined");
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error occured while Creating project",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <section className={styles.bloginput__box}>
@@ -207,12 +227,12 @@ export default function AddProject() {
               >
                 <SelectTrigger
                   className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
                   )}
                 >
                   <SelectValue
                     placeholder="Select Project type"
-                    className="placeholder:text-gray-1"
+                    className="placeholder:text-gray-100"
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
@@ -249,17 +269,17 @@ export default function AddProject() {
             </Label>
             <div className="flex gap-[1rem] max-md:flex-col">
               <Select
-                value={projectBitDepth}
+                value={projectBitDepth ?? undefined}
                 onValueChange={(value) => setProjectBitDepth(value)}
               >
                 <SelectTrigger
                   className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
                   )}
                 >
                   <SelectValue
                     placeholder="Bit Depth"
-                    className="placeholder:text-gray-1"
+                    className="placeholder:text-gray-100"
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
@@ -283,12 +303,12 @@ export default function AddProject() {
               >
                 <SelectTrigger
                   className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
                   )}
                 >
                   <SelectValue
                     placeholder="Sample Rate"
-                    className="placeholder:text-gray-1"
+                    className="placeholder:text-gray-100"
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none max-h-[80vh] bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
@@ -359,12 +379,12 @@ export default function AddProject() {
             >
               <SelectTrigger
                 className={cn(
-                  "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
                 )}
               >
                 <SelectValue
                   placeholder="Select"
-                  className="placeholder:text-gray-1"
+                  className="placeholder:text-gray-100"
                 />
               </SelectTrigger>
               <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1 max-h-[40vh] overflow-y-auto">
@@ -469,9 +489,10 @@ export default function AddProject() {
             >
               Select a joint-work collaboration agreement for this project:
             </Label>
-           <CollaborationAgreement></CollaborationAgreement>
+            <CollaborationAgreement
+              onContentChange={handleCollaborationAgreementChange}
+            />
           </div>
-         
 
           <div className="mt-10 w-full">
             <Button
@@ -488,7 +509,8 @@ export default function AddProject() {
               )}
             </Button>
             <Button
-              type="submit"
+              onClick={handleSaveAsDraft}
+              type="button"
               className="text-16 h-15 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
             >
               Save as Draft
