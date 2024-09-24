@@ -1,6 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Disc3, FolderOpen, Share2, DollarSign, Mic } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import styles from "@/styles/dashboard.module.css";
 import BioSection from "./BioSection";
+import UserProfileCard from "./UserProfileCard";
 
 export default function Dashboard() {
   return (
@@ -114,23 +118,112 @@ export default function Dashboard() {
                           <h5>What next..?</h5>
                           Check out the active projects section for members
                           looking for your unique musical talents and upload an
-                          audition to their project. You&apos;ll also want to get
-                          involved in the community by posting to the member&apos;s
-                          forum and giving kudos and feedback to support your
-                          fellow collaborators in their projects. Interacting
-                          and getting to know other members is gonna be key to
-                          your success as a project manager, collaborator,
-                          engineer, or session artist. You can get started by
-                          letting everyone know that you&apos;ve arrived by posting
-                          to the introductions forum. Remember also to check out
-                          the tutorials for an introduction to the main features
-                          of the site. Thanks for being here. If you need
-                          anything, just sing! The ProCollabs Team
+                          audition to their project. You&apos;ll also want to
+                          get involved in the community by posting to the
+                          member&apos;s forum and giving kudos and feedback to
+                          support your fellow collaborators in their projects.
+                          Interacting and getting to know other members is gonna
+                          be key to your success as a project manager,
+                          collaborator, engineer, or session artist. You can get
+                          started by letting everyone know that you&apos;ve
+                          arrived by posting to the introductions forum.
+                          Remember also to check out the tutorials for an
+                          introduction to the main features of the site. Thanks
+                          for being here. If you need anything, just sing! The
+                          ProCollabs Team
                         </p>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
                 </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="profile">
+              <UserProfileCard />
+            </TabsContent>
+            <TabsContent value="projects">
+              <div className="container mx-auto p-4 space-y-6 flex flex-col gap-4 bg-blue-400">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FolderOpen className="w-6 h-6" />
+                      Projects I&apos;m managing
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="mb-4">
+                      remyoreo has started and is currently managing 1 active
+                      project.
+                    </p>
+                    <div className="bg-gray-100 rounded-lg overflow-hidden">
+                      <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-4">
+                          <Disc3 className="w-10 h-10" />
+                          <span className="font-bold">LESSONS</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button className="p-2 bg-gray-200 rounded-full">
+                            <Share2 className="w-5 h-5" />
+                          </Button>
+                          <Button className="p-2 bg-gray-200 rounded-full">
+                            <DollarSign className="w-5 h-5" />
+                          </Button>
+                          <Button className="p-2 bg-green-500 rounded-full">
+                            <Mic className="w-5 h-5 text-white" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FolderOpen className="w-6 h-6" />
+                      Projects I&apos;m collaborating on
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      You are not currently participating in any project.{" "}
+                      <Link href="#" className="text-blue-500 hover:underline">
+                        Search
+                      </Link>{" "}
+                      for active projects and find members looking for your
+                      skills and talents.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FolderOpen className="w-6 h-6" />
+                      Projects I&apos;m auditioning for
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      You have no pending auditions.{" "}
+                      <Link href="#" className="text-blue-500 hover:underline">
+                        Search
+                      </Link>{" "}
+                      for active projects and find members looking for your
+                      skills and talents.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            <TabsContent value="portfolio">
+              <Card className="bg-slate-600">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                    Portfolio of Published Works
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>Nothing published yet</CardContent>
               </Card>
             </TabsContent>
           </Tabs>
