@@ -54,7 +54,7 @@ export default function Dashboard() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
-              <Card className="bg-slate-600">
+              <Card className="bg-gray-300">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
                     Member Dashboard
@@ -63,75 +63,219 @@ export default function Dashboard() {
                 <CardContent>
                   <Accordion type="single" collapsible>
                     <AccordionItem className="mb-4" value="getting-started">
-                      <AccordionTrigger>Getting Started</AccordionTrigger>
+                      <AccordionTrigger className="mb-2">Getting Started</AccordionTrigger>
                       <AccordionContent>
-                        <h3 className="font-bold mb-2">Free Membership Plan</h3>
-                        <p>
-                          Welcome, remyoreo! Your free membership plan has been
-                          activated allowing you access to many of the community
-                          and collaboration features of the site for free.
-                        </p>
-                        <p>
-                          With the free membership plan you will be able to
-                          start and manage a project, collaborate with others,
-                          and publish and sell your music in our Music Library,
-                          and you can also get involved with our community in
-                          the forums, discussions and by supporting others with
-                          their projects. If at any time you need more space, or
-                          want to run more concurrent projects, then you can
-                          easily upgrade your account at any time to one of our
-                          premium membership plans or purchase addons (such as
-                          more space) to best suit your needs. To upgrade or
-                          purchase addons for your current membership plan, go
-                          to your membership account page. If you have any
-                          questions or need help, please don&apos;t hesitate to
-                          contact us at anytime. Upgrade now
-                        </p>
+                        <CardContent>
+                          <h2 className="text-xl font-semibold mb-2">
+                            Free Membership Plan
+                          </h2>
+                          <p className="mb-4">
+                            Welcome, remyoreo! Your free membership plan has
+                            been activated allowing you access to many of the
+                            community and collaboration features of the site for
+                            free.
+                          </p>
+                          <p className="mb-4">
+                            With the free membership plan you will be able to
+                            start and manage a project, collaborate with others,
+                            and publish and sell your music in our Music
+                            Library, and you can also get involved with our
+                            community in the forums, discussions and by
+                            supporting others with their projects.
+                          </p>
+                          <p className="mb-4">
+                            If at any time you need more space, or want to run
+                            more concurrent projects, then you can easily
+                            upgrade your account at any time to one of our
+                            premium membership plans or purchase addons (such as
+                            more space) to best suit your needs.
+                          </p>
+                          <p className="mb-4">
+                            To upgrade or purchase addons for your current
+                            membership plan, go to your{" "}
+                            <Link
+                              href="/membership-account"
+                              className="text-blue-600 hover:underline"
+                            >
+                              membership account
+                            </Link>{" "}
+                            page. If you have any questions or need help, please
+                            don&apos;t hesitate to{" "}
+                            <Link
+                              href="/contact"
+                              className="text-blue-600 hover:underline"
+                            >
+                              contact us
+                            </Link>{" "}
+                            at anytime.
+                          </p>
+                          <Button variant="default" className="mt-2">
+                            Upgrade now
+                          </Button>
+                        </CardContent>
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="profile-setup">
-                      <AccordionTrigger>
+                      <AccordionTrigger className='mb-2'>
                         Setting Up Your Profile
                       </AccordionTrigger>
                       <AccordionContent>
-                        <p>
-                          Just a couple of things to get done on your profile so
-                          that you can make the most of your time here and
-                          interact more effectively with other members in the
-                          community and on projects.
-                        </p>
-                        <p>
-                          You can adjust these and other settings for your
-                          account and profile at any time by clicking the Edit
-                          Profile button. Once your account has been setup, this
-                          entire section will disapear.
-                        </p>
-                        <h4> What styles of music do you love the most?</h4>
-                        <p>
-                          Obviously, most of us will have preferences about the
-                          style and genre of music that we enjoy the most, so
-                          why not identify with a couple of your preferences so
-                          that others can associate with you when looking for
-                          project partners. <strong>Set this up</strong>
-                        </p>
-                        <p>
-                          <h5>What next..?</h5>
-                          Check out the active projects section for members
-                          looking for your unique musical talents and upload an
-                          audition to their project. You&apos;ll also want to
-                          get involved in the community by posting to the
-                          member&apos;s forum and giving kudos and feedback to
-                          support your fellow collaborators in their projects.
-                          Interacting and getting to know other members is gonna
-                          be key to your success as a project manager,
-                          collaborator, engineer, or session artist. You can get
-                          started by letting everyone know that you&apos;ve
-                          arrived by posting to the introductions forum.
-                          Remember also to check out the tutorials for an
-                          introduction to the main features of the site. Thanks
-                          for being here. If you need anything, just sing! The
-                          ProCollabs Team
-                        </p>
+                        <Card className="">
+                          <CardContent className="p-4 bg-gray-400">
+                            <p className="mb-4">
+                              Just a couple of things to get done on your
+                              profile so that you can make the most of your time
+                              here and interact more effectively with other
+                              members in the community and on projects.
+                            </p>
+                            <p className="mb-4">
+                              You can adjust these and other settings for your
+                              account and profile at any time by clicking the{" "}
+                              <Link
+                                href="/edit-profile"
+                                className="text-blue-600 hover:underline"
+                              >
+                                Edit Profile
+                              </Link>{" "}
+                              button. Once your account has been setup, this
+                              entire section will disappear.
+                            </p>
+
+                            <h3 className="text-lg font-semibold mt-6 mb-2">
+                              <span className="mr-2">❤️</span>
+                              What styles of music do you love the most?
+                            </h3>
+                            <p className="mb-4">
+                              Obviously, most of us will have preferences about
+                              the style and genre of music that we enjoy the
+                              most, so why not identify with a couple of your
+                              preferences so that others can associate with you
+                              when looking for project partners.
+                            </p>
+                            <Button variant="default">Set this up</Button>
+
+                            <h3 className="text-lg font-semibold mt-6 mb-2">
+                              <span className="mr-2">🎸</span>
+                              What gear do you have and use?
+                            </h3>
+                            <p className="mb-4">
+                              We all gotta have or use something to make those
+                              beautiful recordings and sometimes your
+                              collaborators will be looking for a particular
+                              sound, so the microphone that you use or the
+                              guitar and amp combo that you play can be useful
+                              information for potential collaborators. If you&apos;re
+                              a writer, what pen are you using?
+                            </p>
+                            <Button variant="default">Set this up</Button>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="mb-6 bg-gray-300">
+                          <CardHeader>
+                            <CardTitle>What next..?</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="mb-4">
+                              Check out the{" "}
+                              <Link
+                                href="/active-projects"
+                                className="text-blue-600 hover:underline"
+                              >
+                                active projects
+                              </Link>{" "}
+                              section for members looking for your unique
+                              musical talents and upload an{" "}
+                              <Link
+                                href="/audition"
+                                className="text-blue-600 hover:underline"
+                              >
+                                audition
+                              </Link>{" "}
+                              to their project.
+                            </p>
+                            <p className="mb-4">
+                              You'll also want to get involved in the community
+                              by posting to the member's{" "}
+                              <Link
+                                href="/forum"
+                                className="text-blue-600 hover:underline"
+                              >
+                                forum
+                              </Link>{" "}
+                              and giving kudos and feedback to support your
+                              fellow collaborators in their projects.
+                            </p>
+                            <p className="mb-4">
+                              Interacting and getting to know other members is
+                              gonna be key to your success as a project manager,
+                              collaborator, engineer, or session artist. You can
+                              get started by letting everyone know that you've
+                              arrived by posting to the{" "}
+                              <Link
+                                href="/introductions"
+                                className="text-blue-600 hover:underline"
+                              >
+                                introductions
+                              </Link>{" "}
+                              forum.
+                            </p>
+                            <p className="mb-4">
+                              Remember also to check out the{" "}
+                              <Link
+                                href="/tutorials"
+                                className="text-blue-600 hover:underline"
+                              >
+                                tutorials
+                              </Link>{" "}
+                              for an introduction to the main features of the
+                              site.
+                            </p>
+                            <p className="mb-4">
+                              Thanks for being here. If you need anything, just{" "}
+                              <Link
+                                href="/sing"
+                                className="text-blue-600 hover:underline"
+                              >
+                                sing
+                              </Link>
+                              ! The ProCollabs Team 😊
+                            </p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="mb-6 bg-gray-300">
+                          <CardHeader>
+                            <CardTitle>
+                              <span className="mr-2">⚡</span>
+                              Activity Status
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p>Nothing to report.</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className='bg-gray-300'>
+                          <CardHeader>
+                            <CardTitle>
+                              <span className="mr-2">🔔</span>
+                              All Recent Notifications
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p>
+                              You are viewing all recent notifications. You can{" "}
+                              <Link
+                                href="/hide-notifications"
+                                className="text-blue-600 hover:underline"
+                              >
+                                hide notifications
+                              </Link>{" "}
+                              that you have already acknowledged.
+                            </p>
+                          </CardContent>
+                        </Card>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
