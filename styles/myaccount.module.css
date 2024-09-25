@@ -1,0 +1,50 @@
+.myaccount__feeds {
+    margin-top: 7rem;
+    margin-left: 8rem;
+    margin-right: 8rem;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: aliceblue;
+    min-width: 36rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .myaccount__feeds button {
+      background: #333;
+  }
+  
+  @media (max-width: 767px) {
+    .myaccount__feeds {
+      margin-left: -0.5rem;
+      margin-right: 0rem;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .myaccount__feeds {
+      width: 36rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .myaccount__feeds {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+      border: none;
+      padding: 2rem 1rem;
+      width: 32rem;
+    }
+  }
+  
+  @media (max-width: 320px) {
+    .myaccount__feeds {
+      width: 29rem;
+      padding: 1rem;
+      margin-left: -2rem;
+    }
+  }
+  

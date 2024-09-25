@@ -64,7 +64,7 @@ const ProjectPage = ({
             </div>
           </CardHeader>
 
-          <Card>
+          <Card className='bg-gray-400'>
             <CardHeader>
               <CardTitle>Project Status</CardTitle>
             </CardHeader>
@@ -86,8 +86,8 @@ const ProjectPage = ({
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Column */}
-          <div className="lg:w-1/4 ">
-            <Card className="pt-8">
+          <div className="lg:w-1/4">
+            <Card className="pt-8 bg-gray-400">
               <CardContent>
                 <Button className="w-full mb-2">Upload Track</Button>
                 <Button variant="outline" className="w-full mb-4">
@@ -161,8 +161,8 @@ const ProjectPage = ({
           </div>
 
           {/* Middle Column */}
-          <div className="lg:w-1/2">
-            <Card>
+          <div className="lg:w-1/2 ">
+            <Card className="bg-gray-400">
               <CardContent>
                 <h3 className="text-lg font-semibold mb-2">
                   New Project Checklist
@@ -257,7 +257,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Project Summary</CardTitle>
               </CardHeader>
@@ -275,7 +275,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Lyrics</CardTitle>
               </CardHeader>
@@ -284,7 +284,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Project Files</CardTitle>
               </CardHeader>
@@ -296,7 +296,7 @@ const ProjectPage = ({
 
           {/* Right Column */}
           <div className="lg:w-1/4">
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Collaborators</CardTitle>
               </CardHeader>
@@ -305,7 +305,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Project Timeline</CardTitle>
               </CardHeader>
@@ -327,7 +327,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Project Kudos</CardTitle>
               </CardHeader>
@@ -338,21 +338,21 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Credits</CardTitle>
               </CardHeader>
               <CardContent>{/* Add credits info here */}</CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Copyright</CardTitle>
               </CardHeader>
               <CardContent>{/* Add copyright info here */}</CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-400">
               <CardHeader>
                 <CardTitle>Derivative Works</CardTitle>
               </CardHeader>
