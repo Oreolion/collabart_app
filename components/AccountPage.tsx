@@ -28,7 +28,6 @@ import FavoriteGenres from "./Genres";
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("account");
   const [socialMediaLinks, setSocialMediaLinks] = useState<string[]>([]);
-  
 
   const addSocialMediaLink = () => {
     setSocialMediaLinks([...socialMediaLinks, ""]);
@@ -473,11 +472,11 @@ export default function AccountPage() {
             <Button>Save Changes</Button>
           </div>
         </TabsContent>
-        <TabsContent value='talents'>
-            <SkillsAndTalents />
+        <TabsContent value="talents">
+          <SkillsAndTalents />
         </TabsContent>
-        <TabsContent value='genres'>
-            <FavoriteGenres />
+        <TabsContent value="genres">
+          <FavoriteGenres />
         </TabsContent>
       </Tabs>
     </div>

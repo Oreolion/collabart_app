@@ -50,7 +50,7 @@ export default function Dashboard() {
                 Media
               </TabsTrigger>
               <TabsTrigger value="tip-jar" className="hidden md:block">
-                Tip Jar
+                My Account
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
