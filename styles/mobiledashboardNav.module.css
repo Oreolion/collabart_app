@@ -304,7 +304,7 @@
 .search_form {
   position: absolute;
   width: 34rem;
-  top: -25%;
+  top: 25%;
   left: 30%;
   display: flex;
   align-items: center;
