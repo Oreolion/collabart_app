@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { formatTime } from "@/lib/formatTime";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,10 @@ const ProjectPlayer = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
 //   const { audio } = useAudio();
-const audio = {}
+  // Wrap the initialization of 'audio' in useMemo to prevent it from changing on every render
+  const audio = useMemo(() => {
+    return {};
+  }, []);
 
   const togglePlayPause = () => {
     if (audioRef.current?.paused) {

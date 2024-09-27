@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { formatTime } from "@/lib/formatTime";
 import { cn } from "@/lib/utils";
@@ -15,8 +15,11 @@ const ProjectItem = () => {
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  //   const { audio } = useAudio();
-  const audio = {};
+
+  // Wrap the initialization of 'audio' in useMemo to prevent it from changing on every render
+  const audio = useMemo(() => {
+    return {};
+  }, []);
 
   const togglePlayPause = () => {
     if (audioRef.current?.paused) {
@@ -84,6 +87,7 @@ const ProjectItem = () => {
       setIsPlaying(true);
     }
   }, [audio]);
+
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
@@ -93,6 +97,7 @@ const ProjectItem = () => {
   const handleAudioEnded = () => {
     setIsPlaying(false);
   };
+
   return (
     <div
       className={cn(" bottom-0 left-0 flex size-full flex-col", {
@@ -114,7 +119,7 @@ const ProjectItem = () => {
           onEnded={handleAudioEnded}
         />
         <div className="flex items-center gap-4 max-md:hidden">
-          <Link href={`/podcast/${audio?.podcastId}`}>
+          <Link href={`/podcast/${audio?.projectId}`}>
             <Image
               src="/assets/images/daniel-chekalov-rRVGpLI5ceo-unsplash.jpg"
               width={64}
