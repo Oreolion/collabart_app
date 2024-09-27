@@ -1,14 +1,14 @@
 "use client";
 import React from "react";
 import styles from "@/styles/projects.module.css";
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+// import { useUser } from "@clerk/nextjs";
+// import { useRouter } from "next/navigation";
 import ProjectItem from "@/components/ProjectItem";
 import SearchBar from "@/components/SearchBar";
 
 const Page = () => {
-  const { user } = useUser();
-  const router = useRouter();
+//   const { user } = useUser();
+//   const router = useRouter();
 
   return (
     <section className={styles.project__feeds}>

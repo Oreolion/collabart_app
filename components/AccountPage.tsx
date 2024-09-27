@@ -449,13 +449,13 @@ export default function AccountPage() {
                   <Checkbox id="limitedPublicity" />
                   <label htmlFor="limitedPublicity" className="ml-2">
                     Limited Publicity: Google can see some of my profile
-                    information and an alternate 'public' profile picture
+                    information and an alternate `public` profile picture
                   </label>
                 </div>
                 <div className="flex items-center">
                   <Checkbox id="revealStatus" />
                   <label htmlFor="revealStatus" className="ml-2">
-                    Don't reveal my online status to others
+                    Don`t reveal my online status to others
                   </label>
                 </div>
                 <div className="flex items-center">

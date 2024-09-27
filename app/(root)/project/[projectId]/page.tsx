@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Share2, DollarSign, Copyright, Music, Mic } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
+// import { Id } from "@/convex/_generated/dataModel";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -21,7 +21,7 @@ const ProjectPage = ({
 }: {
   params: { projectId: string };
 }) => {
-  const [projectStatus, setProjectStatus] = useState(10);
+  const [projectStatus, ] = useState(10);
   const { user, isLoaded: isUserLoaded } = useUser();
   const router = useRouter();
   const project = useQuery(api.projects.getProjectById, {
