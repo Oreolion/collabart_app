@@ -195,8 +195,8 @@ export default function Dashboard() {
                               to their project.
                             </p>
                             <p className="mb-4">
-                              You'll also want to get involved in the community
-                              by posting to the member's{" "}
+                              You`&lsquo;`ll also want to get involved in the community
+                              by posting to the member`&lsquo;`s{" "}
                               <Link
                                 href="/forum"
                                 className="text-blue-600 hover:underline"
@@ -210,7 +210,7 @@ export default function Dashboard() {
                               Interacting and getting to know other members is
                               gonna be key to your success as a project manager,
                               collaborator, engineer, or session artist. You can
-                              get started by letting everyone know that you've
+                              get started by letting everyone know that you`&lsquo;`ve
                               arrived by posting to the{" "}
                               <Link
                                 href="/introductions"

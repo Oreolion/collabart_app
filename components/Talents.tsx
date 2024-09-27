@@ -44,7 +44,7 @@ export default function SkillsAndTalents() {
       </CardHeader>
       <CardContent>
         <p className="mb-4 text-sm text-gray-600">
-          Make yourself a locatable commodity. Accurate matching of your chops makes it easier for other members to find you when they're searching.
+          Make yourself a locatable commodity. Accurate matching of your chops makes it easier for other members to find you when they`&lsquo;`re searching.
         </p>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-6">
@@ -72,7 +72,7 @@ export default function SkillsAndTalents() {
         <div>
           <h3 className="text-lg font-semibold mb-2">Custom List</h3>
           <p className="text-sm text-gray-600 mb-2">
-            Can't see it here? Add your own. Your 'talent' will be added to your custom list.
+            Can`&lsquo;`t see it here? Add your own. Your `&lsquo;`talent`&lsquo;` will be added to your custom list.
           </p>
           <div className="flex space-x-2 mb-4">
             <Input

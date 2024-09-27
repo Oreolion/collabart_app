@@ -10,7 +10,7 @@ const ThirdSection = () => {
         Platform <strong className="font-bold">Features</strong>
       </h2>
       <p className="mb-[2rem] text-center font-bold">
-        Members have access to a number of cool features on the site. We've
+        Members have access to a number of cool features on the site. We`&lsquo;`ve
         listed some of the main ones below.
       </p>
       <ul className={styles.ul}>
