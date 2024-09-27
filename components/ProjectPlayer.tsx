@@ -87,6 +87,7 @@ const ProjectPlayer = () => {
       setIsPlaying(true);
     }
   }, [audio]);
+  
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
@@ -112,7 +113,7 @@ const ProjectPlayer = () => {
       <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 max-md:justify-center max-md:gap-5 md:px-12">
         <audio
           ref={audioRef}
-          src={audio?.audioUrl}
+          src={audio?.audioUrl || ""}
           className="hidden"
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
@@ -120,7 +121,7 @@ const ProjectPlayer = () => {
         <div className="flex items-center gap-4 max-md:hidden">
           <Link href={`/podcast/${audio?.podcastId}`}>
             <Image
-              src={audio?.imageUrl! || "/images/player1.png"}
+              src={audio?.imageUrl || "/images/player1.png"}
               width={64}
               height={64}
               alt="player1"
@@ -129,9 +130,11 @@ const ProjectPlayer = () => {
           </Link>
           <div className="flex w-[160px] flex-col">
             <h2 className="text-14 truncate font-semibold text-white-1">
-              {audio?.title}
+              {audio?.title || "Unknown Title"}
             </h2>
-            <p className="text-12 font-normal text-white-2">{audio?.author}</p>
+            <p className="text-12 font-normal text-white-2">
+              {audio?.author || "Unknown Author"}
+            </p>
           </div>
         </div>
         <div className="flex-center cursor-pointer gap-3 md:gap-6">
