@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React from "react";
 import styles from "@/styles/projects.module.css";
 // import { useUser } from "@clerk/nextjs";
