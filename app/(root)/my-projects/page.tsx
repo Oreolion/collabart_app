@@ -1,10 +1,11 @@
-// "use client";
-import React from "react";
+"use client";
+import React, { Suspense } from "react";
 import styles from "@/styles/projects.module.css";
 // import { useUser } from "@clerk/nextjs";
 // import { useRouter } from "next/navigation";
 import ProjectItem from "@/components/ProjectItem";
 import SearchBar from "@/components/SearchBar";
+import { Loader } from "lucide-react";
 
 const Page = () => {
 //   const { user } = useUser();
@@ -12,7 +13,9 @@ const Page = () => {
 
   return (
     <section className={styles.project__feeds}>
-      <SearchBar />
+           <Suspense fallback={<Loader/>}>
+        <SearchBar />
+      </Suspense>
       <main className={styles.content__box}>
         <ProjectItem />
         <ProjectItem />
