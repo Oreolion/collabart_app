@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,18 +22,28 @@ import {
 import styles from "@/styles/dashboard.module.css";
 import BioSection from "./BioSection";
 import UserProfileCard from "./UserProfileCard";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
+import { useUser } from "@clerk/nextjs";
 
 export default function Dashboard() {
+  const { user } = useUser();
+
+  const projects = useQuery(api.projects.getAllProjects);
+
+  console.log(projects);
+  console.log(user);
+
   return (
     <>
       <section className={styles.dashboard__feeds}>
         <main className={styles.dashboard__content}>
           <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl">
             <Avatar className="w-24 h-24 mx-auto mb-4">
-              <AvatarImage src="/assets/icons/avatar.svg" alt="remyoreo" />
-              <AvatarFallback>RO</AvatarFallback>
+              <AvatarImage src={user?.imageUrl} alt="remyoreo" />
+              <AvatarFallback>{user?.username}</AvatarFallback>
             </Avatar>
-            <h2 className="text-2xl font-bold">remyoreo</h2>
+            <h2 className="text-2xl font-bold">{user?.username}</h2>
             <p className="text-gray-600">
               I am an Afrobeats and HipHop Artist & Songwriter
             </p>
@@ -63,7 +74,9 @@ export default function Dashboard() {
                 <CardContent>
                   <Accordion type="single" collapsible>
                     <AccordionItem className="mb-4" value="getting-started">
-                      <AccordionTrigger className="mb-2">Getting Started</AccordionTrigger>
+                      <AccordionTrigger className="mb-2">
+                        Getting Started
+                      </AccordionTrigger>
                       <AccordionContent>
                         <CardContent>
                           <h2 className="text-xl font-semibold mb-2">
@@ -116,7 +129,7 @@ export default function Dashboard() {
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="profile-setup">
-                      <AccordionTrigger className='mb-2'>
+                      <AccordionTrigger className="mb-2">
                         Setting Up Your Profile
                       </AccordionTrigger>
                       <AccordionContent>
@@ -164,8 +177,8 @@ export default function Dashboard() {
                               collaborators will be looking for a particular
                               sound, so the microphone that you use or the
                               guitar and amp combo that you play can be useful
-                              information for potential collaborators. If you&apos;re
-                              a writer, what pen are you using?
+                              information for potential collaborators. If
+                              you&apos;re a writer, what pen are you using?
                             </p>
                             <Button variant="default">Set this up</Button>
                           </CardContent>
@@ -195,8 +208,8 @@ export default function Dashboard() {
                               to their project.
                             </p>
                             <p className="mb-4">
-                              You`&lsquo;`ll also want to get involved in the community
-                              by posting to the member`&lsquo;`s{" "}
+                              You`&lsquo;`ll also want to get involved in the
+                              community by posting to the member`&lsquo;`s{" "}
                               <Link
                                 href="/forum"
                                 className="text-blue-600 hover:underline"
@@ -210,8 +223,8 @@ export default function Dashboard() {
                               Interacting and getting to know other members is
                               gonna be key to your success as a project manager,
                               collaborator, engineer, or session artist. You can
-                              get started by letting everyone know that you`&lsquo;`ve
-                              arrived by posting to the{" "}
+                              get started by letting everyone know that
+                              you`&lsquo;`ve arrived by posting to the{" "}
                               <Link
                                 href="/introductions"
                                 className="text-blue-600 hover:underline"
@@ -239,7 +252,7 @@ export default function Dashboard() {
                               >
                                 sing
                               </Link>
-                              ! The ProCollabs Team 😊
+                              ! CollabArts Team 😊
                             </p>
                           </CardContent>
                         </Card>
@@ -256,7 +269,7 @@ export default function Dashboard() {
                           </CardContent>
                         </Card>
 
-                        <Card className='bg-gray-300'>
+                        <Card className="bg-gray-300">
                           <CardHeader>
                             <CardTitle>
                               <span className="mr-2">🔔</span>
@@ -296,8 +309,8 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <p className="mb-4">
-                      remyoreo has started and is currently managing 1 active
-                      project.
+                      {user?.username} has started and is currently managing 1
+                      active project.
                     </p>
                     <div className="bg-gray-100 rounded-lg overflow-hidden">
                       <div className="flex items-center justify-between p-4">

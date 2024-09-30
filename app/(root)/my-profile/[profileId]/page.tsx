@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Info } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
 
 const ProfilePage = ({
   params,
@@ -24,10 +25,12 @@ const ProfilePage = ({
     profileId: string;
   };
 }) => {
-  const user = useQuery(api.users.getUserById, {
+    const { user } = useUser();
+  const userId = useQuery(api.users.getUserById, {
     clerkId: params.profileId,
   });
 
+  console.log(userId)
   console.log(user)
 
 
@@ -68,7 +71,7 @@ const ProfilePage = ({
           </div>
           <div className="space-y-2">
             <Label>
-              Why are you on ProCollabs? Select all that apply. I am:
+              Why are you on CollabArts? Select all that apply. I am:
             </Label>
             {[
               "A lyricist looking for composers to write with",
@@ -138,11 +141,11 @@ const ProfilePage = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="first-name">First Name</Label>
-              <Input id="first-name" placeholder="Jenny" />
+              <Input id="first-name" placeholder={user?.firstname} />
             </div>
             <div>
               <Label htmlFor="last-name">Last Name</Label>
-              <Input id="last-name" placeholder="Jackson" />
+              <Input id="last-name" placeholder="Jackson" value={user?.lastname} />
             </div>
             <div>
               <Label htmlFor="state">State</Label>
@@ -158,6 +161,9 @@ const ProfilePage = ({
                   <SelectItem value="us">United States</SelectItem>
                   <SelectItem value="ca">Canada</SelectItem>
                   <SelectItem value="uk">United Kingdom</SelectItem>
+                  <SelectItem value="uk">South Africa</SelectItem>
+                  <SelectItem value="uk">Nigeria</SelectItem>
+                  <SelectItem value="uk">Kenya</SelectItem>
                 </SelectContent>
               </Select>
             </div>
