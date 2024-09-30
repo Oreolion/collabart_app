@@ -15,9 +15,14 @@ const MobileDashBoardNav = () => {
   const { signOut } = useClerk();
   const { user } = useUser();
   const pathname = usePathname();
-  const myRef = useRef(null);
-
   const router = useRouter();
+
+  // Refs for the dropdowns and their triggers
+  const notificationIconRef = useRef<SVGSVGElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const menuListIconRef = useRef<SVGSVGElement>(null);
+  const menuListRef = useRef<HTMLDivElement>(null);
+
   function toggleMenu() {
     setToggle(!toggle);
   }
@@ -30,8 +35,6 @@ const MobileDashBoardNav = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      //@ts-expect-error type-error
-      myRef?.current?.classList.remove("active");
       setToggle(false);
     };
 
@@ -42,8 +45,44 @@ const MobileDashBoardNav = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Close notification dropdown if click is outside dropdown and icon
+      if (
+        dropDown &&
+        notificationRef.current &&
+        notificationIconRef.current &&
+        !notificationRef.current.contains(target) &&
+        !notificationIconRef.current.contains(target)
+      ) {
+        setDropDown(false);
+      }
+
+      // Close menu list dropdown if click is outside dropdown and icon
+      if (
+        menuListdropDown &&
+        menuListRef.current &&
+        menuListIconRef.current &&
+        !menuListRef.current.contains(target) &&
+        !menuListIconRef.current.contains(target)
+      ) {
+        setMenuListDropDown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropDown, menuListdropDown]);
+
   const isLinkActive = (href: string) => {
-    return pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+    return (
+      pathname === href || (href !== "/dashboard" && pathname.startsWith(href))
+    );
   };
 
   return (
@@ -53,7 +92,7 @@ const MobileDashBoardNav = () => {
         <>
           <nav
             className={`${styles.dashboard__nav} ${styles.mobile}`}
-            ref={myRef}
+            // Remove the myRef since it's not needed here
           >
             <div className={`${styles.logo} ${styles.link}`}>
               <Link href="/">
@@ -73,7 +112,9 @@ const MobileDashBoardNav = () => {
                     <Link
                       key={item.label}
                       href={item.route}
-                      className={`${styles.link} ${isLinkActive(`${item.route}`) ? styles.active_link : ""}`}
+                      className={`${styles.link} ${
+                        isLinkActive(`${item.route}`) ? styles.active_link : ""
+                      }`}
                     >
                       <SVGIcon svgString={item.svg} />
 
@@ -96,18 +137,7 @@ const MobileDashBoardNav = () => {
                   <p className={styles.p}>My Profile</p>
                 </Link>
               </li>
-              {/* <li className={styles.li}>
-                <Link className={styles.link} href="/dashboard/nocontent">
-                  <svg
-                    className={styles.svg}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                  >
-                    <path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
-                  </svg>
-                  Notifications
-                </Link> 
-              </li>*/}
+
               <li>
                 <div className={styles.link}>
                   <svg
@@ -169,6 +199,7 @@ const MobileDashBoardNav = () => {
               )}
 
               <svg
+                ref={notificationIconRef}
                 className={styles.notification_icon}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
@@ -184,6 +215,7 @@ const MobileDashBoardNav = () => {
           </div>
 
           <svg
+            ref={menuListIconRef}
             className={styles.menulist__icon}
             onClick={toggleMenuListDropDown}
             fill="#ccc"
@@ -195,14 +227,14 @@ const MobileDashBoardNav = () => {
           </svg>
 
           {dropDown && (
-            <div className={styles.notificationbox}>
+            <div className={styles.notificationbox} ref={notificationRef}>
               <div className={styles.link}>
                 You currently have no Notification.
               </div>
             </div>
           )}
           {menuListdropDown && (
-            <div className={styles.menulist}>
+            <div className={styles.menulist} ref={menuListRef}>
               <Link href="/my-account" className={styles.link}>
                 My Account
               </Link>
