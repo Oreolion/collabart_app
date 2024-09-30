@@ -10,7 +10,6 @@
   overflow-y: auto;
 }
 
-
 .bloginput__box > .svg {
   height: 2rem;
   width: 2rem;
@@ -136,7 +135,7 @@
   }
 
   .bloginput__box {
-    margin-left: 2rem;
+    margin-left: 1rem;
     margin-right: 0rem;
   }
 
@@ -149,5 +148,11 @@
   .bloginput__box > .svg {
     top: 5rem;
     left: 12%;
+  }
+}
+
+@media (max-width: 480px) {
+  .bloginput__box h1 {
+    font-size: 2rem;
   }
 }
