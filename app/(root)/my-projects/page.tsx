@@ -14,7 +14,7 @@ const Page = () => {
 const { user, isLoaded } = useUser();
 
 useEffect(() => {
-  console.log('Create Project Page Loaded');
+  console.log('my Projects Page Loaded');
   console.log('User:', user);
   console.log('Is Loaded:', isLoaded);
 }, [user, isLoaded]);

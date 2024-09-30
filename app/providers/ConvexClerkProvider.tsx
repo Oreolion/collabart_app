@@ -7,7 +7,7 @@ import {
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const convex = new ConvexReactClient(
   process.env.NEXT_PUBLIC_CONVEX_URL as string
@@ -34,14 +34,16 @@ const ConvexClerkProvider = ({ children }: { children: ReactNode }) => (
 );
 
 const AuthRedirect = ({ children }: { children: ReactNode }) => {
-  const { isSignedIn } = useAuth();
-  const router = useRouter();
-
-  if (isSignedIn) {
-    router.push("/dashboard");
-  }
-
-  return <>{children}</>;
-};
+    const { isSignedIn } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+  
+    if (isSignedIn && (pathname === '/sign-in' || pathname === '/sign-up')) {
+      // If signed in and on sign-in or sign-up page, redirect to dashboard
+      router.push('/dashboard');
+    }
+  
+    return <>{children}</>;
+  };
 
 export default ConvexClerkProvider;
