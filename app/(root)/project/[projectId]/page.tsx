@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Share2, DollarSign, Copyright, Music, Mic } from "lucide-react";
-// import { Id } from "@/convex/_generated/dataModel";
+import { Id } from "@/convex/_generated/dataModel";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 const ProjectPage = ({
   params: { projectId },
 }: {
-  params: { projectId: string };
+  params: { projectId: Id<"projects"> };
 }) => {
   const [projectStatus, ] = useState(10);
   const { user, isLoaded: isUserLoaded } = useUser();
@@ -34,14 +34,14 @@ const ProjectPage = ({
     console.log("Project ID:", projectId);
     console.log("Project data:", project);
 
-    // if (isUserLoaded && !user) {
-    //   console.log("User not authenticated, redirecting to dashboard");
-    //   router.push("/dashboard");
-    // }
   }, [isUserLoaded, user, router, projectId, project]);
 
   if (!isUserLoaded) {
     console.log("User data is still loading");
+    return <LoaderSpinner />;
+  }
+  if (!projectId) {
+    console.log("No project id found");
     return <LoaderSpinner />;
   }
 

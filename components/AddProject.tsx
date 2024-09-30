@@ -34,6 +34,7 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import CollaborationAgreement from "./CollaborationAgreement";
+import { useUser } from "@clerk/nextjs";
 
 export default function AddProject() {
   //   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
@@ -60,6 +61,14 @@ export default function AddProject() {
   const { toast } = useToast();
   const router = useRouter();
   const createProject = useMutation(api.projects.createProject);
+
+  const { user, isLoaded } = useUser();
+
+  useEffect(() => {
+    console.log('Create Project Page Loaded');
+    console.log('User:', user);
+    console.log('Is Loaded:', isLoaded);
+  }, [user, isLoaded]);
 
   useEffect(() => {
     if (isDropdownOpen) {

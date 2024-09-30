@@ -18,7 +18,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "CollabArt",
-  description: "The Digital Playground of Creators and Artists",
+  description: "The Digital Playground For Creators and Artists",
 };
 
 export default function RootLayout({

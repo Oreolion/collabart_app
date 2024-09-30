@@ -43,7 +43,7 @@ const MobileDashBoardNav = () => {
   }, []);
 
   const isLinkActive = (href: string) => {
-    return pathname === href || pathname.startsWith(href);
+    return pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
   };
 
   return (
