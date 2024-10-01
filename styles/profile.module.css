@@ -10,7 +10,7 @@
   font-size: 1rem;
   padding: 2rem;
   border-radius: 2rem;
-  background: #2f455f;
+  background:rgba(33, 60, 90, 0.5);
   color: aliceblue;
   min-width: 36rem;
   display: flex;

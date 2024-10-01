@@ -71,7 +71,7 @@ export default function AccountPage() {
     <div className="container mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold">Account</h1>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-gray-400">
         <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="banner">Banner</TabsTrigger>
@@ -80,8 +80,8 @@ export default function AccountPage() {
           <TabsTrigger value="genres">Genres</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
-        <TabsContent value="account">
-          <Card>
+        <TabsContent value="account" className="bg-gray-400">
+          <Card className="bg-gray-400">
             <CardHeader>
               <CardTitle>My Membership Plan</CardTitle>
             </CardHeader>
@@ -131,7 +131,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gray-400">
             <CardHeader>
               <CardTitle>My Invoices</CardTitle>
             </CardHeader>
@@ -140,7 +140,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gray-400">
             <CardHeader>
               <CardTitle>Purchase Membership Services</CardTitle>
             </CardHeader>
@@ -189,7 +189,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gray-400">
             <CardHeader>
               <CardTitle>My Payment History</CardTitle>
             </CardHeader>
@@ -198,14 +198,14 @@ export default function AccountPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="profile">
+        <TabsContent value="profile" className="bg-gray-400">
           <h1 className="text-2xl font-bold mb-6">Member Profile</h1>
 
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>About Me</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-gray-400">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label
@@ -232,7 +232,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="mb-6 bg-gray-400">
             <CardHeader>
               <CardTitle>Purpose on ProCollabs</CardTitle>
             </CardHeader>
@@ -472,10 +472,10 @@ export default function AccountPage() {
             <Button>Save Changes</Button>
           </div>
         </TabsContent>
-        <TabsContent value="talents">
+        <TabsContent value="talents" className="bg-gray-400">
           <SkillsAndTalents />
         </TabsContent>
-        <TabsContent value="genres">
+        <TabsContent value="genres" className="bg-gray-400">
           <FavoriteGenres />
         </TabsContent>
       </Tabs>

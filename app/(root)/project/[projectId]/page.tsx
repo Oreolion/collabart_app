@@ -15,6 +15,8 @@ import { useUser } from "@clerk/nextjs";
 import React from "react";
 import styles from "@/styles/project.module.css";
 import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/formatTime";
+
 
 const ProjectPage = ({
   params: { projectId },
@@ -29,12 +31,11 @@ const ProjectPage = ({
   });
 
   useEffect(() => {
-    console.log("User loaded:", isUserLoaded);
-    console.log("User:", user);
+  
     console.log("Project ID:", projectId);
     console.log("Project data:", project);
 
-  }, [isUserLoaded, user, router, projectId, project]);
+  }, [ router, projectId, project]);
 
   if (!isUserLoaded) {
     console.log("User data is still loading");
@@ -54,7 +55,7 @@ const ProjectPage = ({
       <div className="container mx-auto p-4">
         <div className="flex justify-between mb-2">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">LESSONS</CardTitle>
+            <CardTitle className="text-2xl font-bold">{project?.projectTitle}</CardTitle>
             <p className="text-sm text-muted-foreground">
               Managed by {project?.author}
             </p>
@@ -89,7 +90,7 @@ const ProjectPage = ({
           <div className="lg:w-1/4">
             <Card className="pt-8 bg-gray-400">
               <CardContent>
-                <Button className="w-full mb-2">Upload Track</Button>
+                <Button variant="ghost" className="w-full mb-2 bg-green-900">Upload Track</Button>
                 <Button variant="outline" className="w-full mb-4">
                   Rough Mixer
                 </Button>
@@ -125,7 +126,7 @@ const ProjectPage = ({
                     {project?.collaborationAgreement}
                   </p>
                   <p>
-                    <strong>Started:</strong> {project?._creationTime}
+                    <strong>Started:</strong> {formatDate(project?._creationTime)}
                   </p>
                 </div>
                 <Tabs defaultValue="talent" className="mt-4">
@@ -152,7 +153,7 @@ const ProjectPage = ({
                   <Button variant="outline" className="w-full">
                     File Management
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full text-sm">
                     Collaboration Agreement
                   </Button>
                 </div>
@@ -320,7 +321,7 @@ const ProjectPage = ({
                       Started the project &quot;Yay&quot;
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {project?.author} - 2 days ago
+                      {project?.author} - {formatDate(project?._creationTime)}
                     </p>
                   </div>
                 </div>

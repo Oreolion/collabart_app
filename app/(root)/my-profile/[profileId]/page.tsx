@@ -141,11 +141,11 @@ const ProfilePage = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="first-name">First Name</Label>
-              <Input id="first-name" placeholder={user?.firstname} />
+              <Input id="first-name" placeholder={user?.firstName} />
             </div>
             <div>
               <Label htmlFor="last-name">Last Name</Label>
-              <Input id="last-name" placeholder="Jackson" value={user?.lastname} />
+              <Input id="last-name" placeholder={user?.lastName} />
             </div>
             <div>
               <Label htmlFor="state">State</Label>
@@ -161,9 +161,9 @@ const ProfilePage = ({
                   <SelectItem value="us">United States</SelectItem>
                   <SelectItem value="ca">Canada</SelectItem>
                   <SelectItem value="uk">United Kingdom</SelectItem>
-                  <SelectItem value="uk">South Africa</SelectItem>
-                  <SelectItem value="uk">Nigeria</SelectItem>
-                  <SelectItem value="uk">Kenya</SelectItem>
+                  <SelectItem value="sa">South Africa</SelectItem>
+                  <SelectItem value="ng">Nigeria</SelectItem>
+                  <SelectItem value="ken">Kenya</SelectItem>
                 </SelectContent>
               </Select>
             </div>

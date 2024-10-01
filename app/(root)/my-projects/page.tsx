@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import ProjectItem from "@/components/ProjectItem";
 import SearchBar from "@/components/SearchBar";
 import { Loader } from "lucide-react";
-import ProjectList from "@/components/ProjectList";
+// import ProjectList from "@/components/ProjectList";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import Image from "next/image";
@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Share2, Heart, MessageCircle } from "lucide-react";
+import { formatDate } from "@/lib/formatTime";
 
 // interface Project {
 //   id: number;
@@ -97,6 +98,8 @@ const Page = () => {
   console.log(projects);
   console.log(user);
 
+
+
   return (
     <section className={styles.project__feeds}>
       <Suspense fallback={<Loader />}>
@@ -148,7 +151,7 @@ const Page = () => {
                       </span>
                     </div>
                     <p className="text-sm text-gray-500">
-                      Project Type: Public • Started: {project._creationTime} •
+                      Project Type: Public • Started: {formatDate(project._creationTime)} •
                       {/* No. Files: {project.filesCount} */}
                     </p>
                     <div className="flex flex-wrap gap-1">
