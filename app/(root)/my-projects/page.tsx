@@ -105,7 +105,7 @@ const Page = () => {
       <Suspense fallback={<Loader />}>
         <SearchBar />
       </Suspense>
-      <h1 className="text-2xl font-bold mb-6">Active Collaboration Projects</h1>
+      <h1 className="text-2xl font-bold mb-6 ml-4">Active Collaboration Projects</h1>
       <main className={styles.content__box}>
         <div className="space-y-4">
           {projects?.map((project) => (

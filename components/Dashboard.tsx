@@ -38,7 +38,7 @@ export default function Dashboard() {
     <>
       <section className={styles.dashboard__feeds}>
         <main className={styles.dashboard__content}>
-          <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl">
+          <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl max-md:max-w-[25rem]">
             <Avatar className="w-24 h-24 mx-auto mb-4">
               <AvatarImage src={user?.imageUrl} alt="remyoreo" />
               <AvatarFallback>{user?.username}</AvatarFallback>
@@ -49,8 +49,8 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <Tabs defaultValue="dashboard" className="mb-8">
-            <TabsList className="h-10 grid gap-4 grid-cols-3 md:grid-cols-6">
+          <Tabs defaultValue="dashboard" className="mb-8 max-md:max-w-[25rem]">
+            <TabsList className="h-10 grid gap-4 grid-cols-3 md:grid-cols-6 max-md:flex max-md:gap-8">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -67,7 +67,7 @@ export default function Dashboard() {
             <TabsContent value="dashboard">
               <Card className="bg-gray-300">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
                     Member Dashboard
                   </CardTitle>
                 </CardHeader>
@@ -380,7 +380,7 @@ export default function Dashboard() {
                     Portfolio of Published Works
                   </CardTitle>
                 </CardHeader>
-                <CardContent>Nothing published yet</CardContent>
+                <CardContent className="max-md:ml-[-1rem]">Nothing published yet</CardContent>
               </Card>
             </TabsContent>
           </Tabs>
@@ -388,11 +388,11 @@ export default function Dashboard() {
           <div className="flex flex-col gap-8 mb-4">
             <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
                   Work for Hire
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="max-md:ml-[-1.8rem]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -400,12 +400,12 @@ export default function Dashboard() {
                       <TableHead>Date</TableHead>
                       <TableHead>Artist</TableHead>
                       <TableHead>Project</TableHead>
-                      <TableHead className="px-4 py-2">Scope of Work</TableHead>
-                      <TableHead className="px-4 py-2">Status</TableHead>
-                      <TableHead className="px-4 py-2">Amount</TableHead>
+                      <TableHead className="px-2 py-2">Scope of Work</TableHead>
+                      <TableHead className="px-2 py-2">Status</TableHead>
+                      <TableHead className="px-2 py-2">Amount</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody className="max-md:ml-[-1.8rem]">
                     <TableRow>
                       <TableCell colSpan={7} className="text-center">
                         Start a project and hire artists to perform your songs
@@ -418,11 +418,11 @@ export default function Dashboard() {
 
             <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
                   Royalty Statement
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="max-md:ml-[-1.8rem]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -430,12 +430,12 @@ export default function Dashboard() {
                       <TableHead>Date</TableHead>
                       <TableHead>Description</TableHead>
                       <TableHead>Amount</TableHead>
-                      <TableHead className="px-4 py-2">Scope of Work</TableHead>
-                      <TableHead className="px-4 py-2">Status</TableHead>
-                      <TableHead className="px-4 py-2">Amount</TableHead>
+                      <TableHead className="px-2 py-2">Scope of Work</TableHead>
+                      <TableHead className="px-2 py-2">Status</TableHead>
+                      <TableHead className="px-2 py-2">Amount</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody className="max-md:ml-[-1.8rem]">
                     <TableRow>
                       <TableCell colSpan={7} className="text-center">
                         You have no royalty payments.

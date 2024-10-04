@@ -49,7 +49,7 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
               <h1 className={styles.h1}>{item.h1}</h1>
               <h3 className={styles.h3}>{item.h3}</h3>
               <p className={styles.p}>{item.p}</p>
-              <div className="flex gap-[1rem] items-center justify-center max-md:ml-[-3rem] max-md:flex-col">
+              <div className="flex gap-[1rem] items-center justify-center max-md:ml-[-10rem] max-md:flex-col">
                 <Button className="p-[1.5rem] font-bold">SIGN UP FOR FREE</Button>
                 <Button className="p-[1.5rem] font-bold">LEARN MORE</Button>
               </div>

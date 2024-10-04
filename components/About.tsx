@@ -1,10 +1,50 @@
-import React from "react";
+'use client'
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import styles from "../styles/about.module.css";
 import ToggleBoxes from "./ToggleBoxes";
 
 const About = () => {
+    const [hasAnimated, setHasAnimated] = useState(false);
+    const ref = useRef(null);
+  
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !hasAnimated) {
+            setHasAnimated(true);
+          }
+        },
+        { threshold: 0.1 }
+      );
+  
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+  
+      return () => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      };
+    }, [hasAnimated]);
+
+    const variants = {
+        hidden: { x: "-100%", opacity: 0 },
+        visible: {
+          x: 0,
+          opacity: 1,
+          transition: { duration: 0.8, ease: "easeOut" },
+        },
+      };
   return (
-    <section className={styles.about__section}>
+    <section
+    ref={ref}
+   
+     className={styles.about__section}>
+     <motion.div  initial="hidden"
+     animate={hasAnimated ? "visible" : "hidden"}
+     variants={variants}>
       <h2 className={styles.h2}>
         For <strong className="font-bold">Music Creators</strong>
       </h2>
@@ -20,6 +60,7 @@ const About = () => {
         Click the icons below for details
       </p>
       <ToggleBoxes></ToggleBoxes>
+      </motion.div>
     </section>
   );
 };

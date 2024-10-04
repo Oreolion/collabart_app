@@ -25,21 +25,19 @@ const ProfilePage = ({
     profileId: string;
   };
 }) => {
-    const { user } = useUser();
+  const { user } = useUser();
   const userId = useQuery(api.users.getUserById, {
     clerkId: params.profileId,
   });
 
-  console.log(userId)
-  console.log(user)
-
+  console.log(userId);
 
   return (
     <div className={styles.profile__feeds}>
-      <div className="container mx-auto p-4 space-y-8">
+      <div className="container mx-auto p-4 space-y-8 max-md:ml-[-1.5rem] max-md:max-w-[25rem]">
         <h1 className="text-2xl font-bold mb-4">Member Profile</h1>
 
-        <section className="space-y-4">
+        <section className="space-y-4 max-md:ml-[-1.5rem]">
           <h2 className="text-xl font-semibold">About Me</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

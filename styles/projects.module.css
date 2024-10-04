@@ -38,16 +38,16 @@
 
 @media (max-width: 480px) {
   .project__feeds {
-    margin-left: -2rem;
+    margin-left: -1rem;
     margin-right: 0.5rem;
     border: none;
-    padding: 2rem 1rem;
-    width: 32rem;
+    padding: 2rem .3rem;
+    width: 29rem;
   }
 
   .content__box {
     gap: 4rem;
-    width: 90%;
+    width: 75%;
   }
 }
 
@@ -55,6 +55,5 @@
   .project__feeds {
     width: 29rem;
     padding: 1rem;
-    margin-left: -2rem;
   }
 }

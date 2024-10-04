@@ -17,13 +17,12 @@ import styles from "@/styles/project.module.css";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatTime";
 
-
 const ProjectPage = ({
   params: { projectId },
 }: {
   params: { projectId: Id<"projects"> };
 }) => {
-  const [projectStatus, ] = useState(10);
+  const [projectStatus] = useState(10);
   const { user, isLoaded: isUserLoaded } = useUser();
   const router = useRouter();
   const project = useQuery(api.projects.getProjectById, {
@@ -31,11 +30,9 @@ const ProjectPage = ({
   });
 
   useEffect(() => {
-  
     console.log("Project ID:", projectId);
     console.log("Project data:", project);
-
-  }, [ router, projectId, project]);
+  }, [router, projectId, project]);
 
   if (!isUserLoaded) {
     console.log("User data is still loading");
@@ -55,7 +52,9 @@ const ProjectPage = ({
       <div className="container mx-auto p-4">
         <div className="flex justify-between mb-2">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">{project?.projectTitle}</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {project?.projectTitle}
+            </CardTitle>
             <p className="text-sm text-muted-foreground">
               Managed by {project?.author}
             </p>
@@ -65,7 +64,7 @@ const ProjectPage = ({
             </div>
           </CardHeader>
 
-          <Card className='bg-gray-400'>
+          <Card className="bg-gray-400">
             <CardHeader>
               <CardTitle>Project Status</CardTitle>
             </CardHeader>
@@ -90,7 +89,9 @@ const ProjectPage = ({
           <div className="lg:w-1/4">
             <Card className="pt-8 bg-gray-400">
               <CardContent>
-                <Button variant="ghost" className="w-full mb-2 bg-green-900">Upload Track</Button>
+                <Button variant="ghost" className="w-full mb-2 bg-green-900">
+                  Upload Track
+                </Button>
                 <Button variant="outline" className="w-full mb-4">
                   Rough Mixer
                 </Button>
@@ -126,7 +127,8 @@ const ProjectPage = ({
                     {project?.collaborationAgreement}
                   </p>
                   <p>
-                    <strong>Started:</strong> {formatDate(project?._creationTime)}
+                    <strong>Started:</strong>{" "}
+                    {formatDate(project?._creationTime)}
                   </p>
                 </div>
                 <Tabs defaultValue="talent" className="mt-4">
@@ -313,8 +315,8 @@ const ProjectPage = ({
               <CardContent>
                 <div className="flex items-center space-x-2">
                   <Avatar>
-                    <AvatarImage src="/placeholder-avatar.jpg" />
-                    <AvatarFallback>RO</AvatarFallback>
+                    <AvatarImage src={project?.authorImageUrl} />
+                    <AvatarFallback>{project?.author.slice(0, 1)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium">
@@ -334,7 +336,7 @@ const ProjectPage = ({
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full">
-                  <Mic className="mr-2 h-4 w-4" /> Leave a comment
+                  <Mic className="mr-2 h-6 w-6" /> Leave a comment
                 </Button>
               </CardContent>
             </Card>
