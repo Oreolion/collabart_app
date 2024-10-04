@@ -34,10 +34,10 @@ const ProfilePage = ({
 
   return (
     <div className={styles.profile__feeds}>
-      <div className="container mx-auto p-4 space-y-8 max-md:ml-[-1.5rem] max-md:max-w-[25rem]">
+      <div className="container mx-auto p-4 space-y-8 max-sm:ml-[-1.5rem] max-sm:max-w-[25rem]">
         <h1 className="text-2xl font-bold mb-4">Member Profile</h1>
 
-        <section className="space-y-4 max-md:ml-[-1.5rem]">
+        <section className="space-y-4 max-sm:ml-[-1.5rem]">
           <h2 className="text-xl font-semibold">About Me</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

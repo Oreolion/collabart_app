@@ -68,15 +68,11 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="container mx-auto p-4 space-y-8 max-md:max-w-[25rem] max-md:ml-[-1.9rem] max-[320px]:ml-[-.5rem]">
+    <div className="container mx-auto p-4 space-y-8 max-[480px]:max-w-[25rem] max-md:ml-[-1.9rem] max-[320px]:ml-[-.5rem]">
       <h1 className="text-3xl font-bold">Account</h1>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full bg-gray-400"
-      >
-        <TabsList className="grid h-12 w-full gap-4 grid-cols-3 max-[320px]:h-[5.5rem] lg:grid-cols-6 max-md:gap-1">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-gray-400">
+        <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6 max-md:gap-1">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="banner">Banner</TabsTrigger>
           <TabsTrigger value="picture">Picture</TabsTrigger>
