@@ -61,8 +61,7 @@ export default function AddProject() {
   const router = useRouter();
   const createProject = useMutation(api.projects.createProject);
 
-//   const { user, isLoaded } = useUser();
-
+  //   const { user, isLoaded } = useUser();
 
   useEffect(() => {
     if (isDropdownOpen) {
@@ -176,7 +175,10 @@ export default function AddProject() {
 
   return (
     <section className={styles.bloginput__box}>
-      <h1 className="text-3xl font-bold text-white-1"> Create New Project</h1>
+      <h1 className="text-3xl font-bold text-white-1 max-[320px]:text-sm max-[320px]:font-normal">
+        {" "}
+        Create New Project
+      </h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

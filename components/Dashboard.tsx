@@ -208,8 +208,8 @@ export default function Dashboard() {
                               to their project.
                             </p>
                             <p className="mb-4">
-                              You`&lsquo;`ll also want to get involved in the
-                              community by posting to the member`&lsquo;`s{" "}
+                              You&lsquo;ll also want to get involved in the
+                              community by posting to the member&lsquo;s{" "}
                               <Link
                                 href="/forum"
                                 className="text-blue-600 hover:underline"
@@ -224,7 +224,7 @@ export default function Dashboard() {
                               gonna be key to your success as a project manager,
                               collaborator, engineer, or session artist. You can
                               get started by letting everyone know that
-                              you`&lsquo;`ve arrived by posting to the{" "}
+                              you&lsquo;ve arrived by posting to the{" "}
                               <Link
                                 href="/introductions"
                                 className="text-blue-600 hover:underline"
@@ -407,7 +407,7 @@ export default function Dashboard() {
                   </TableHeader>
                   <TableBody className="max-md:ml-[-1.8rem]">
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center">
+                      <TableCell colSpan={7} className="text-center max-sm:ml-[-1.8rem]">
                         Start a project and hire artists to perform your songs
                       </TableCell>
                     </TableRow>
@@ -435,9 +435,9 @@ export default function Dashboard() {
                       <TableHead className="px-2 py-2">Amount</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody className="max-md:ml-[-1.8rem]">
+                  <TableBody className="max-sm:ml-[-1.8rem]">
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center">
+                      <TableCell colSpan={7} className="text-center max-sm:ml-[-1.8rem]">
                         You have no royalty payments.
                       </TableCell>
                     </TableRow>
@@ -449,8 +449,8 @@ export default function Dashboard() {
           <BioSection></BioSection>
         </main>
       </section>
-      <footer className=" p-4 mt-8">
-        <div className="container mx-auto text-center text-gray-600">
+      <footer className=" p-4 mt-8 max-sm:ml-[-8rem]">
+        <div className="container  mx-auto text-center text-gray-600">
           © 2024 Collabart. Some Rights Reserved.
         </div>
       </footer>

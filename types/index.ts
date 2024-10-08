@@ -4,30 +4,6 @@ import { Dispatch, SetStateAction } from "react";
 
 import { Id } from "../convex/_generated/dataModel";
 
-export interface ProjectProps {
-  _id: Id<"projects">;
-  _creationTime: number;
-  user: Id<"users">;
-  projectTitle: string;
-  projectType: string;
-  projectAuditionPrivacy: string;
-  projectBitDepth: string;
-  projectSampleRate: string;
-  projectDescription: string;
-  collaborationAgreement: string;
-  projectBrief: string;
-  //   audioStorageId: Id<"_storage"> | null;
-//   audioUrl: string | null;
-//   imageUrl: string | null;
-//   imageStorageId: Id<"_storage"> | null;
-//   audioDuration: number;
-  author: string;
-  authorId: string;
-  authorImageUrl: string;
-  views: number;
-  likes: number;
-}
-
 export interface HeroCarouselDetails {
   id: number;
   h1: string;
@@ -47,6 +23,48 @@ export type UseDotButtonType = {
   scrollSnaps: number[];
   onDotButtonClick: (index: number) => void;
 };
+
+export interface ProjectProps {
+  _id: Id<"projects">;
+  _creationTime: number;
+  user: Id<"users">;
+  projectTitle: string;
+  projectType: string;
+  projectAuditionPrivacy: string;
+  projectBitDepth: string;
+  projectSampleRate: string;
+  projectDescription: string;
+  collaborationAgreement: string;
+  projectBrief: string;
+  //   audioStorageId: Id<"_storage"> | null;
+  //   audioUrl: string | null;
+  //   imageUrl: string | null;
+  //   imageStorageId: Id<"_storage"> | null;
+  //   audioDuration: number;
+  author: string;
+  authorId: string;
+  authorImageUrl: string;
+  views: number;
+  likes: number;
+}
+
+export interface ProjectFileType {
+    _id: string;
+    _creationTime: number;
+    createdAt: number;
+    projectId: string;
+    userId: string;
+    username: string;
+    projectFileId: string;
+    projectFileLabel: string;
+    projectFileTitle: string;
+    projectFile: string;
+    // newContent: string;
+    //   content: string;
+  // commentUserImage: string;
+}
+
+export type ProjectFilesArrayType = ProjectFileType[];
 
 export interface ProfileProjectProps {
   projects: ProjectProps[];

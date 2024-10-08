@@ -16,6 +16,7 @@ import React from "react";
 import styles from "@/styles/project.module.css";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatTime";
+import Link from "next/link";
 
 const ProjectPage = ({
   params: { projectId },
@@ -34,7 +35,7 @@ const ProjectPage = ({
     console.log("Project data:", project);
   }, [router, projectId, project]);
 
-  if (!isUserLoaded) {
+  if (!user || !isUserLoaded) {
     console.log("User data is still loading");
     return <LoaderSpinner />;
   }
@@ -43,9 +44,9 @@ const ProjectPage = ({
     return <LoaderSpinner />;
   }
 
-  if (!isUserLoaded) {
-    return <LoaderSpinner />;
-  }
+  //   const handleUpload = () => {
+  //    return router.push(`/project/${projectId}/upload`);
+  //   }
 
   return (
     <div className={styles.projects__feeds}>
@@ -89,9 +90,17 @@ const ProjectPage = ({
           <div className="lg:w-1/4">
             <Card className="pt-8 bg-gray-400">
               <CardContent>
-                <Button variant="ghost" className="w-full mb-2 bg-green-900">
-                  Upload Track
-                </Button>
+                <Link
+                  href={`/project/${projectId}/upload`}
+                  className="w-full mb-2 "
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full mb-4 text-green-600"
+                  >
+                    Upload Track
+                  </Button>
+                </Link>
                 <Button variant="outline" className="w-full mb-4">
                   Rough Mixer
                 </Button>
@@ -148,7 +157,9 @@ const ProjectPage = ({
                   </TabsContent>
                 </Tabs>
                 <div className="space-y-2 mt-4">
-                  <Button className="w-full text-sm">Close Project</Button>
+                  <Button variant="destructive" className="w-full text-sm">
+                    Close Project
+                  </Button>
                   <Button variant="outline" className="w-full">
                     Project Settings
                   </Button>
@@ -316,7 +327,9 @@ const ProjectPage = ({
                 <div className="flex items-center space-x-2">
                   <Avatar>
                     <AvatarImage src={project?.authorImageUrl} />
-                    <AvatarFallback>{project?.author.slice(0, 1)}</AvatarFallback>
+                    <AvatarFallback>
+                      {project?.author.slice(0, 1)}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium">

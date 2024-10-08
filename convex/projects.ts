@@ -60,6 +60,46 @@ export const createProject = mutation({
     });
   },
 });
+
+// create comment mutation
+export const AddProjectFile = mutation({
+    args: {
+      projectId: v.id("projects"),
+      projectFileTitle: v.string(),
+      projectFileLabel: v.string(),
+      projectFile: v.string(),
+    },
+    handler: async (ctx, args) => {
+      const identity = await ctx.auth.getUserIdentity();
+  
+      if (!identity) {
+        throw new Error("Not authenticated");
+      }
+  
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), identity.email))
+        .first();
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      return await ctx.db.insert("projectFile", {
+        projectId: args.projectId,
+        userId: user._id,
+        username: user.name,
+        projectFileLabel: args.projectFileLabel,
+        projectFileTitle: args.projectFileTitle,
+        projectFile: args.projectFile,
+        createdAt: Date.now(),
+        // commentUserImage: user.imageUrl,
+      });
+    },
+  });
+
+
+
 // this query will get all the projects.
 export const getAllProjects = query({
   handler: async (ctx) => {

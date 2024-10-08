@@ -73,12 +73,12 @@ export default function AccountPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-gray-400">
         <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6 max-md:gap-1">
+          <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="banner">Banner</TabsTrigger>
-          <TabsTrigger value="picture">Picture</TabsTrigger>
           <TabsTrigger value="talents">Talents</TabsTrigger>
           <TabsTrigger value="genres">Genres</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="banner">Banner</TabsTrigger>
+          <TabsTrigger value="picture">Picture</TabsTrigger>
         </TabsList>
         <TabsContent value="account" className="bg-gray-400">
           <Card className="bg-gray-400">

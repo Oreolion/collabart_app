@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Share2, Heart, MessageCircle } from "lucide-react";
 import { formatDate } from "@/lib/formatTime";
+import LoaderSpinner from "@/components/LoaderSpinner";
 
 // interface Project {
 //   id: number;
@@ -97,6 +98,8 @@ const Page = () => {
 
   console.log(projects);
   console.log(user);
+
+  if (isLoaded) return <LoaderSpinner></LoaderSpinner>
 
 
 

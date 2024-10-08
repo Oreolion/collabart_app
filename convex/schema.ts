@@ -26,12 +26,27 @@ export default defineSchema({
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
     .searchIndex("search_body", { searchField: "projectDescription" }),
+
+    // users table
   users: defineTable({
     email: v.string(),
     imageUrl: v.string(),
     clerkId: v.string(),
     name: v.string(),
   }),
+
+    // project file tables ...
+    projectFile: defineTable({
+        projectId: v.id("projects"),
+        userId: v.id("users"),
+        username: v.optional(v.string()),
+        projectFileId: v.optional(v.id("projectFileId")),
+        projectFileTitle: v.optional(v.string()),
+        projectFileLabel: v.string(),
+        projectFile: v.string(),
+        createdAt: v.number(),
+      }).index("by_project", ["projectId"]),
+
   // comment tables ...
 //   comments: defineTable({
 //     projectId: v.id("projects"),
