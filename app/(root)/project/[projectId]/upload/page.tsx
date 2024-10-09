@@ -31,7 +31,6 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUploadFiles } from "@xixixao/uploadstuff/react";
 
-
 export default function ProjectUploadForm({
   params: { projectId },
 }: {
@@ -39,10 +38,10 @@ export default function ProjectUploadForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [projectFile, setProjectFile] = useState<File | null>(null);
-      const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-      null
-    );
-    const [audioUrl, setAudioUrl] = useState("");
+  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
+    null
+  );
+  const [audioUrl, setAudioUrl] = useState("");
 
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -50,7 +49,6 @@ export default function ProjectUploadForm({
   const generateUploadUrl = useMutation(api.file.generateUploadUrl);
   const { startUpload } = useUploadFiles(generateUploadUrl);
   const getFileUrl = useMutation(api.projects.getUrl);
-
 
   // Define the form schema including projectFileLabel and checkboxes
   const formSchema = z.object({
@@ -76,7 +74,6 @@ export default function ProjectUploadForm({
     },
   });
 
-
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
@@ -95,16 +92,17 @@ export default function ProjectUploadForm({
       const blob = new Blob([projectFile], { type: "audio/mpeg" });
       const fileName = fileRef.current?.files[0]?.name;
       console.log(fileName);
-      
+
       const file = new File([blob], fileName, { type: "audio/mpeg" });
 
       const uploaded = await startUpload([file]);
-      const storageId = (uploaded[0].response).storageId;
+      const storageId = uploaded[0].response.storageId;
       setAudioStorageId(storageId);
 
-      const audioUrl = await getFileUrl({ storageId });
-      setAudioUrl(audioUrl);
-    
+      const result = await getFileUrl({ storageId });
+      setAudioUrl(result);
+      console.log(audioUrl);
+      console.log(audioStorageId);
 
       const projectFileData = {
         projectFileTitle: data.projectFileTitle,
