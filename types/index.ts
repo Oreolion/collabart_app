@@ -49,18 +49,22 @@ export interface ProjectProps {
 }
 
 export interface ProjectFileType {
-    _id: string;
-    _creationTime: number;
-    createdAt: number;
-    projectId: string;
-    userId: string;
-    username: string;
-    projectFileId: string;
-    projectFileLabel: string;
-    projectFileTitle: string;
-    projectFile: string;
-    // newContent: string;
-    //   content: string;
+  _id: string;
+  _creationTime: number;
+  createdAt: number;
+  projectId: string;
+  userId: string;
+  username: string;
+  projectFileId: string;
+  projectFileLabel: string;
+  projectFileTitle: string;
+  projectFile: string;
+  isProjectOwner: boolean;
+  hasExplicitLyrics: boolean;
+  containsLoops: boolean;
+  confirmCopyright: boolean; 
+  // newContent: string;
+  //   content: string;
   // commentUserImage: string;
 }
 

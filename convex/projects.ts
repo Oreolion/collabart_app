@@ -62,43 +62,61 @@ export const createProject = mutation({
 });
 
 // create comment mutation
-export const AddProjectFile = mutation({
-    args: {
-      projectId: v.id("projects"),
-      projectFileTitle: v.string(),
-      projectFileLabel: v.string(),
-      projectFile: v.string(),
-    },
-    handler: async (ctx, args) => {
-      const identity = await ctx.auth.getUserIdentity();
-  
-      if (!identity) {
-        throw new Error("Not authenticated");
-      }
-  
-      const user = await ctx.db
-        .query("users")
-        .filter((q) => q.eq(q.field("email"), identity.email))
-        .first();
-  
-      if (!user) {
-        throw new Error("User not found");
-      }
-  
-      return await ctx.db.insert("projectFile", {
-        projectId: args.projectId,
-        userId: user._id,
-        username: user.name,
-        projectFileLabel: args.projectFileLabel,
-        projectFileTitle: args.projectFileTitle,
-        projectFile: args.projectFile,
-        createdAt: Date.now(),
-        // commentUserImage: user.imageUrl,
-      });
-    },
-  });
+export const addProjectFile = mutation({
+  args: {
+    projectId: v.id("projects"),
+    projectFile: v.string(),
+    projectFileTitle: v.string(),
+    projectFileLabel: v.string(),
+    isProjectOwner: v.boolean(),
+    hasExplicitLyrics: v.boolean(),
+    containsLoops: v.boolean(),
+    confirmCopyright: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    if (!ctx.auth) {
+      throw new Error("Authentication context is not available");
+    }
+    const identity = await ctx.auth.getUserIdentity();
 
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
 
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return await ctx.db.insert("projectFile", {
+      projectId: args.projectId,
+      userId: user._id,
+      username: user.name,
+      projectFileLabel: args.projectFileLabel,
+      projectFileTitle: args.projectFileTitle,
+      projectFile: args.projectFile,
+      isProjectOwner: args.isProjectOwner,
+      hasExplicitLyrics: args.hasExplicitLyrics,
+      containsLoops: args.containsLoops,
+      confirmCopyright: args.confirmCopyright,
+      createdAt: Date.now(),
+      // commentUserImage: user.imageUrl,
+    });
+  },
+});
+
+export const getUrl = mutation({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
 
 // this query will get all the projects.
 export const getAllProjects = query({
@@ -109,23 +127,23 @@ export const getAllProjects = query({
 
 // this query will get the project by the projectId.
 export const getProjectById = query({
-    args: {
-      projectId: v.id("projects"),
-    },
-    handler: async (ctx, args) => {
-      try {
-        const project = await ctx.db.get(args.projectId);
-        if (!project) {
-          console.warn(`Project with ID ${args.projectId} not found.`);
-          return null;
-        }
-        return project;
-      } catch (error) {
-        console.error("Error fetching project:", error);
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const project = await ctx.db.get(args.projectId);
+      if (!project) {
+        console.warn(`Project with ID ${args.projectId} not found.`);
         return null;
       }
-    },
-  });
+      return project;
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      return null;
+    }
+  },
+});
 
 // this query will get the projects based on the views of the project , which we are showing in the Trending Projects section.
 export const getTrendingProjects = query({

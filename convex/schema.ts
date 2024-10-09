@@ -27,7 +27,7 @@ export default defineSchema({
     .searchIndex("search_title", { searchField: "projectTitle" })
     .searchIndex("search_body", { searchField: "projectDescription" }),
 
-    // users table
+  // users table
   users: defineTable({
     email: v.string(),
     imageUrl: v.string(),
@@ -35,34 +35,38 @@ export default defineSchema({
     name: v.string(),
   }),
 
-    // project file tables ...
-    projectFile: defineTable({
-        projectId: v.id("projects"),
-        userId: v.id("users"),
-        username: v.optional(v.string()),
-        projectFileId: v.optional(v.id("projectFileId")),
-        projectFileTitle: v.optional(v.string()),
-        projectFileLabel: v.string(),
-        projectFile: v.string(),
-        createdAt: v.number(),
-      }).index("by_project", ["projectId"]),
+  // project file tables ...
+  projectFile: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    username: v.optional(v.string()),
+    projectFileId: v.optional(v.id("projectFileId")),
+    projectFileTitle: v.optional(v.string()),
+    projectFileLabel: v.string(),
+    projectFile: v.string(),
+    createdAt: v.number(),
+    isProjectOwner: v.boolean(),
+    hasExplicitLyrics: v.boolean(),
+    containsLoops: v.boolean(),
+    confirmCopyright: v.boolean(),
+  }).index("by_project", ["projectId"]),
 
   // comment tables ...
-//   comments: defineTable({
-//     projectId: v.id("projects"),
-//     userId: v.id("users"),
-//     commentUserImage: v.optional(v.string()),
-//     commentId: v.optional(v.id("comment")),
-//     content: v.string(),
-//     username: v.optional(v.string()),
-//     createdAt: v.number(),
-//   }).index("by_project", ["projectId"]),
+  //   comments: defineTable({
+  //     projectId: v.id("projects"),
+  //     userId: v.id("users"),
+  //     commentUserImage: v.optional(v.string()),
+  //     commentId: v.optional(v.id("comment")),
+  //     content: v.string(),
+  //     username: v.optional(v.string()),
+  //     createdAt: v.number(),
+  //   }).index("by_project", ["projectId"]),
 
   // user open ai call count table...
-//   userCallCounts: defineTable({
-//     userId: v.string(),
-//     count: v.number(),
-//   }).index("by_userId", ["userId"]),
+  //   userCallCounts: defineTable({
+  //     userId: v.string(),
+  //     count: v.number(),
+  //   }).index("by_userId", ["userId"]),
 
   // bookmarks tables for schema ...
   savedProjects: defineTable({

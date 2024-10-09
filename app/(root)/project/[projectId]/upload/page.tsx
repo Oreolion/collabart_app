@@ -14,11 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-
 import styles from "@/styles/upload.module.css";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { AddProjectFile } from "@/convex/projects";
 import {
   Form,
   FormControl,
@@ -28,54 +26,101 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-export default function ProjectUploadForm() {
-  //   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-  //     null
-  //   );
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUploadFiles } from "@xixixao/uploadstuff/react";
 
-  //   const [audioUrl, setAudioUrl] = useState("");
-  //   const [audioDuration, setAudioDuration] = useState(0);
-  //   const [projectFileTitle, setProjectFileTitle] = useState<string | null>(null);
-  const [projectFileLabel, setProjectFileLabel] = useState<string | null>(null);
-  const [projectFile, setProjectFile] = useState<string | null>(null);
+
+export default function ProjectUploadForm({
+  params: { projectId },
+}: {
+  params: { projectId: Id<"projects"> };
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [projectFile, setProjectFile] = useState<File | null>(null);
+      const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
+      null
+    );
+    const [audioUrl, setAudioUrl] = useState("");
+
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
+  const addProjectFile = useMutation(api.projects.addProjectFile);
+  const generateUploadUrl = useMutation(api.file.generateUploadUrl);
+  const { startUpload } = useUploadFiles(generateUploadUrl);
+  const getFileUrl = useMutation(api.projects.getUrl);
 
+
+  // Define the form schema including projectFileLabel and checkboxes
   const formSchema = z.object({
     projectFileTitle: z.string().min(2, "Title must be at least 2 characters"),
+    projectFileLabel: z.string().nonempty("Label is required"),
+    isProjectOwner: z.boolean().default(false),
+    hasExplicitLyrics: z.boolean().default(false),
+    containsLoops: z.boolean().default(false),
+    confirmCopyright: z.boolean().refine((val) => val === true, {
+      message: "You must confirm the copyright",
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       projectFileTitle: "",
+      projectFileLabel: "",
+      isProjectOwner: false,
+      hasExplicitLyrics: false,
+      containsLoops: false,
+      confirmCopyright: false,
     },
   });
+
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
       console.log("projectFile:", projectFile);
-      if (!projectFile || !projectFileLabel) {
+      console.log("projectId:", projectId);
+      if (!projectFile) {
         toast({
-          title: "Missing Information",
-          description: "Please ensure all required fields are filled.",
+          title: "Missing File",
+          description: "Please upload a project file.",
           variant: "destructive",
         });
         setIsSubmitting(false);
-        throw new Error("Missing required fields");
+        return;
       }
+
+      const blob = new Blob([projectFile], { type: "audio/mpeg" });
+      const fileName = fileRef.current?.files[0]?.name;
+      console.log(fileName);
+      
+      const file = new File([blob], fileName, { type: "audio/mpeg" });
+
+      const uploaded = await startUpload([file]);
+      const storageId = (uploaded[0].response).storageId;
+      setAudioStorageId(storageId);
+
+      const audioUrl = await getFileUrl({ storageId });
+      setAudioUrl(audioUrl);
+    
 
       const projectFileData = {
         projectFileTitle: data.projectFileTitle,
-        projectFile: projectFile,
+        projectFileLabel: data.projectFileLabel,
+        isProjectOwner: data.isProjectOwner,
+        hasExplicitLyrics: data.hasExplicitLyrics,
+        containsLoops: data.containsLoops,
+        confirmCopyright: data.confirmCopyright,
+        projectFile: storageId,
+        projectId: projectId,
       };
 
       console.log("projectFileData:", projectFileData);
 
-      //   const projectId = await AddProjectFile(projectFileData);
-      //   console.log("projectId:", projectId);
+      const projectdata = await addProjectFile(projectFileData);
+      console.log("projectdata:", projectdata);
 
       toast({
         title: "Project File Added Successfully",
@@ -84,15 +129,17 @@ export default function ProjectUploadForm() {
     } catch (error) {
       console.log(error);
       toast({
-        title: "Error occured while adding project File",
+        title: "Error occurred while adding project file",
         variant: "destructive",
       });
       setIsSubmitting(false);
     }
   }
 
-  const uploadFile = () => {
-    setProjectFile("")
+  const uploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProjectFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -112,58 +159,80 @@ export default function ProjectUploadForm() {
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="projectTitle"
+                      name="projectFileTitle"
                       render={({ field }) => (
                         <FormItem className="flex flex-col gap-2.5">
                           <FormLabel>Title</FormLabel>
 
                           <FormControl>
                             <Input
-                              className="input-class  focus-visible:ring-offset-orange-1"
+                              className="input-class focus-visible:ring-offset-orange-1"
                               placeholder="Title..."
                               {...field}
                             />
                           </FormControl>
 
                           <FormMessage className="text-red-300" />
-                          <div className="space-x-2 flex items-center"></div>
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="label">Label</Label>
-                    <Select
-                      value={projectFileLabel}
-                      onValueChange={(value) => setProjectFileLabel(value)}
-                    >
-                      <SelectTrigger
-                        className={cn(
-                          "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                        )}
-                      >
-                        <SelectValue placeholder="Select a label" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ideas">Ideas</SelectItem>
-                        {/* Add more options as needed */}
-                      </SelectContent>
-                    </Select>
+                    <FormField
+                      control={form.control}
+                      name="projectFileLabel"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col gap-2.5">
+                          <FormLabel>Label</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger
+                                className={cn(
+                                  "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
+                                )}
+                              >
+                                <SelectValue placeholder="Select a label" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="ideas">Ideas</SelectItem>
+                              {/* Add more options as needed */}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-300" />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="project-owner" />
-                  <Label htmlFor="project-owner">
-                    Submitting work as the Project Owner
-                  </Label>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="isProjectOwner"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="project-owner"
+                        />
+                      </FormControl>
+                      <FormLabel htmlFor="project-owner">
+                        Submitting work as the Project Owner
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold">2. File Upload</h2>
                 <div className="space-y-2">
                   <Label htmlFor="file-upload">
-                    Upload your project audio, sheet music, chord charts or
+                    Upload your project audio, sheet music, chord charts, or
                     lyrics from here.
                   </Label>
                   <Input
@@ -195,20 +264,42 @@ export default function ProjectUploadForm() {
                   file and confirm that you have the right to upload and
                   contribute this file to the project.
                 </p>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="explicit-lyrics" />
-                    <Label htmlFor="explicit-lyrics">
-                      Lyrics in my submission are explicit
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="contains-loops" />
-                    <Label htmlFor="contains-loops">
-                      Audio in my submission contains loops
-                    </Label>
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="hasExplicitLyrics"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="explicit-lyrics"
+                        />
+                      </FormControl>
+                      <FormLabel htmlFor="explicit-lyrics">
+                        Lyrics in my submission are explicit
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="containsLoops"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="contains-loops"
+                        />
+                      </FormControl>
+                      <FormLabel htmlFor="contains-loops">
+                        Audio in my submission contains loops
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="space-y-4">
@@ -219,10 +310,24 @@ export default function ProjectUploadForm() {
                   provided by the legal copyright owner(s), to upload and use
                   this work for the purposes of this collaboration.
                 </p>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="confirm-copyright" required />
-                  <Label htmlFor="confirm-copyright">CONFIRM</Label>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="confirmCopyright"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="confirm-copyright"
+                          required
+                        />
+                      </FormControl>
+                      <FormLabel htmlFor="confirm-copyright">CONFIRM</FormLabel>
+                      <FormMessage className="text-red-300" />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
