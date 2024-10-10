@@ -2,11 +2,9 @@
 import React, { Suspense } from "react";
 import styles from "@/styles/projects.module.css";
 import { useUser } from "@clerk/nextjs";
-// import { useRouter } from "next/navigation";
-import ProjectItem from "@/components/ProjectItem";
+import { useAudio } from "@/app/providers/AudioProvider";
 import SearchBar from "@/components/SearchBar";
-import { Loader } from "lucide-react";
-// import ProjectList from "@/components/ProjectList";
+import { Loader, Play, Share2, Heart, MessageCircle } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import Image from "next/image";
@@ -20,106 +18,64 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Share2, Heart, MessageCircle } from "lucide-react";
 import { formatDate } from "@/lib/formatTime";
 import LoaderSpinner from "@/components/LoaderSpinner";
 
-// interface Project {
-//   id: number;
-//   title: string;
-//   creator: string;
-//   creatorAvatar: string;
-//   startDate: string;
-//   filesCount: number;
-//   coverImage: string;
-//   genres: string[];
-//   instruments: string[];
-//   bpm?: number;
-//   key?: string;
-// }
+const ProjectPage = () => {
+  const { setAudio } = useAudio();
+  const { isLoaded } = useUser();
 
-// const projects: Project[] = [
-//   {
-//     id: 1,
-//     title: "THAT'S LIFE",
-//     creator: "SellaDon",
-//     creatorAvatar: "/placeholder.svg",
-//     startDate: "Sep 14, 2024",
-//     filesCount: 26,
-//     coverImage: "/placeholder.svg",
-//     genres: [
-//       "Alternative",
-//       "Blues",
-//       "Hip Hop",
-//       "Indie",
-//       "Pop",
-//       "Rap",
-//       "Breakbeat",
-//       "Laid Back",
-//       "Nostalgic",
-//       "Playful",
-//       "Reflective",
-//     ],
-//     instruments: [
-//       "Percussion",
-//       "Saxophone",
-//       "Electric Bass",
-//       "Drums (acoustic)",
-//       "Drum Programming",
-//       "Mastering",
-//       "Mixing",
-//       "Rhythm Guitar",
-//       "Electric Guitar",
-//       "Acoustic Guitar",
-//       "Guitar",
-//       "Lead Guitar",
-//       "Piano",
-//       "Keyboards",
-//       "Music Composition",
-//       "Arrangement",
-//       "Lyrics",
-//       "Melody Writer",
-//       "Production",
-//       "Vocals",
-//       "Vocals (male)",
-//       "Vocals (female)",
-//     ],
-//     bpm: 84,
-//     key: "E Major",
-//   },
-//   // Add more projects here...
-// ];
+  // Fetch projects along with their associated project files
+  const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
 
-const Page = () => {
-  //   const router = useRouter();
+  if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  const { user, isLoaded } = useUser();
-  const projects = useQuery(api.projects.getAllProjects);
-
-  console.log(projects);
-  console.log(user);
-
-  if (isLoaded) return <LoaderSpinner></LoaderSpinner>
-
-
+  const handlePlay = (project: any) => {
+    // Assuming each project has a 'projectFiles' array
+    const projectFile = projectsWithFiles[0]?.projectFiles[0]; // Modify as needed
+    console.log("Playing project file:", projectFile);
+    console.log("Playing project:", project);
+    
+    if (projectFile) {
+      setAudio({
+        title: projectFile.projectFileTitle || project.projectTitle || "Unknown Title",
+        audioUrl: project, // Adjust the field name as needed
+        projectId: project._id,
+        author: project.author || "Unknown Author",
+        imageUrl: project.imageUrl || "/images/player1.png",
+      });
+    } else {
+      console.warn("No project file available for this project.");
+    }
+  };
 
   return (
     <section className={styles.project__feeds}>
       <Suspense fallback={<Loader />}>
         <SearchBar />
       </Suspense>
-      <h1 className="text-2xl font-bold mb-6 ml-4">Active Collaboration Projects</h1>
+      <h1 className="text-2xl font-bold mb-6 ml-4">
+        Active Collaboration Projects
+      </h1>
       <main className={styles.content__box}>
         <div className="space-y-4">
-          {projects?.map((project) => (
-            <Card key={project?._id} className="bg-neutral-900">
+          {projectsWithFiles?.map((project) => (
+            <Card key={project._id} className="bg-neutral-900">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-gray-500">
-                  {project?.projectTitle}
+                  {project.projectTitle}
                 </CardTitle>
                 <div className="flex space-x-2">
+                  <Button
+                    className="p-2"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handlePlay(project.projectFiles[0])} // Pass the project
+                  >
+                    <Play className="h-6 w-6" />
+                  </Button>
                   <Button className="p-2" variant="ghost" size="icon">
-                    <Share2 name="share" className="h-6 w-6" />
+                    <Share2 className="h-6 w-6" />
                   </Button>
                   <Button className="p-2" variant="ghost" size="icon">
                     <Heart className="h-6 w-6" />
@@ -142,24 +98,24 @@ const Page = () => {
                     <div className="flex items-center space-x-2">
                       <Avatar className="h-6 w-6">
                         <AvatarImage
-                          src={project.authorImageUrl}
-                          alt={project?.author}
+                          src={project.authorImageUrl || "/assets/images/default-avatar.png"}
+                          alt={project.author}
                         />
                         <AvatarFallback className="text-gray-500">
-                          {project.author[0]}
+                          {project.author ? project.author[0] : "U"}
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium text-gray-500">
-                        {project?.author}
+                        {project.author || "Unknown Author"}
                       </span>
                     </div>
                     <p className="text-sm text-gray-500">
-                      Project Type: Public • Started: {formatDate(project._creationTime)} •
-                      {/* No. Files: {project.filesCount} */}
+                      Project Type: Public • Started:{" "}
+                      {formatDate(project._creationTime)}
                     </p>
                     <div className="flex flex-wrap gap-1">
-                      {[] ||
-                        project?.instruments.map((instrument, index) => (
+                      {project.instruments &&
+                        project.instruments.map((instrument, index) => (
                           <Badge
                             key={index}
                             variant="secondary"
@@ -170,8 +126,8 @@ const Page = () => {
                         ))}
                     </div>
                     <div className="flex flex-wrap gap-1 text-gray-500">
-                      {[] ||
-                        project?.genres.map((genre, index) => (
+                      {project.genres &&
+                        project.genres.map((genre, index) => (
                           <Badge
                             key={index}
                             variant="default"
@@ -186,14 +142,14 @@ const Page = () => {
               </CardContent>
               <CardFooter>
                 <div className="flex space-x-2">
-                  {project?.projectSampleRate && (
+                  {project.projectSampleRate && (
                     <Badge variant="secondary" className="text-xs">
                       {project.projectSampleRate} bpm
                     </Badge>
                   )}
-                  {project?.projectBitDepth && (
+                  {project.projectBitDepth && (
                     <Badge variant="secondary" className="text-xs">
-                      {project?.projectBitDepth}
+                      {project.projectBitDepth}
                     </Badge>
                   )}
                 </div>
@@ -201,11 +157,9 @@ const Page = () => {
             </Card>
           ))}
         </div>
-
-        <ProjectItem />
       </main>
     </section>
   );
 };
 
-export default Page;
+export default ProjectPage;

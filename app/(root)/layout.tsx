@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
+import ProjectPlayer from "@/components/ProjectPlayer";
 
 
 export default function RootLayout({
@@ -12,6 +13,10 @@ export default function RootLayout({
      <DashboardLayout>
         {children}
      </DashboardLayout>
+     <div className="sticky bottom-[-2rem] left-0 right-0">
+
+     <ProjectPlayer />
+     </div>
     </main>
   );
 }

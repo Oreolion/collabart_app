@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ScrollToTop from "@/components/ScrollToTop";
 import ConvexClerkProvider from "./providers/ConvexClerkProvider";
-
+import AudioProvider from "./providers/AudioProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,13 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-       <ConvexClerkProvider>{children}</ConvexClerkProvider>
-       <ScrollToTop></ScrollToTop>
-      </body>
-    </html>
+    <ConvexClerkProvider>
+      <html lang="en">
+        <AudioProvider>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            {children}
+            <ScrollToTop></ScrollToTop>
+          </body>
+        </AudioProvider>
+      </html>
+    </ConvexClerkProvider>
   );
 }

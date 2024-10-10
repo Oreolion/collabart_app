@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatTime } from "@/lib/formatTime";
 import { cn } from "@/lib/utils";
-// import { useAudio } from "../app/providers/AudioProvider";
+import { useAudio } from "@/app/providers/AudioProvider";
 
 import { Progress } from "./ui/progress";
 
@@ -15,19 +15,20 @@ const ProjectPlayer = () => {
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-//   const { audio } = useAudio();
-  // Wrap the initialization of 'audio' in useMemo to prevent it from changing on every render
-  const audio = useMemo(() => {
-    return {};
-  }, []);
+  const { audio } = useAudio();
 
   const togglePlayPause = () => {
-    if (audioRef.current?.paused) {
-      audioRef.current?.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current?.pause();
-      setIsPlaying(false);
+    if (audioRef.current) {
+      if (audioRef.current.paused) {
+        audioRef.current.play().then(() => {
+          setIsPlaying(true);
+        }).catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+      } else {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
     }
   };
 
@@ -72,22 +73,35 @@ const ProjectPlayer = () => {
         audioElement.removeEventListener("timeupdate", updateCurrentTime);
       };
     }
-  }, []);
+  }, [audio?.audioUrl]);
 
   useEffect(() => {
+    console.log("Audio URL updated:", audio?.audioUrl);
+
     const audioElement = audioRef.current;
-    if (audio?.audioUrl) {
-      if (audioElement) {
+    if (audio?.audioUrl && audioElement) {
+      const handlePlay = () => {
         audioElement.play().then(() => {
           setIsPlaying(true);
+          console.log("Audio is playing.");
+        }).catch((error) => {
+          console.error("Error playing audio:", error);
+          setIsPlaying(false);
         });
-      }
-    } else {
-      audioElement?.pause();
-      setIsPlaying(true);
+      };
+
+      audioElement.addEventListener("loadedmetadata", handlePlay);
+
+      return () => {
+        audioElement.removeEventListener("loadedmetadata", handlePlay);
+      };
+    } else if (audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
+    //   console.log("Audio is paused.");
     }
-  }, [audio]);
-  
+  }, [audio?.audioUrl]);
+
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
@@ -100,11 +114,11 @@ const ProjectPlayer = () => {
 
   return (
     <div
-      className={cn("sticky bottom-0 left-0 flex size-full flex-col", {
+      className={cn("sticky bottom-0 flex size-full flex-col", {
         hidden: !audio?.audioUrl || audio?.audioUrl === "",
       })}
     >
-      {/* change the color for indicator inside the Progress component in ui folder */}
+      {/* Progress Bar */}
       <Progress
         value={(currentTime / duration) * 100}
         className="w-full"
@@ -118,8 +132,9 @@ const ProjectPlayer = () => {
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
         />
+        {/* Project Details */}
         <div className="flex items-center gap-4 max-md:hidden">
-          <Link href={`/podcast/${audio?.podcastId}`}>
+          <Link href={`/project/${audio?.projectId}`}>
             <Image
               src={audio?.imageUrl || "/images/player1.png"}
               width={64}
@@ -137,7 +152,9 @@ const ProjectPlayer = () => {
             </p>
           </div>
         </div>
+        {/* Controls */}
         <div className="flex-center cursor-pointer gap-3 md:gap-6">
+          {/* Rewind */}
           <div className="flex items-center gap-1.5">
             <Image
               src={"/assets/icons/reverse.svg"}
@@ -145,16 +162,20 @@ const ProjectPlayer = () => {
               height={24}
               alt="rewind"
               onClick={rewind}
+              className="cursor-pointer"
             />
             <h2 className="text-12 font-bold text-white-4">-5</h2>
           </div>
+          {/* Play/Pause */}
           <Image
             src={isPlaying ? "/assets/icons/Pause.svg" : "/assets/icons/Play.svg"}
             width={30}
             height={30}
             alt="play"
             onClick={togglePlayPause}
+            className="cursor-pointer"
           />
+          {/* Forward */}
           <div className="flex items-center gap-1.5">
             <h2 className="text-12 font-bold text-white-4">+5</h2>
             <Image
@@ -163,12 +184,14 @@ const ProjectPlayer = () => {
               height={24}
               alt="forward"
               onClick={forward}
+              className="cursor-pointer"
             />
           </div>
         </div>
+        {/* Mute and Duration */}
         <div className="flex items-center gap-6">
           <h2 className="text-16 font-normal text-white-2 max-md:hidden">
-            {formatTime(duration)}
+            {formatTime(currentTime)} / {formatTime(duration)}
           </h2>
           <div className="flex w-full gap-2">
             <Image

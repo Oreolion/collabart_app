@@ -109,13 +109,35 @@ export const addProjectFile = mutation({
   },
 });
 
-export const getUrl = mutation({
-  args: {
-    storageId: v.id("_storage"),
-  },
+export const getProjectFile = query({
+  args: { projectId: v.optional(v.id("projects")) },
   handler: async (ctx, args) => {
-    return await ctx.storage.getUrl(args.storageId);
+    return await ctx.db
+      .query("projectFile")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .order("desc")
+      .collect();
   },
+});
+
+export const getAllProjectsWithFiles = query(async ({ db }) => {
+  const projects = await db.query("projects").collect();
+
+  const projectsWithFiles = await Promise.all(
+    projects.map(async (project) => {
+      const projectFiles = await db
+        .query("projectFile")
+        .withIndex("by_project", (q) => q.eq("projectId", project._id))
+        .collect();
+
+      return {
+        ...project,
+        projectFiles,
+      };
+    })
+  );
+
+  return projectsWithFiles;
 });
 
 // this query will get all the projects.
@@ -230,5 +252,14 @@ export const getProjectByProjectCategory = query({
         )
       )
       .collect();
+  },
+});
+
+export const getUrl = mutation({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
   },
 });
