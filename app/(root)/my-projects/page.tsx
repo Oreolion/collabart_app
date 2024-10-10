@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/formatTime";
 import LoaderSpinner from "@/components/LoaderSpinner";
+import { AudioProps } from "@/types";
 
 const ProjectPage = () => {
   const { setAudio } = useAudio();
@@ -30,7 +31,7 @@ const ProjectPage = () => {
 
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  const handlePlay = (project: any) => {
+  const handlePlay = (project: AudioProps) => {
     // Assuming each project has a 'projectFiles' array
     const projectFile = projectsWithFiles[0]?.projectFiles[0]; // Modify as needed
     console.log("Playing project file:", projectFile);
