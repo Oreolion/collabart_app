@@ -5,8 +5,8 @@ import { mutation, query } from "./_generated/server";
 // create project mutation
 export const createProject = mutation({
   args: {
-    // audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
-    // audioUrl: v.string(),
+    audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    audioUrl: v.optional(v.string()),
     // imageUrl: v.string(),
     // imageStorageId: v.union(v.id("_storage"), v.null()),
     projectTitle: v.string(),
@@ -19,7 +19,7 @@ export const createProject = mutation({
     collaborationAgreement: v.optional(v.string()),
     views: v.number(),
     likes: v.number(),
-    // audioDuration: v.number(),
+    audioDuration: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();

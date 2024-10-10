@@ -41,6 +41,8 @@ export default function ProjectUploadForm({
   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
     null
   );
+    const [audioDuration,] = useState(0);
+
   const [audioUrl, setAudioUrl] = useState("");
 
   const { toast } = useToast();
@@ -113,6 +115,9 @@ export default function ProjectUploadForm({
         confirmCopyright: data.confirmCopyright,
         projectFile: storageId,
         projectId: projectId,
+        audioStorageId: audioStorageId,
+        audioDuration: audioDuration,
+        audioUrl: audioUrl
       };
 
       console.log("projectFileData:", projectFileData);

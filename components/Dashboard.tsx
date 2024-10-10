@@ -32,13 +32,13 @@ export default function Dashboard() {
   const projects = useQuery(api.projects.getAllProjects);
 
   console.log(projects);
-  console.log(user);
+  //   console.log(user);
 
   return (
     <>
       <section className={styles.dashboard__feeds}>
         <main className={styles.dashboard__content}>
-          <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl max-md:max-w-[25rem]">
+          <div className="mb-5 text-center bg-slate-900 py-4 rounded-tl-3xl rounded-tr-3xl max-[320px]:max-w-[25rem]">
             <Avatar className="w-24 h-24 mx-auto mb-4">
               <AvatarImage src={user?.imageUrl} alt="remyoreo" />
               <AvatarFallback>{user?.username}</AvatarFallback>
@@ -49,8 +49,8 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <Tabs defaultValue="dashboard" className="mb-8 max-md:max-w-[25rem]">
-            <TabsList className="h-10 grid gap-4 grid-cols-3 md:grid-cols-6 max-md:flex max-md:gap-8">
+          <Tabs defaultValue="dashboard" className="mb-8 max-[320px]:max-w-[25rem]">
+            <TabsList className="h-10 grid gap-4 grid-cols-3 md:grid-cols-6 max-md:flex max-md:justify-between max-[480px]:gap-8">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -61,7 +61,7 @@ export default function Dashboard() {
                 Media
               </TabsTrigger>
               <TabsTrigger value="tip-jar" className="hidden md:block">
-                My Account
+                <Link href="/my-account">My Account</Link>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
@@ -308,29 +308,37 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4">
-                      {user?.username} has started and is currently managing 1
-                      active project.
-                    </p>
-                    <div className="bg-gray-100 rounded-lg overflow-hidden">
-                      <div className="flex items-center justify-between p-4">
-                        <div className="flex items-center gap-4">
-                          <Disc3 className="w-10 h-10" />
-                          <span className="font-bold">LESSONS</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button className="p-2 bg-gray-200 rounded-full">
-                            <Share2 className="w-5 h-5" />
-                          </Button>
-                          <Button className="p-2 bg-gray-200 rounded-full">
-                            <DollarSign className="w-5 h-5" />
-                          </Button>
-                          <Button className="p-2 bg-green-500 rounded-full">
-                            <Mic className="w-5 h-5 text-white" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    {projects?.map((project) => {
+                      return (
+                        <>
+                          <p className="mb-4">
+                            {user?.username} has started and is currently
+                            managing 1 active project.
+                          </p>
+                          <div className="bg-gray-100 rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between p-4">
+                              <div className="flex items-center gap-4">
+                                <Disc3 className="w-10 h-10" />
+                                <span className="font-bold">
+                                  {project?.projectTitle}
+                                </span>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button className="p-2 bg-gray-200 rounded-full">
+                                  <Share2 className="w-5 h-5" />
+                                </Button>
+                                <Button className="p-2 bg-gray-200 rounded-full">
+                                  <DollarSign className="w-5 h-5" />
+                                </Button>
+                                <Button className="p-2 bg-green-500 rounded-full">
+                                  <Mic className="w-5 h-5 text-white" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })}
                   </CardContent>
                 </Card>
 
@@ -380,7 +388,9 @@ export default function Dashboard() {
                     Portfolio of Published Works
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="max-md:ml-[-1rem]">Nothing published yet</CardContent>
+                <CardContent className="max-md:ml-[-1rem]">
+                  Nothing published yet
+                </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
@@ -407,7 +417,10 @@ export default function Dashboard() {
                   </TableHeader>
                   <TableBody className="max-md:ml-[-1.8rem]">
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center max-sm:ml-[-1.8rem]">
+                      <TableCell
+                        colSpan={7}
+                        className="text-center max-sm:ml-[-1.8rem]"
+                      >
                         Start a project and hire artists to perform your songs
                       </TableCell>
                     </TableRow>
@@ -437,7 +450,10 @@ export default function Dashboard() {
                   </TableHeader>
                   <TableBody className="max-sm:ml-[-1.8rem]">
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center max-sm:ml-[-1.8rem]">
+                      <TableCell
+                        colSpan={7}
+                        className="text-center max-sm:ml-[-1.8rem]"
+                      >
                         You have no royalty payments.
                       </TableCell>
                     </TableRow>

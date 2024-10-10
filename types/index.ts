@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { Dispatch, SetStateAction } from "react";
+// import { Dispatch, SetStateAction } from "react";
 
 import { Id } from "../convex/_generated/dataModel";
 
@@ -36,11 +36,11 @@ export interface ProjectProps {
   projectDescription: string;
   collaborationAgreement: string;
   projectBrief: string;
-  //   audioStorageId: Id<"_storage"> | null;
-  //   audioUrl: string | null;
+  audioStorageId: Id<"_storage"> | null;
+  audioUrl: string | null;
   //   imageUrl: string | null;
   //   imageStorageId: Id<"_storage"> | null;
-  //   audioDuration: number;
+  audioDuration: number;
   author: string;
   authorId: string;
   authorImageUrl: string;
@@ -62,7 +62,7 @@ export interface ProjectFileType {
   isProjectOwner: boolean;
   hasExplicitLyrics: boolean;
   containsLoops: boolean;
-  confirmCopyright: boolean; 
+  confirmCopyright: boolean;
   // newContent: string;
   //   content: string;
   // commentUserImage: string;
@@ -89,17 +89,17 @@ export type projectAuditionPrivacy =
   | "Keep auditions private [recommended]"
   | "Keep auditions visible to the community";
 
-export interface GenerateProjectProps {
-  projectType: projectType;
-  projectPrivacy: string;
-  //   setAudio: Dispatch<SetStateAction<string>>;
-  //   audio: string;
-  //   setAudioStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>;
-  postContent: string;
-  setProjectContent: Dispatch<SetStateAction<string>>;
-  prompt: string;
-  setPrompt: Dispatch<SetStateAction<string>>;
-}
+// export interface GenerateProjectProps {
+//   projectType: projectType;
+//   projectPrivacy: string;
+//   setAudio: Dispatch<SetStateAction<string>>;
+//   audio: string;
+//   setAudioStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>;
+//   postContent: string;
+//   setProjectContent: Dispatch<SetStateAction<string>>;
+//   prompt: string;
+//   setPrompt: Dispatch<SetStateAction<string>>;
+// }
 
 export interface AudioProps {
   title: string;

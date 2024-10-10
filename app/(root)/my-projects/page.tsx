@@ -71,7 +71,7 @@ const ProjectPage = () => {
                     className="p-2"
                     variant="ghost"
                     size="icon"
-                    onClick={() => handlePlay(project.projectFiles[0])} // Pass the project
+                    onClick={() => handlePlay(project.projectFiles[0])} 
                   >
                     <Play className="h-6 w-6" />
                   </Button>
