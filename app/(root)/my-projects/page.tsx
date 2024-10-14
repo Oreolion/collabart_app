@@ -33,14 +33,14 @@ const ProjectPage = () => {
 
   const handlePlay = (project: AudioProps) => {
     // Assuming each project has a 'projectFiles' array
-    const projectFile = projectsWithFiles[0]?.projectFiles[0]; // Modify as needed
+    const projectFile = projectsWithFiles[0]?.projectFiles[0]; 
     console.log("Playing project file:", projectFile);
     console.log("Playing project:", project);
     
     if (projectFile) {
       setAudio({
         title: projectFile.projectFileTitle || project.projectTitle || "Unknown Title",
-        audioUrl: project, // Adjust the field name as needed
+        audioUrl: project, 
         projectId: project._id,
         author: project.author || "Unknown Author",
         imageUrl: project.imageUrl || "/images/player1.png",

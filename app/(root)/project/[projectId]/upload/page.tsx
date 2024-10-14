@@ -80,7 +80,7 @@ export default function ProjectUploadForm({
     try {
       setIsSubmitting(true);
       console.log("projectFile:", projectFile);
-      console.log("projectId:", projectId);
+    //   console.log("projectId:", projectId);
       if (!projectFile) {
         toast({
           title: "Missing File",
@@ -102,6 +102,7 @@ export default function ProjectUploadForm({
       setAudioStorageId(storageId);
 
       const result = await getFileUrl({ storageId });
+      console.log(result)
       setAudioUrl(result);
       console.log(audioUrl);
       console.log(audioStorageId);
@@ -113,7 +114,7 @@ export default function ProjectUploadForm({
         hasExplicitLyrics: data.hasExplicitLyrics,
         containsLoops: data.containsLoops,
         confirmCopyright: data.confirmCopyright,
-        projectFile: storageId,
+        // projectFile: storageId,
         projectId: projectId,
         audioStorageId: audioStorageId,
         audioDuration: audioDuration,
@@ -143,6 +144,7 @@ export default function ProjectUploadForm({
     if (e.target.files && e.target.files[0]) {
       setProjectFile(e.target.files[0]);
     }
+    console.log(projectFile)
   };
 
   return (

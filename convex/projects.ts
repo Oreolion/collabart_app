@@ -5,12 +5,17 @@ import { mutation, query } from "./_generated/server";
 // create project mutation
 export const createProject = mutation({
   args: {
-    audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
-    audioUrl: v.optional(v.string()),
     // imageUrl: v.string(),
     // imageStorageId: v.union(v.id("_storage"), v.null()),
     projectTitle: v.string(),
     projectDescription: v.string(),
+    projectFile: v.optional(
+      v.object({
+        audioStorageId: v.string(),
+        audioUrl: v.string(),
+        audioDuration: v.number(),
+      })
+    ),
     projectBrief: v.string(),
     projectType: v.string(),
     projectBitDepth: v.string(),
@@ -19,7 +24,6 @@ export const createProject = mutation({
     collaborationAgreement: v.optional(v.string()),
     views: v.number(),
     likes: v.number(),
-    audioDuration: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -44,7 +48,6 @@ export const createProject = mutation({
       projectDescription: args.projectDescription,
       projectBrief: args.projectBrief,
       collaborationAgreement: args.collaborationAgreement,
-      //   audioUrl: args.audioUrl,
       //   imageUrl: args.imageUrl,
       //   imageStorageId: args.imageStorageId,
       author: user[0].name,
@@ -56,7 +59,7 @@ export const createProject = mutation({
       views: args.views,
       likes: args.likes,
       authorImageUrl: user[0].imageUrl,
-      //   audioDuration: args.audioDuration,
+      projectFile: args.projectFile,
     });
   },
 });
@@ -65,7 +68,10 @@ export const createProject = mutation({
 export const addProjectFile = mutation({
   args: {
     projectId: v.id("projects"),
-    projectFile: v.string(),
+    // projectFile: v.string(),
+    audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    audioUrl: v.optional(v.string()),
+    audioDuration: v.optional(v.number()),
     projectFileTitle: v.string(),
     projectFileLabel: v.string(),
     isProjectOwner: v.boolean(),
@@ -97,14 +103,16 @@ export const addProjectFile = mutation({
       userId: user._id,
       username: user.name,
       projectFileLabel: args.projectFileLabel,
+      audioStorageId: args.audioStorageId,
+      audioUrl: args.audioUrl,
+      audioDuration: args.audioDuration,
       projectFileTitle: args.projectFileTitle,
-      projectFile: args.projectFile,
+    //   projectFile: args.projectFile,
       isProjectOwner: args.isProjectOwner,
       hasExplicitLyrics: args.hasExplicitLyrics,
       containsLoops: args.containsLoops,
       confirmCopyright: args.confirmCopyright,
       createdAt: Date.now(),
-      // commentUserImage: user.imageUrl,
     });
   },
 });
