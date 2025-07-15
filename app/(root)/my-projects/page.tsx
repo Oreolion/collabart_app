@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/formatTime";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { AudioProps } from "@/types";
+import Link from "next/link";
 
 const ProjectPage = () => {
   const { setAudio } = useAudio();
@@ -63,8 +64,10 @@ const ProjectPage = () => {
           {projectsWithFiles?.map((project) => (
             <Card key={project._id} className="bg-neutral-900">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">
-                  {project.projectTitle}
+                <CardTitle className="text-sm font-medium text-gray-700 underline hover:text-gray-300">
+                 <Link href={`/project/${project._id}`}>
+                 {project.projectTitle}
+                 </Link> 
                 </CardTitle>
                 <div className="flex space-x-2">
                   <Button

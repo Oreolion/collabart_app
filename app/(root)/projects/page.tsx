@@ -8,12 +8,11 @@ import {
   Clock,
   Play,
   Music,
-  Users,
   Calendar,
   FileText,
 } from "lucide-react";
 import styles from "@/styles/projects.module.css";
-import { useUser } from "@clerk/nextjs";
+// import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -22,30 +21,30 @@ import { Id } from "@/convex/_generated/dataModel";
 
 
 
-const genreColors: Record<string, string> = {
-  Baroque: "background: #f3e8ff; color: #7c3aed;",
-  Goth: "background: #f3f4f6; color: #374151;",
-  Instrumental: "background: #dbeafe; color: #2563eb;",
-  Rock: "background: #fee2e2; color: #dc2626;",
-  Atmospheric: "background: #cffafe; color: #0891b2;",
-  Brooding: "background: #e0e7ff; color: #4f46e5;",
-  Harsh: "background: #fed7aa; color: #ea580c;",
-  Hypnotic: "background: #fce7f3; color: #ec4899;",
-  Nocturnal: "background: #f1f5f9; color: #475569;",
-  Alternative: "background: #dcfce7; color: #16a34a;",
-  Folk: "background: #fef3c7; color: #d97706;",
-  Indie: "background: #ccfbf1; color: #0d9488;",
-  Intimate: "background: #ffe4e6; color: #e11d48;",
-  Passionate: "background: #fee2e2; color: #dc2626;",
-  Sentimental: "background: #fce7f3; color: #ec4899;",
-  Metal: "background: #f3f4f6; color: #374151;",
-  Aggressive: "background: #fee2e2; color: #dc2626;",
-  Energetic: "background: #fef3c7; color: #d97706;",
-  Melancholy: "background: #dbeafe; color: #2563eb;",
-  Pop: "background: #f3e8ff; color: #7c3aed;",
-  Reggae: "background: #dcfce7; color: #16a34a;",
-  Reggaeton: "background: #ecfccb; color: #65a30d;",
-};
+// const genreColors: Record<string, string> = {
+//   Baroque: "background: #f3e8ff; color: #7c3aed;",
+//   Goth: "background: #f3f4f6; color: #374151;",
+//   Instrumental: "background: #dbeafe; color: #2563eb;",
+//   Rock: "background: #fee2e2; color: #dc2626;",
+//   Atmospheric: "background: #cffafe; color: #0891b2;",
+//   Brooding: "background: #e0e7ff; color: #4f46e5;",
+//   Harsh: "background: #fed7aa; color: #ea580c;",
+//   Hypnotic: "background: #fce7f3; color: #ec4899;",
+//   Nocturnal: "background: #f1f5f9; color: #475569;",
+//   Alternative: "background: #dcfce7; color: #16a34a;",
+//   Folk: "background: #fef3c7; color: #d97706;",
+//   Indie: "background: #ccfbf1; color: #0d9488;",
+//   Intimate: "background: #ffe4e6; color: #e11d48;",
+//   Passionate: "background: #fee2e2; color: #dc2626;",
+//   Sentimental: "background: #fce7f3; color: #ec4899;",
+//   Metal: "background: #f3f4f6; color: #374151;",
+//   Aggressive: "background: #fee2e2; color: #dc2626;",
+//   Energetic: "background: #fef3c7; color: #d97706;",
+//   Melancholy: "background: #dbeafe; color: #2563eb;",
+//   Pop: "background: #f3e8ff; color: #7c3aed;",
+//   Reggae: "background: #dcfce7; color: #16a34a;",
+//   Reggaeton: "background: #ecfccb; color: #65a30d;",
+// };
 
 const Pagination = ({
   currentPage,
@@ -94,6 +93,7 @@ const ProjectCard = ({
     });
 
   console.log(projects);
+  console.log(project);
 
   const getTypeClass = (type: string) => {
     switch (type) {
@@ -248,7 +248,7 @@ export default function ProjectsPage() {
     mood: "",
   });
   const [listMostActive, setListMostActive] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, ] = useState(1);
 
   const handleSearch = () => {
     console.log("Searching with filters:", searchFilters);
@@ -362,7 +362,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Pagination */}
-        <Pagination currentPage={currentPage} totalPages={30} />
+        <Pagination currentPage={currentPage} totalPages={5} />
 
         {/* Projects List */}
         <div>
@@ -372,7 +372,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Bottom Pagination */}
-        <Pagination currentPage={currentPage} totalPages={30} />
+        <Pagination currentPage={currentPage} totalPages={5} />
       </div>
     </div>
   );
