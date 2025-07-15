@@ -90,7 +90,7 @@ export default function ToggleBoxes() {
                 project by uploading your idea as an audition.
               </p>
               <h4 className="mb-[1rem] font-bold max-md:ml-[0rem] max-md:max-w-[17rem]">
-                Here&apos;s what you can expect as a ProCollabs member
+                Here&apos;s what you can expect as a CollabArts member
               </h4>
 
               <ul className="flex flex-col gap-[.4rem]">
@@ -307,12 +307,12 @@ export default function ToggleBoxes() {
                 Once a song has taken shape and all collaborators have uploaded
                 and fined tuned their contributions, it&apos;s time to mix! And
                 if that ain&apos;t your specialty, no worries, you&apos;ll find
-                many talented audio engineers on ProCollabs who&apos;ll be more
+                many talented audio engineers on CollabArts who&apos;ll be more
                 than happy to participate.
               </p>
 
               <h4 className="mb-[1rem] font-bold max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Completing your collaboration project on ProCollabs
+                Completing your collaboration project on CollabArts
               </h4>
               <ul className="flex flex-col gap-[.4rem]">
                 <li className="flex gap-[1rem]">
@@ -365,7 +365,7 @@ export default function ToggleBoxes() {
                     ></Image>
                   </div>
                   <p className="text-sm">
-                    Publish to the ProCollabs Music Library and pursue
+                    Publish to the CollabArts Music Library and pursue
                     commercial interest
                   </p>
                 </li>

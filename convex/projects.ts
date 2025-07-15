@@ -107,7 +107,7 @@ export const addProjectFile = mutation({
       audioUrl: args.audioUrl,
       audioDuration: args.audioDuration,
       projectFileTitle: args.projectFileTitle,
-    //   projectFile: args.projectFile,
+      //   projectFile: args.projectFile,
       isProjectOwner: args.isProjectOwner,
       hasExplicitLyrics: args.hasExplicitLyrics,
       containsLoops: args.containsLoops,

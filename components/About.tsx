@@ -50,7 +50,7 @@ const About = () => {
       </h2>
 
       <p className={styles.p}>
-        ProCollabs is an online music collaboration service that gives you
+        CollabArts is an online music collaboration service that gives you
         access to experienced and talented songwriters, musicians, audio
         engineers, and music producers from all around the world. It&apos;s a place
         to unite, socialize, and collaborate in the writing and production of

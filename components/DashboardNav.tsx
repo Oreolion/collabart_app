@@ -7,7 +7,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { navbarLinks } from "@/constants";
 import SVGIcon from "@/components/SVGIcon";
 
-const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void }) => {
+const DashboardNav = ({
+  onNavToggle,
+}: {
+  onNavToggle: (showNav: boolean) => void;
+}) => {
   const [showNav, setShowNav] = useState(true);
   const { signOut } = useClerk();
   const { user } = useUser();
@@ -23,7 +27,6 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
     setShowNav(newShowNav);
     onNavToggle(newShowNav);
   }, [showNav, onNavToggle]);
-
 
   return (
     <div className={styles.dashboard__navcontainer}>
@@ -80,6 +83,20 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
         <ul className={styles.dashboard__navlists}>
           <h5 className={styles.h5}>Overview</h5>
 
+          <li className={styles.li} key="Projects">
+            <Link
+              href="/projects"
+              className={`${styles.link} ${isLinkActive("/projects") ? styles.active_link : ""}`}
+            >
+              <SVGIcon
+                svgString={`<svg className="${styles.svg}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+              <title>Active Projects</title>
+              <path d="M211.2 96a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM32 256c0 17.7 14.3 32 32 32h85.6c10.1-39.4 38.6-71.5 75.8-86.6c-9.7-6-21.2-9.4-33.4-9.4H96c-35.3 0-64 28.7-64 64zm461.6 32H576c17.7 0 32-14.3 32-32c0-35.3-28.7-64-64-64H448c-11.7 0-22.7 3.1-32.1 8.6c38.1 14.8 67.4 47.3 77.7 87.4zM391.2 226.4c-6.9-1.6-14.2-2.4-21.6-2.4h-96c-8.5 0-16.7 1.1-24.5 3.1c-30.8 8.1-55.6 31.1-66.1 60.9c-3.5 10-5.5 20.8-5.5 32c0 17.7 14.3 32 32 32h224c17.7 0 32-14.3 32-32c0-11.2-1.9-22-5.5-32c-10.8-30.7-36.8-54.2-68.9-61.6zM563.2 96a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM321.6 192a80 80 0 1 0 0-160 80 80 0 1 0 0 160zM32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H32z"/>
+            </svg>`}
+              />
+              <p className={styles.linktext}>Active Projects</p>
+            </Link>
+          </li>
           <li className={styles.li} key="Homefeeds">
             <Link
               href="/dashboard"
@@ -108,7 +125,10 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
               <p className={styles.linktext}>Create Project</p>
             </Link>
           </li>
-          <li className={styles.li} key="Bookmarks">
+
+          <h5 className={styles.h5}>Personal</h5>
+
+          <li className={styles.li} key="My Projects">
             <Link
               href="/my-projects"
               className={`${styles.link} ${isLinkActive("/my-projects") ? styles.active_link : ""}`}
@@ -133,11 +153,9 @@ const DashboardNav = ({ onNavToggle }: { onNavToggle: (showNav: boolean) => void
       <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z" />
                   </svg>`}
               />
-              <p className={styles.linktext}>Funds</p>
+              <p className={styles.linktext}>My Balance</p>
             </Link>
           </li>
-
-          <h5 className={styles.h5}>Personal</h5>
 
           <li className={styles.li}>
             <Link className={styles.link} href={`/my-profile/${user?.id}`}>
