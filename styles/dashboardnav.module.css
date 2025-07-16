@@ -167,9 +167,9 @@
   position: absolute;
   top: 50%;
   z-index: 11111;
-  right: 82.2%;
+  right: 82.5%;
   position: fixed;
-  background-color: rgb(34, 36, 34);
+  background-color: rgb(0, 0, 0);
   color: #ef4444;
   border: none;
   transition-duration: 0.5s;
@@ -190,9 +190,9 @@
   position: absolute;
   top: 50%;
   z-index: 11111;
-  right: 92.3%;
+  right: 92.4%;
   position: fixed;
-  background-color: rgb(26, 28, 26);
+  background-color: rgb(0, 0, 0);
   color: #ef4444;
   border: none;
   transition-duration: 0.5s;

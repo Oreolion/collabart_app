@@ -10,7 +10,16 @@ import {
   Music,
   Calendar,
   FileText,
+  Heart,
+  MessageCircle,
 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import styles from "@/styles/projects.module.css";
 // import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
@@ -18,8 +27,14 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
-
-
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/formatTime";
+import { AudioProps } from "@/types";
+import { useAudio } from "@/app/providers/AudioProvider";
+import LoaderSpinner from "@/components/LoaderSpinner";
+import { useUser } from "@clerk/nextjs";
 
 // const genreColors: Record<string, string> = {
 //   Baroque: "background: #f3e8ff; color: #7c3aed;",
@@ -88,159 +103,276 @@ const ProjectCard = ({
   params: { projectId: Id<"projects"> };
 }) => {
   const projects = useQuery(api.projects.getAllProjects);
-   const project = useQuery(api.projects.getProjectById, {
-      projectId: projectId,
-    });
+  const project = useQuery(api.projects.getProjectById, {
+    projectId: projectId,
+  });
+  const { setAudio } = useAudio();
+  const { isLoaded } = useUser();
+  const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
+
+  if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
+
+  const handlePlay = (project: AudioProps) => {
+    // Assuming each project has a 'projectFiles' array
+    const projectFile = projectsWithFiles[0]?.projectFiles[0];
+    console.log("Playing project file:", projectFile);
+
+    if (projectFile) {
+      setAudio({
+        title:
+          projectFile.projectFileTitle ||
+          project.projectTitle ||
+          "Unknown Title",
+        audioUrl: project,
+        projectId: project._id,
+        author: project.author || "Unknown Author",
+        imageUrl: project.imageUrl || "/images/player1.png",
+      });
+    } else {
+      console.warn("No project file available for this project.");
+    }
+  };
 
   console.log(projects);
   console.log(project);
 
-  const getTypeClass = (type: string) => {
-    switch (type) {
-      case "Public":
-        return styles.project__type__badge__public;
-      case "Member":
-        return styles.project__type__badge__member;
-      case "Member Invite":
-        return styles.project__type__badge__invite;
-      default:
-        return styles.project__type__badge__public;
-    }
-  };
+  //   const getTypeClass = (type: string) => {
+  //     switch (type) {
+  //       case "Public":
+  //         return styles.project__type__badge__public;
+  //       case "Member":
+  //         return styles.project__type__badge__member;
+  //       case "Member Invite":
+  //         return styles.project__type__badge__invite;
+  //       default:
+  //         return styles.project__type__badge__public;
+  //     }
+  //   };
+
+  //   const handlePlay = (project: AudioProps) => {
+  //     // Assuming each project has a 'projectFiles' array
+  //     const projectFile = projectsWithFiles[0]?.projectFiles[0];
+  //     console.log("Playing project file:", projectFile);
+  //     console.log("Playing project:", project);
+
+  //     if (projectFile) {
+  //       setAudio({
+  //         title:
+  //           projectFile.projectFileTitle ||
+  //           project.projectTitle ||
+  //           "Unknown Title",
+  //         audioUrl: project,
+  //         projectId: project._id,
+  //         author: project.author || "Unknown Author",
+  //         imageUrl: project.imageUrl || "/images/player1.png",
+  //       });
+  //     } else {
+  //       console.warn("No project file available for this project.");
+  //     }
+  //   };
 
   return (
     <div className={styles.project__card}>
-      {projects?.map((project) => (
-        <div key={project._id}>
-          <div className={styles.project__header}>
-            <div className={styles.project__title__section}>
+      {projectsWithFiles?.map((project) => (
+        <Card key={project._id} className="bg-neutral-900">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xl font-medium text-gray-700 underline hover:text-gray-300">
               <Button className={styles.project__action__button}>
                 <Play size={16} />
               </Button>
-              <h3 className={styles.project__title}>
-                <Link href={`/project/${projectId}`}> {project.projectTitle}
-                </Link>
-               
-                </h3>
+              <Link href={`/project/${project._id}`}>
+                {project.projectTitle}
+              </Link>
+            </CardTitle>
+            <div className="flex space-x-2">
+              <Button
+                className="p-2"
+                variant="ghost"
+                size="icon"
+                onClick={() => handlePlay(project.projectFiles[0])}
+              >
+                <Play className="h-6 w-6" />
+              </Button>
+              <Button className="p-2" variant="ghost" size="icon">
+                <Share2 className="h-6 w-6" />
+              </Button>
+              <Button className="p-2" variant="ghost" size="icon">
+                <Heart className="h-6 w-6" />
+              </Button>
+              <Button className="p-2" variant="ghost" size="icon">
+                <MessageCircle className="h-6 w-6" />
+              </Button>
             </div>
-            <div className={styles.project__actions}>
-              <Button className={styles.project__action__button}>
-                <Share2 size={16} />
-              </Button>
-              <Button className={styles.project__action__button}>
-                <DollarSign size={16} />
-              </Button>
-              <Button className={styles.project__action__button}>
-                <Clock size={16} />
-              </Button>
-            </div>
-          </div>
-
-          <div className={styles.project__content}>
-            <div className={styles.project__main}>
-              <div className={styles.project__artwork}>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+              {project?.authorImageUrl ? (
+                <Image
+                  src="/assets/images/producer.webp" // dynamically add project image.
+                  alt={project.projectTitle}
+                  width={80}
+                  height={40}
+                  className="rounded-md"
+                />
+              ) : (
                 <Music size={32} color="#6b7280" />
-              </div>
-
-              <div className={styles.project__details}>
-                <div className={styles.project__meta}>
-                  <span
-                    className={`${styles.project__type__badge} ${getTypeClass(project.projectType)}`}
-                  >
-                    {project.projectType}
-                  </span>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                    }}
-                  >
-                    <Calendar size={12} />
-                    <span>Started: {project._creationTime}</span>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                    }}
-                  >
-                    <FileText size={12} />
-                    <span>Files: {project.fileCount}</span>
-                  </div>
-                </div>
-
-                <div className={styles.project__creator}>
-                  <div className={styles.project__avatar}>
-                    {project.author.slice(0, 2).toUpperCase()}
-                  </div>
-                  <span className={styles.project__username}>
-                    {project.author}
+              )}
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage
+                      src={
+                        project.authorImageUrl ||
+                        "/assets/images/default-avatar.png"
+                      }
+                      alt={project.author}
+                    />
+                    <AvatarFallback className="text-gray-500">
+                      {project.author ? project.author[0] : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-500">
+                    {project.author || "Unknown Author"}
                   </span>
                 </div>
-
-                {/* {project.talents.length > 0 && (
-                  <div className={styles.project__talents}>
-                    <div className={styles.project__talents__label}>
-                      <Users size={12} />
-                      <span>Looking for:</span>
-                    </div>
-                    <div className={styles.project__talents__list}>
-                      {project.talents.join(", ")}
-                    </div>
-                  </div>
-                )} */}
-
-                {/* {project.genres.length > 0 && (
-                  <div className={styles.project__genres}>
-                    {project.genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className={styles.project__genre__badge}
-                        style={{
-                          ...(genreColors[genre]
-                            ? genreColors[genre]
-                                .split(";")
-                                .reduce((acc, style) => {
-                                  const [key, value] = style
-                                    .split(":")
-                                    .map((s) => s.trim());
-                                  if (key && value) acc[key as any] = value;
-                                  return acc;
-                                }, {} as any)
-                            : { background: "#f3f4f6", color: "#374151" }),
-                        }}
+                <p className="text-sm text-gray-500">
+                  Project Type: Public • Started:
+                  {formatDate(project._creationTime)}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {project.instruments &&
+                    project.instruments.map((instrument, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-xs"
                       >
+                        {instrument}
+                      </Badge>
+                    ))}
+                </div>
+                <div className="flex flex-wrap gap-1 text-gray-500">
+                  {project.genres &&
+                    project.genres.map((genre, index) => (
+                      <Badge key={index} variant="default" className="text-xs">
                         {genre}
-                      </span>
+                      </Badge>
                     ))}
-                  </div>
-                )} */}
-
-                {/* {project.mood && project.mood.length > 0 && (
-                  <div className={styles.project__mood__badges}>
-                    {project.mood.map((item) => (
-                      <span key={item} className={styles.project__mood__badge}>
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                )} */}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+          <CardFooter>
+            <div className="flex space-x-2">
+              {project.projectSampleRate && (
+                <Badge variant="secondary" className="text-xs">
+                  {project.projectSampleRate} bpm
+                </Badge>
+              )}
+              {project.projectBitDepth && (
+                <Badge variant="secondary" className="text-xs">
+                  {project.projectBitDepth}
+                </Badge>
+              )}
+            </div>
+          </CardFooter>
+        </Card>
+
+        // <div key={project._id}>
+
+        //   <div className={styles.project__content}>
+        //
+
+        //       <div className={styles.project__details}>
+        //         <div className={styles.project__meta}>
+        //           <span
+        //             className={`${styles.project__type__badge} ${getTypeClass(project.projectType)}`}
+        //           >
+        //             {project.projectType}
+        //           </span>
+        //           <div
+        //             style={{
+        //               display: "flex",
+        //               alignItems: "center",
+        //               gap: "0.25rem",
+        //             }}
+        //           >
+        //             <Calendar size={12} />
+        //             <span>Started: {project._creationTime}</span>
+        //           </div>
+        //           <div
+        //             style={{
+        //               display: "flex",
+        //               alignItems: "center",
+        //               gap: "0.25rem",
+        //             }}
+        //           >
+        //             <FileText size={12} />
+        //             <span>Files: {project.fileCount}</span>
+        //           </div>
+        //         </div>
+
+        //
+
+        //         {/* {project.talents.length > 0 && (
+        //           <div className={styles.project__talents}>
+        //             <div className={styles.project__talents__label}>
+        //               <Users size={12} />
+        //               <span>Looking for:</span>
+        //             </div>
+        //             <div className={styles.project__talents__list}>
+        //               {project.talents.join(", ")}
+        //             </div>
+        //           </div>
+        //         )} */}
+
+        //         {/* {project.genres.length > 0 && (
+        //           <div className={styles.project__genres}>
+        //             {project.genres.map((genre) => (
+        //               <span
+        //                 key={genre}
+        //                 className={styles.project__genre__badge}
+        //                 style={{
+        //                   ...(genreColors[genre]
+        //                     ? genreColors[genre]
+        //                         .split(";")
+        //                         .reduce((acc, style) => {
+        //                           const [key, value] = style
+        //                             .split(":")
+        //                             .map((s) => s.trim());
+        //                           if (key && value) acc[key as any] = value;
+        //                           return acc;
+        //                         }, {} as any)
+        //                     : { background: "#f3f4f6", color: "#374151" }),
+        //                 }}
+        //               >
+        //                 {genre}
+        //               </span>
+        //             ))}
+        //           </div>
+        //         )} */}
+
+        //         {/* {project.mood && project.mood.length > 0 && (
+        //           <div className={styles.project__mood__badges}>
+        //             {project.mood.map((item) => (
+        //               <span key={item} className={styles.project__mood__badge}>
+        //                 {item}
+        //               </span>
+        //             ))}
+        //           </div>
+        //         )} */}
+        //       </div>
+        //     </div>
+        //   </div>
+        // </div>
       ))}
     </div>
   );
 };
 
 export default function ProjectsPage() {
-
   const projects = useQuery(api.projects.getAllProjects);
 
-  console.log(projects);
   const [searchFilters, setSearchFilters] = useState({
     title: "",
     talent: "",
@@ -248,7 +380,7 @@ export default function ProjectsPage() {
     mood: "",
   });
   const [listMostActive, setListMostActive] = useState(false);
-  const [currentPage, ] = useState(1);
+  const [currentPage] = useState(1);
 
   const handleSearch = () => {
     console.log("Searching with filters:", searchFilters);
@@ -367,7 +499,10 @@ export default function ProjectsPage() {
         {/* Projects List */}
         <div>
           {projects?.map((project) => (
-            <ProjectCard key={project._id}  params={{ projectId: project._id }}  />
+            <ProjectCard
+              key={project._id}
+              params={{ projectId: project._id }}
+            />
           ))}
         </div>
 
