@@ -4,6 +4,7 @@
   padding: 0.5rem;
   color: #e67e22;
   cursor: pointer;
+  z-index: 111111;
 }
 
 .logo .h3 {
@@ -151,6 +152,7 @@
 
 .innerdashboard__container .header .logo {
   display: none;
+  z-index: 111;
 }
 
 .innerdashboard__container .header .p {

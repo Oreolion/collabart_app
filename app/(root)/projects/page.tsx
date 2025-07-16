@@ -4,12 +4,12 @@ import { useState } from "react";
 import {
   Search,
   Share2,
-  DollarSign,
-  Clock,
+//   DollarSign,
+//   Clock,
   Play,
   Music,
-  Calendar,
-  FileText,
+//   Calendar,
+//   FileText,
   Heart,
   MessageCircle,
 } from "lucide-react";
@@ -312,7 +312,7 @@ const ProjectCard = ({
         //           </div>
         //         </div>
 
-        //
+        
 
         //         {/* {project.talents.length > 0 && (
         //           <div className={styles.project__talents}>
