@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   Share2,
-//   DollarSign,
-//   Clock,
+  //   DollarSign,
+  //   Clock,
   Play,
   Music,
-//   Calendar,
-//   FileText,
+  //   Calendar,
+  //   FileText,
   Heart,
   MessageCircle,
 } from "lucide-react";
@@ -35,6 +35,9 @@ import { AudioProps } from "@/types";
 import { useAudio } from "@/app/providers/AudioProvider";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { useUser } from "@clerk/nextjs";
+import { useDebounce } from "@/lib/useDebounce";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 
 // const genreColors: Record<string, string> = {
 //   Baroque: "background: #f3e8ff; color: #7c3aed;",
@@ -312,8 +315,6 @@ const ProjectCard = ({
         //           </div>
         //         </div>
 
-        
-
         //         {/* {project.talents.length > 0 && (
         //           <div className={styles.project__talents}>
         //             <div className={styles.project__talents__label}>
@@ -379,8 +380,8 @@ export default function ProjectsPage() {
     genre: "",
     mood: "",
   });
-  const [listMostActive, setListMostActive] = useState(false);
   const [currentPage] = useState(1);
+  const [listMostActive, setListMostActive] = useState(false);
 
   const handleSearch = () => {
     console.log("Searching with filters:", searchFilters);
@@ -396,6 +397,26 @@ export default function ProjectsPage() {
     setListMostActive(false);
   };
 
+    const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get('search') || "");
+  const debouncedValue = useDebounce(search, 300);
+
+  useEffect(() => {
+    if (debouncedValue) {
+      const params = new URLSearchParams(searchParams);
+      params.set('search', debouncedValue);
+      router.push(`${pathname}?${params.toString()}`);
+    } else if (!debouncedValue && pathname === "/dashboard") {
+      router.push("/dashboard");
+    }
+  }, [debouncedValue, pathname, router, searchParams]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
   return (
     <div className={styles.project__feeds}>
       <div className={styles.content__box}>
@@ -408,17 +429,15 @@ export default function ProjectsPage() {
 
           <div className={styles.search__grid}>
             <div className={styles.search__field}>
-              <label className={styles.search__label}>By Title</label>
+              <label className={styles.search__label}>
+                By Title
+              </label>
               <input
                 className={styles.search__input}
-                placeholder="Search by title..."
-                value={searchFilters.title}
-                onChange={(e) =>
-                  setSearchFilters((prev) => ({
-                    ...prev,
-                    title: e.target.value,
-                  }))
-                }
+                type="search"
+                placeholder="search Project..."
+                value={search}
+                onChange={handleChange}
               />
             </div>
             <div className={styles.search__field}>

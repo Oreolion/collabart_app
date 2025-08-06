@@ -42,7 +42,7 @@ const DashboardNav = ({
             })}
 
             <div className="flex flex-col gap-[2.5rem]">
-              <Link className={styles.link} href={`/profile/${user?.id}`}>
+              <Link className={styles.link} href={`/my-profile/${user?.id}`}>
                 <svg
                   className={styles.svg}
                   xmlns="http://www.w3.org/2000/svg"
