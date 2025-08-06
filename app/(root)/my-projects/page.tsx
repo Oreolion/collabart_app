@@ -105,16 +105,17 @@ const ProjectPage = () => {
 
   return (
     <section className={styles.project__feeds}>
-      <Suspense fallback={<Loader />}>
-        <div className={styles.search__section}>
-          <div className={styles.search__title}>
-            <Search size={24} />
-            Find Projects
-          </div>
+      <Suspense fallback={<Loader />}></Suspense>
+      <div className={styles.search__section}>
+        <div className={styles.search__title}>
+          <Search size={24} />
+          Find Projects
+        </div>
 
-          <div className={styles.search__grid}>
-            <div className={styles.search__field}>
+        <div className={styles.search__grid}>
+          <div className={styles.search__field}>
               <label className={styles.search__label}>By Title</label>
+            <Suspense fallback={<Loader />}>
               <input
                 className={styles.search__input}
                 type="search"
@@ -122,79 +123,79 @@ const ProjectPage = () => {
                 value={search}
                 onChange={handleChange}
               />
-            </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Talent</label>
-              <input
-                className={styles.search__input}
-                placeholder="Search by talent..."
-                value={searchFilters.talent}
-                onChange={(e) =>
-                  setSearchFilters((prev) => ({
-                    ...prev,
-                    talent: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Genre</label>
-              <input
-                className={styles.search__input}
-                placeholder="Search by genre..."
-                value={searchFilters.genre}
-                onChange={(e) =>
-                  setSearchFilters((prev) => ({
-                    ...prev,
-                    genre: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Mood</label>
-              <input
-                className={styles.search__input}
-                placeholder="Search by mood..."
-                value={searchFilters.mood}
-                onChange={(e) =>
-                  setSearchFilters((prev) => ({
-                    ...prev,
-                    mood: e.target.value,
-                  }))
-                }
-              />
-            </div>
+            </Suspense>
           </div>
-
-          <div className={styles.search__controls}>
-            <div className={styles.checkbox__container}>
-              <input
-                type="checkbox"
-                id="most-active"
-                checked={listMostActive}
-                onChange={(e) => setListMostActive(e.target.checked)}
-              />
-              <label htmlFor="most-active">List most active</label>
-            </div>
-
-            <div className={styles.button__group}>
-              <button
-                onClick={handleSearch}
-                className={`${styles.search__button} ${styles.search__button__primary}`}
-              >
-                Search
-              </button>
-              <button
-                onClick={handleClear}
-                className={`${styles.search__button} ${styles.search__button__secondary}`}
-              >
-                Clear
-              </button>
-            </div>
+          <div className={styles.search__field}>
+            <label className={styles.search__label}>By Talent</label>
+            <input
+              className={styles.search__input}
+              placeholder="Search by talent..."
+              value={searchFilters.talent}
+              onChange={(e) =>
+                setSearchFilters((prev) => ({
+                  ...prev,
+                  talent: e.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className={styles.search__field}>
+            <label className={styles.search__label}>By Genre</label>
+            <input
+              className={styles.search__input}
+              placeholder="Search by genre..."
+              value={searchFilters.genre}
+              onChange={(e) =>
+                setSearchFilters((prev) => ({
+                  ...prev,
+                  genre: e.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className={styles.search__field}>
+            <label className={styles.search__label}>By Mood</label>
+            <input
+              className={styles.search__input}
+              placeholder="Search by mood..."
+              value={searchFilters.mood}
+              onChange={(e) =>
+                setSearchFilters((prev) => ({
+                  ...prev,
+                  mood: e.target.value,
+                }))
+              }
+            />
           </div>
         </div>
-      </Suspense>
+
+        <div className={styles.search__controls}>
+          <div className={styles.checkbox__container}>
+            <input
+              type="checkbox"
+              id="most-active"
+              checked={listMostActive}
+              onChange={(e) => setListMostActive(e.target.checked)}
+            />
+            <label htmlFor="most-active">List most active</label>
+          </div>
+
+          <div className={styles.button__group}>
+            <button
+              onClick={handleSearch}
+              className={`${styles.search__button} ${styles.search__button__primary}`}
+            >
+              Search
+            </button>
+            <button
+              onClick={handleClear}
+              className={`${styles.search__button} ${styles.search__button__secondary}`}
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
       <h1 className="text-2xl font-bold mb-6 ml-4">
         Active Collaboration Projects
       </h1>
