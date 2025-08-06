@@ -103,7 +103,7 @@ export type projectAuditionPrivacy =
 
 export interface AudioProps {
   title: string;
-  audioUrl: string;
+  audioUrl: { audioUrl: string };
   author: string;
   imageUrl: string;
   projectId: string;
@@ -112,4 +112,11 @@ export interface AudioProps {
 export interface AudioContextType {
   audio: AudioProps | undefined;
   setAudio: React.Dispatch<React.SetStateAction<AudioProps | undefined>>;
+  resetAudio: () => void;
 }
+
+// export interface AudioContextType {
+//   audio: AudioProps | undefined;
+//   setAudio: (audio: AudioProps | undefined) => void;
+//   resetAudio: () => void;
+// }

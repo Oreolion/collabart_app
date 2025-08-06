@@ -1,5 +1,4 @@
 "use client";
-
 import { AudioContextType, AudioProps } from "@/types";
 import { usePathname } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -10,12 +9,16 @@ const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [audio, setAudio] = useState<AudioProps | undefined>();
   const pathname = usePathname();
 
+  const resetAudio = () => {
+    setAudio(undefined);
+  };
+
   useEffect(() => {
     if (pathname === "/create-project") setAudio(undefined);
   }, [pathname]);
 
   return (
-    <AudioContext.Provider value={{ audio, setAudio }}>
+    <AudioContext.Provider value={{ audio, setAudio, resetAudio }}>
       {children}
     </AudioContext.Provider>
   );
@@ -23,12 +26,8 @@ const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAudio = () => {
   const context = useContext(AudioContext);
-
-  //   console.log(context)
-
   if (!context)
     throw new Error("useAudio must be used within an AudioProvider");
-
   return context;
 };
 
