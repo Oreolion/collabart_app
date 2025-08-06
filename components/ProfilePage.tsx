@@ -25,10 +25,11 @@ import { Slider } from "@/components/ui/slider";
 import SkillsAndTalents from "./Talents";
 import FavoriteGenres from "./Genres";
 
-export default function AccountPage() {
+
+export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("account");
   const [socialMediaLinks, setSocialMediaLinks] = useState<string[]>([]);
-
+ 
   const addSocialMediaLink = () => {
     setSocialMediaLinks([...socialMediaLinks, ""]);
   };
@@ -201,9 +202,9 @@ export default function AccountPage() {
         <TabsContent value="profile" className="bg-gray-400">
           <h1 className="text-2xl font-bold mb-6">Member Profile</h1>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>About Me</CardTitle>
+          <Card className="bg-gray-400 mb-6">
+            <CardHeader className="bg-gray-400">
+              <CardTitle className="bg-gray-400">About Me</CardTitle>
             </CardHeader>
             <CardContent className="bg-gray-400">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

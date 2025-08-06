@@ -235,8 +235,8 @@ const MobileDashBoardNav = () => {
           )}
           {menuListdropDown && (
             <div className={styles.menulist} ref={menuListRef}>
-              <Link href="/my-account" className={styles.link}>
-                My Account
+              <Link href={`/my-profile/${user?.id}`} className={styles.link}>
+                My Profile
               </Link>
               <Link href="/legals" className={styles.link}>
                 Legals

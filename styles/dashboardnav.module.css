@@ -43,6 +43,14 @@
   cursor: pointer;
 }
 
+.dashboard__navcontainer .dashboard__nav .logo {
+    z-index: 1111;
+}
+
+.dashboard__navcontainer .collapseblock .logo {
+ z-index: 1111;
+}
+
 .h3 {
   line-height: 1;
   letter-spacing: 0.7;

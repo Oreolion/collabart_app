@@ -74,7 +74,7 @@ export default function FavoriteGenres() {
         <div>
           <h3 className="text-lg font-semibold mb-2">Custom List</h3>
           <p className="text-sm text-gray-600 mb-2">
-            Can`&lsquo;`t see it here? Add your own. Your `&lsquo;`genre`&lsquo;` will be added to your custom list.
+            Can&lsquo;t see it here? Add your own. Your &lsquo;genre&lsquo; will be added to your custom list.
           </p>
           <div className="flex space-x-2 mb-4">
             <Input

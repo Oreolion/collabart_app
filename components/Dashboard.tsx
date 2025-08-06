@@ -61,7 +61,7 @@ export default function Dashboard() {
                 Media
               </TabsTrigger>
               <TabsTrigger value="tip-jar" className="hidden md:block">
-                <Link href="/my-account">My Account</Link>
+                <Link href={`/my-profile/${user?.id}`}>My Account</Link>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard">
