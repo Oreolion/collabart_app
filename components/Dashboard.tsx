@@ -44,7 +44,7 @@ export default function Dashboard() {
               <AvatarFallback>{user?.username}</AvatarFallback>
             </Avatar>
             <h2 className="text-2xl font-bold">{user?.username}</h2>
-            <p className="text-gray-600">
+            <p className="text-gray-100">
               I am an Afrobeats and HipHop Artist & Songwriter
             </p>
           </div>
@@ -67,7 +67,7 @@ export default function Dashboard() {
             <TabsContent value="dashboard">
               <Card className="bg-gray-300">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
+                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem] text-gray-100">
                     Member Dashboard
                   </CardTitle>
                 </CardHeader>
@@ -384,7 +384,7 @@ export default function Dashboard() {
             <TabsContent value="portfolio">
               <Card className="bg-slate-600">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2">
+                  <CardTitle className="text-lg font-semibold bg-slate-800 p-2 text-gray-100">
                     Portfolio of Published Works
                   </CardTitle>
                 </CardHeader>
@@ -398,7 +398,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-8 mb-4">
             <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
+                <CardTitle className="text-lg text-gray-100 font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
                   Work for Hire
                 </CardTitle>
               </CardHeader>
@@ -431,7 +431,7 @@ export default function Dashboard() {
 
             <Card className="bg-slate-600">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
+                <CardTitle className="text-lg text-gray-100 font-semibold bg-slate-800 p-2 max-md:ml-[-1rem]">
                   Royalty Statement
                 </CardTitle>
               </CardHeader>
@@ -467,7 +467,7 @@ export default function Dashboard() {
       </section>
       <footer className=" p-4 mt-8 max-sm:ml-[-8rem]">
         <div className="container  mx-auto text-center text-gray-600">
-          © 2024 Collabart. Some Rights Reserved.
+          © 2025 Collabart. Some Rights Reserved.
         </div>
       </footer>
     </>

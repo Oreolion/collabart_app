@@ -157,7 +157,7 @@ const ProjectPage = ({
                   </TabsContent>
                 </Tabs>
                 <div className="space-y-2 mt-4">
-                  <Button variant="destructive" className="w-full text-sm">
+                  <Button variant="destructive" className="w-full text-sm text-red-600">
                     Close Project
                   </Button>
                   <Button variant="outline" className="w-full">
@@ -166,7 +166,16 @@ const ProjectPage = ({
                   <Button variant="outline" className="w-full">
                     File Management
                   </Button>
-                  <Button variant="outline" className="w-full text-sm">
+                  <Button variant="outline" className="w-full">
+                    Set Open for Audition
+                  </Button>
+                  <Button variant="outline" className="w-full text-green-600">
+                    List for selling
+                  </Button>
+                  <Button variant="outline" className="w-full text-blue-700">
+                    Send Invite
+                  </Button>
+                  <Button variant="outline" className="w-full text-xs">
                     Collaboration Agreement
                   </Button>
                 </div>
