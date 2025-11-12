@@ -38,7 +38,6 @@ import { useUser } from "@clerk/nextjs";
 import { useDebounce } from "@/lib/useDebounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-
 // const genreColors: Record<string, string> = {
 //   Baroque: "background: #f3e8ff; color: #7c3aed;",
 //   Goth: "background: #f3f4f6; color: #374151;",
@@ -397,16 +396,16 @@ export default function ProjectsPage() {
     setListMostActive(false);
   };
 
-    const router = useRouter();
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchParams.get('search') || "");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const debouncedValue = useDebounce(search, 300);
 
   useEffect(() => {
     if (debouncedValue) {
       const params = new URLSearchParams(searchParams);
-      params.set('search', debouncedValue);
+      params.set("search", debouncedValue);
       router.push(`${pathname}?${params.toString()}`);
     } else if (!debouncedValue && pathname === "/dashboard") {
       router.push("/dashboard");
@@ -429,9 +428,7 @@ export default function ProjectsPage() {
 
           <div className={styles.search__grid}>
             <div className={styles.search__field}>
-              <label className={styles.search__label}>
-                By Title
-              </label>
+              <label className={styles.search__label}>By Title</label>
               <input
                 className={styles.search__input}
                 type="search"

@@ -1,86 +1,165 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Share2, DollarSign, Copyright, Music, Mic } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
-import LoaderSpinner from "@/components/LoaderSpinner";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import { useUser } from "@clerk/nextjs";
-import React from "react";
-import styles from "@/styles/project.module.css";
-import { useRouter } from "next/navigation";
-import { formatDate } from "@/lib/formatTime";
-import Link from "next/link";
+"use client"
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Share2,
+  DollarSign,
+  Copyright,
+  Music,
+  Mic,
+  Upload,
+  FileText,
+  Users,
+  AlertTriangle,
+  Send,
+  Settings,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react"
+import type { Id } from "@/convex/_generated/dataModel"
+import LoaderSpinner from "@/components/LoaderSpinner"
+import { api } from "@/convex/_generated/api"
+import { useQuery } from "convex/react"
+import { useUser } from "@clerk/nextjs"
+import styles from "@/styles/project.module.css"
+import { useRouter } from "next/navigation"
+import { formatDate } from "@/lib/formatTime"
+import Link from "next/link"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 const ProjectPage = ({
   params: { projectId },
 }: {
-  params: { projectId: Id<"projects"> };
+  params: { projectId: Id<"projects"> }
 }) => {
-  const [projectStatus] = useState(10);
-  const { user, isLoaded: isUserLoaded } = useUser();
-  const router = useRouter();
+  const [projectStatus] = useState(10)
+  const { user, isLoaded: isUserLoaded } = useUser()
+  const router = useRouter()
   const project = useQuery(api.projects.getProjectById, {
     projectId: projectId,
-  });
+  })
+
+  const [openModals, setOpenModals] = useState({
+    selling: false,
+    collaboration: false,
+    fileManagement: false,
+    audition: false,
+    closeProject: false,
+    collaborationAgreement: false,
+    projectSettings: false,
+    lyrics: false,
+    share: false,
+    comments: false,
+  })
+
+  const [comments, setComments] = useState<{ user: string; text: string; date: string }[]>([])
+  const [commentText, setCommentText] = useState("")
+  const [shareUrl, setShareUrl] = useState("")
+  const [showCommentForm, setShowCommentForm] = useState(false)
+
+  const toggleModal = (modalName: keyof typeof openModals) => {
+    setOpenModals((prev) => ({
+      ...prev,
+      [modalName]: !prev[modalName],
+    }))
+  }
+
+  const handleAddComment = () => {
+    if (commentText.trim()) {
+      setComments([
+        ...comments,
+        {
+          user: user?.fullName || "Anonymous",
+          text: commentText,
+          date: new Date().toLocaleDateString(),
+        },
+      ])
+      setCommentText("")
+      setShowCommentForm(false)
+    }
+  }
+
+  const handleShare = (platform: string) => {
+    const url = `${window.location.origin}/project/${projectId}`
+    const message = `Check out this project: ${project?.projectTitle}`
+
+    const shareLinks: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      copy: url,
+    }
+
+    if (platform === "copy") {
+      navigator.clipboard.writeText(url)
+      alert("Link copied to clipboard!")
+    } else {
+      window.open(shareLinks[platform], "_blank")
+    }
+  }
 
   useEffect(() => {
-    console.log("Project ID:", projectId);
-    console.log("Project data:", project);
-  }, [router, projectId, project]);
+    console.log("Project ID:", projectId)
+    console.log("Project data:", project)
+  }, [router, projectId, project])
 
   if (!user || !isUserLoaded) {
-    console.log("User data is still loading");
-    return <LoaderSpinner />;
+    console.log("User data is still loading")
+    return <LoaderSpinner />
   }
   if (!projectId) {
-    console.log("No project id found");
-    return <LoaderSpinner />;
+    console.log("No project id found")
+    return <LoaderSpinner />
   }
-
-  //   const handleUpload = () => {
-  //    return router.push(`/project/${projectId}/upload`);
-  //   }
 
   return (
     <div className={styles.projects__feeds}>
       <div className="container mx-auto p-4">
-        <div className="flex justify-between mb-2">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">
+        <div className="flex flex-col lg:flex-row justify-between mb-2 gap-4">
+          <CardHeader className="flex-1">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               {project?.projectTitle}
             </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Managed by {project?.author}
-            </p>
+            <p className="text-sm text-muted-foreground mt-2">Managed by {project?.author}</p>
             <div className="flex items-center mt-2">
               <Music className="w-4 h-4 mr-1" />
-              <span className="text-sm">0</span>
+              <span className="text-sm">0 tracks</span>
             </div>
           </CardHeader>
 
-          <Card className="bg-gray-400">
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
             <CardHeader>
-              <CardTitle>Project Status</CardTitle>
+              <CardTitle className="text-lg">Project Status</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm mb-2">
-                Collaboration Phase: This is a work in progress. Collaborators
-                are busy now!
+              <p className="text-sm mb-3">
+                Collaboration Phase: This is a work in progress. Collaborators are busy now!
               </p>
               <Progress value={projectStatus} className="mb-4" />
-              <p className="text-sm font-semibold">Open</p>
+              <Badge className="bg-green-500">Open</Badge>
             </CardContent>
           </Card>
         </div>
-        <CardHeader>
-          <CardTitle className="text-center text-xl bg-slate-900 py-2">
+
+        <CardHeader className="mb-6">
+          <CardTitle className="text-center text-2xl bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg text-white">
             Your Collaboration Project
           </CardTitle>
         </CardHeader>
@@ -88,96 +167,460 @@ const ProjectPage = ({
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Column */}
           <div className="lg:w-1/4">
-            <Card className="pt-8 bg-gray-400">
-              <CardContent>
-                <Link
-                  href={`/project/${projectId}/upload`}
-                  className="w-full mb-2 "
-                >
-                  <Button
-                    variant="outline"
-                    className="w-full mb-4 text-green-600"
-                  >
+            <Card className="pt-8 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700 sticky top-20">
+              <CardContent className="space-y-3">
+                <Link href={`/project/${projectId}/upload`} className="w-full">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm">
+                    <Upload className="w-4 h-4 mr-2" />
                     Upload Track
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full mb-4">
+
+                <Button variant="outline" className="w-full bg-transparent text-sm">
                   Rough Mixer
                 </Button>
-                <div className="bg-gray-200 rounded-full w-40 h-40 mx-auto mb-4 flex items-center justify-center">
-                  <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
-                    <span className="text-xs">add 1</span>
+
+                <div className="bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-900 dark:to-purple-900 rounded-full w-40 h-40 mx-auto mb-4 flex items-center justify-center">
+                  <div className="bg-white dark:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-xs font-semibold">
+                    +1
                   </div>
                 </div>
-                <div className="flex justify-between mb-2">
-                  <Button className="p-1" variant="ghost" size="icon">
-                    <Share2 className="h-8 w-8" />
+
+                <div className="flex justify-between mb-4 gap-2">
+                  <Dialog open={openModals.share} onOpenChange={() => toggleModal("share")}>
+                    <DialogTrigger asChild>
+                      <Button className="p-2 bg-transparent" variant="outline" size="icon" title="Share">
+                        <Share2 className="h-5 w-5" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-slate-500">
+                      <DialogHeader>
+                        <DialogTitle>Share Project</DialogTitle>
+                        <DialogDescription className="text-gray-700">Share this project on social media or copy the link.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-3">
+                        <Button
+                          className="w-full text-sm bg-transparent"
+                          variant="outline"
+                          onClick={() => handleShare("twitter")}
+                        >
+                          Share on Twitter
+                        </Button>
+                        <Button
+                          className="w-full text-sm bg-transparent"
+                          variant="outline"
+                          onClick={() => handleShare("facebook")}
+                        >
+                          Share on Facebook
+                        </Button>
+                        <Button
+                          className="w-full text-sm bg-transparent"
+                          variant="outline"
+                          onClick={() => handleShare("linkedin")}
+                        >
+                          Share on LinkedIn
+                        </Button>
+                        <Button
+                          className="w-full text-sm bg-slate-600 hover:bg-slate-700"
+                          onClick={() => handleShare("copy")}
+                        >
+                          Copy Link
+                        </Button>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => toggleModal("share")} className="text-sm text-gray-500">
+                          Close
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button className="p-2 bg-transparent" variant="outline" size="icon" title="Budget">
+                    <DollarSign className="h-5 w-5" />
                   </Button>
-                  <Button className="p-1" variant="ghost" size="icon">
-                    <DollarSign className="h-8 w-8" />
-                  </Button>
-                  <Button className="p-1" variant="ghost" size="icon">
-                    <Copyright className="h-8 w-8" />
+                  <Button className="p-2 bg-transparent" variant="outline" size="icon" title="Copyright">
+                    <Copyright className="h-5 w-5" />
                   </Button>
                 </div>
-                <div className="space-y-2 text-sm">
+
+                <div className="space-y-2 text-sm bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
                   <p>
                     <strong>Project Type:</strong> {project?.projectType}
                   </p>
                   <p>
-                    <strong>Auditions:</strong>{" "}
-                    {project?.projectAuditionPrivacy}
+                    <strong>Auditions:</strong> {project?.projectAuditionPrivacy}
                   </p>
                   <p>
                     <strong>Status:</strong> Open
                   </p>
                   <p>
-                    <strong>Agreement:</strong>{" "}
-                    {project?.collaborationAgreement}
+                    <strong>Agreement:</strong> {project?.collaborationAgreement}
                   </p>
                   <p>
-                    <strong>Started:</strong>{" "}
-                    {formatDate(project?._creationTime)}
+                    <strong>Started:</strong> {formatDate(project?._creationTime)}
                   </p>
                 </div>
+
                 <Tabs defaultValue="talent" className="mt-4">
                   <TabsList className="grid w-full gap-2 grid-cols-3">
-                    <TabsTrigger value="talent">Talent</TabsTrigger>
-                    <TabsTrigger value="genre">Genre</TabsTrigger>
-                    <TabsTrigger value="mood">Mood</TabsTrigger>
+                    <TabsTrigger value="talent" className="text-xs">
+                      Talent
+                    </TabsTrigger>
+                    <TabsTrigger value="genre" className="text-xs">
+                      Genre
+                    </TabsTrigger>
+                    <TabsTrigger value="mood" className="text-xs">
+                      Mood
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="talent">
-                    <Badge>Got it covered!</Badge>
+                    <Badge className="bg-blue-500">Got it covered!</Badge>
                   </TabsContent>
                   <TabsContent value="genre">
-                    <Badge>None set</Badge>
+                    <Link href={`/project/${projectId}/edit`}>
+                      <Badge
+                        variant="outline"
+                        className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
+                      >
+                        None set <ArrowRight className="w-3 h-3" />
+                      </Badge>
+                    </Link>
                   </TabsContent>
                   <TabsContent value="mood">
-                    <Badge>None set</Badge>
+                    <Link href={`/project/${projectId}/edit`}>
+                      <Badge
+                        variant="outline"
+                        className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
+                      >
+                        None set <ArrowRight className="w-3 h-3" />
+                      </Badge>
+                    </Link>
                   </TabsContent>
                 </Tabs>
+
                 <div className="space-y-2 mt-4">
-                  <Button variant="destructive" className="w-full text-sm text-red-600">
-                    Close Project
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Project Settings
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    File Management
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Set Open for Audition
-                  </Button>
-                  <Button variant="outline" className="w-full text-green-600">
-                    List for selling
-                  </Button>
-                  <Button variant="outline" className="w-full text-blue-700">
-                    Send Invite
-                  </Button>
-                  <Button variant="outline" className="w-full text-xs">
-                    Collaboration Agreement
-                  </Button>
+                  <Dialog open={openModals.closeProject} onOpenChange={() => toggleModal("closeProject")}>
+                    <DialogTrigger asChild>
+                      <Button variant="destructive" className="w-full text-xs">
+                        <AlertTriangle className="w-4 h-4 mr-1" />
+                        Close Project
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-gray-400">
+                      <DialogHeader>
+                        <DialogTitle>Close Project</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to close this project? This action cannot be undone.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <Label htmlFor="close-reason">Reason for closing</Label>
+                        <Textarea
+                          id="close-reason"
+                          placeholder="Tell us why you're closing this project..."
+                          className="mt-2"
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("closeProject")}>
+                          Cancel
+                        </Button>
+                        <Button variant="destructive">Close Project</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={openModals.projectSettings} onOpenChange={() => toggleModal("projectSettings")}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full bg-transparent text-xs">
+                        <Settings className="w-4 h-4 mr-1" />
+                        Settings
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>Project Settings</DialogTitle>
+                        <DialogDescription>Configure your project preferences.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div>
+                          <Label htmlFor="visibility">Visibility</Label>
+                          <Select>
+                            <SelectTrigger id="visibility" className="mt-2">
+                              <SelectValue placeholder="Select visibility" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="public">Public</SelectItem>
+                              <SelectItem value="private">Private</SelectItem>
+                              <SelectItem value="unlisted">Unlisted</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="comments">Comments</Label>
+                          <Select>
+                            <SelectTrigger id="comments" className="mt-2">
+                              <SelectValue placeholder="Who can comment?" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="everyone">Everyone</SelectItem>
+                              <SelectItem value="collaborators">Collaborators Only</SelectItem>
+                              <SelectItem value="disabled">Disabled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="invites">Invite Type</Label>
+                          <Select>
+                            <SelectTrigger id="invites" className="mt-2">
+                              <SelectValue placeholder="Who can join?" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="open">Open to All</SelectItem>
+                              <SelectItem value="invite-only">Invite Only</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("projectSettings")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700">Save Settings</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={openModals.fileManagement} onOpenChange={() => toggleModal("fileManagement")}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full bg-transparent text-xs">
+                        <FileText className="w-4 h-4 mr-1" />
+                        Files
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>File Management</DialogTitle>
+                        <DialogDescription>Upload and manage project files.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-6 space-y-4">
+                        <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 transition">
+                          <Upload className="w-8 h-8 mb-2 text-slate-400" />
+                          <p className="text-sm font-medium">Drag and drop files here</p>
+                          <p className="text-xs text-muted-foreground">or click to browse</p>
+                        </div>
+                        <div>
+                          <Label>File Type</Label>
+                          <Input placeholder="e.g., Audio Track, Document, etc." className="mt-2" />
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Textarea placeholder="Describe this file..." className="mt-2" />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("fileManagement")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700">Upload Files</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={openModals.audition} onOpenChange={() => toggleModal("audition")}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full text-purple-600 bg-transparent text-xs">
+                        <Mic className="w-4 h-4 mr-1" />
+                        Audition
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>Open for Audition</DialogTitle>
+                        <DialogDescription>Set specific talent requirements for auditions.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div>
+                          <Label htmlFor="audition-talent">Required Talent</Label>
+                          <Input id="audition-talent" placeholder="e.g., Lead Vocals, Guitar" className="mt-2" />
+                        </div>
+                        <div>
+                          <Label htmlFor="audition-brief">Audition Brief</Label>
+                          <Textarea
+                            id="audition-brief"
+                            placeholder="Describe what you're looking for..."
+                            className="mt-2"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="audition-deadline">Deadline</Label>
+                          <Input id="audition-deadline" type="date" className="mt-2" />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("audition")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-purple-600 hover:bg-purple-700">Open</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={openModals.collaboration} onOpenChange={() => toggleModal("collaboration")}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full text-blue-600 bg-transparent text-xs">
+                        <Users className="w-4 h-4 mr-1" />
+                       Send Invite
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>Send Collaboration Invite</DialogTitle>
+                        <DialogDescription>Invite collaborators to join your project.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div>
+                          <Label htmlFor="collaborator-email">Email</Label>
+                          <Input
+                            id="collaborator-email"
+                            type="email"
+                            placeholder="collaborator@example.com"
+                            className="mt-2"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="role">Role</Label>
+                          <Select>
+                            <SelectTrigger id="role" className="mt-2">
+                              <SelectValue placeholder="Select a role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="producer">Producer</SelectItem>
+                              <SelectItem value="vocalist">Vocalist</SelectItem>
+                              <SelectItem value="guitarist">Guitarist</SelectItem>
+                              <SelectItem value="bassist">Bassist</SelectItem>
+                              <SelectItem value="drummer">Drummer</SelectItem>
+                              <SelectItem value="engineer">Engineer</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="invite-message">Message</Label>
+                          <Textarea
+                            id="invite-message"
+                            placeholder="Add a personal message (optional)..."
+                            className="mt-2"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("collaboration")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700">Send</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={openModals.selling} onOpenChange={() => toggleModal("selling")}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full text-green-600 bg-transparent text-xs">
+                        <DollarSign className="w-4 h-4 mr-1" />
+                        Sell
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>List for Selling</DialogTitle>
+                        <DialogDescription>Configure pricing and licensing options.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div>
+                          <Label htmlFor="selling-price">Price ($)</Label>
+                          <Input id="selling-price" type="number" placeholder="0.00" className="mt-2" />
+                        </div>
+                        <div>
+                          <Label htmlFor="license-type">License Type</Label>
+                          <Select>
+                            <SelectTrigger id="license-type" className="mt-2">
+                              <SelectValue placeholder="Select license type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="exclusive">Exclusive</SelectItem>
+                              <SelectItem value="non-exclusive">Non-Exclusive</SelectItem>
+                              <SelectItem value="lease">Lease</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="terms">Terms & Conditions</Label>
+                          <Textarea id="terms" placeholder="Describe the licensing terms..." className="mt-2" />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("selling")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-green-600 hover:bg-green-700">List</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog
+                    open={openModals.collaborationAgreement}
+                    onOpenChange={() => toggleModal("collaborationAgreement")}
+                  >
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full bg-transparent text-xs">
+                        <CheckCircle2 className="w-4 h-4 mr-1" />
+                        Agreement
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl bg-slate-400">
+                      <DialogHeader>
+                        <DialogTitle>Collaboration Agreement</DialogTitle>
+                        <DialogDescription>
+                          Define terms and agreements for collaborators on this project.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div>
+                          <Label htmlFor="agreement-type">Agreement Type</Label>
+                          <Select>
+                            <SelectTrigger id="agreement-type" className="mt-2">
+                              <SelectValue placeholder="Select agreement type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="royalty-split">Royalty Split</SelectItem>
+                              <SelectItem value="work-for-hire">Work for Hire</SelectItem>
+                              <SelectItem value="profit-share">Profit Share</SelectItem>
+                              <SelectItem value="fixed-fee">Fixed Fee</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="payment-terms">Payment Terms</Label>
+                          <Input id="payment-terms" placeholder="e.g., 50/50 split, $500 upfront" className="mt-2" />
+                        </div>
+                        <div>
+                          <Label htmlFor="agreement-terms">Agreement Details</Label>
+                          <Textarea
+                            id="agreement-terms"
+                            placeholder="Describe the full terms and conditions..."
+                            className="mt-2"
+                            rows={5}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("collaborationAgreement")}>
+                          Cancel
+                        </Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700">Save Agreement</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>
@@ -185,102 +628,68 @@ const ProjectPage = ({
 
           {/* Middle Column */}
           <div className="lg:w-1/2 ">
-            <Card className="bg-gray-400">
-              <CardContent>
-                <h3 className="text-lg font-semibold mb-2">
-                  New Project Checklist
-                </h3>
+            <Card className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold mb-2">New Project Checklist</h3>
                 <p className="mb-4 text-sm">
-                  Whenever starting a new project, there are a couple of things
-                  you&apos;ll want to remember to do. By completing your project
-                  setup with all the necessary information, audio, and content,
-                  you&apos;ll not only help your project standout and gain
-                  support, but it will help you as a professional or an artist
-                  to build a reputation as being a reliable, trustworthy, and an
-                  effective project manager and collaborator.
+                  Whenever starting a new project, there are a couple of things you&apos;ll want to remember to do. By
+                  completing your project setup with all the necessary information, audio, and content, you&apos;ll not
+                  only help your project standout and gain support, but it will help you as a professional or an artist
+                  to build a reputation as being a reliable, trustworthy, and an effective project manager and
+                  collaborator.
                 </p>
                 <p className="mb-4 text-sm">
-                  Nothing says &quot;don&apos;t bother to collaborate with
-                  me&quot; more than a project that looks lifeless or poorly
-                  managed. And remember that maintaining your project is equally
-                  as important!
+                  Nothing says &quot;don&apos;t bother to collaborate with me&quot; more than a project that looks
+                  lifeless or poorly managed. And remember that maintaining your project is equally as important!
                 </p>
                 <p className="mb-4 text-sm">
-                  The checklist below should help get you started with the most
-                  important things:
+                  The checklist below should help get you started with the most important things:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-sm mb-4">
                   <li>
-                    Upload your audio tracks. This could be a simple recorded
-                    idea of your lyrics, a mix of your song so far, or each of
-                    the separate tracks (e.g. bass, guitar, drums, vocals, etc.)
-                    if you will need an audio engineer to mix your project.
+                    Upload your audio tracks. This could be a simple recorded idea of your lyrics, a mix of your song so
+                    far, or each of the separate tracks (e.g. bass, guitar, drums, vocals, etc.) if you will need an
+                    audio engineer to mix your project.
                   </li>
                   <li>
-                    Select the &apos;featured&apos; track. This will be the
-                    audio that represents your project&apos;s current state of
-                    the mix. This is the track that will be trending project
-                    section in the lounge. The featured track will play whenever
-                    others click the play link to hear your project.
+                    Select the &apos;featured&apos; track. This will be the audio that represents your project&apos;s
+                    current state of the mix.
                   </li>
                   <li>
-                    Upload coverart. Even if you didn&apos;t finalize the
-                    coverart yet, upload an image that will represent your song
-                    and have it stand out from the crowd. There can only be one
-                    &apos;White Album&apos;!
+                    Upload coverart. Even if you didn&apos;t finalize the coverart yet, upload an image that will
+                    represent your song and have it stand out from the crowd.
                   </li>
                   <li>
-                    Complete your project summary. Tell others what this project
-                    is all about or describe your song.
+                    Complete your project summary. Tell others what this project is all about or describe your song.
                   </li>
-                  <li>
-                    Complete your project brief. Tell others what you want to
-                    do, and by when. Provide details so everyone knows what is
-                    expected, such as proposed copyright splits, or your
-                    intention to sell, license or just give away your song for
-                    free when it&apos;s finished. Good communication is the key
-                    to effective project management and an awesome collaboration
-                    experience!
-                  </li>
+                  <li>Complete your project brief. Tell others what you want to do, and by when.</li>
                   <li>Got lyrics? Paste them into the lyric box.</li>
                   <li>Got music? Set key, chord, and tempo information.</li>
                   <li>
-                    Set the genre and mood. Members searching for a
-                    collaboration will be looking for this information.
+                    Set the genre and mood. Members searching for a collaboration will be looking for this information.
                   </li>
                 </ul>
-                <p className="mb-4 text-sm font-semibold">
-                  All setup and ready to go?
-                </p>
+                <p className="mb-4 text-sm font-semibold">All setup and ready to go?</p>
                 <ul className="list-disc list-inside space-y-2 text-sm mb-4">
+                  <li>Set the talents needed. Let everyone know that you&apos;re looking for collaborators.</li>
                   <li>
-                    Set the talents needed. Let everyone know that you&apos;re
-                    looking for collaborators by selecting instruments and
-                    skills needed for your project. If your project has an audio
-                    track, an email will be sent to all members who are actively
-                    searching for projects to collaborate in.
+                    If this is a &apos;work-for-hire&apos; project then set a budget for each of the talents you need.
                   </li>
                   <li>
-                    If this is a &apos;work-for-hire&apos; project then set a
-                    budget for each of the talents you need.
-                  </li>
-                  <li>
-                    Invite collaborators. Once your project is up and running,
-                    be proactive by searching our artist directory, checking out
-                    profiles, and inviting members that have the talent you need
-                    for your project.
+                    Invite collaborators. Once your project is up and running, be proactive by searching and inviting
+                    members.
                   </li>
                 </ul>
                 <p className="text-sm mb-4">
-                  For a detailed explanation of all the project features, take a
-                  look at our project tutorials. Or ask for help anytime in the
-                  forums.
+                  For a detailed explanation of all the project features, take a look at our project tutorials.
                 </p>
-                <Button>OK, I got it!</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                  OK, I got it!
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Project Summary</CardTitle>
               </CardHeader>
@@ -292,22 +701,44 @@ const ProjectPage = ({
                   <strong>Project brief:</strong> {project?.projectBrief}
                 </p>
                 <p className="text-sm">
-                  For audio file uploads, please use: {project?.projectBitDepth}
-                  , {project?.projectSampleRate}
+                  For audio file uploads, please use: {project?.projectBitDepth}, {project?.projectSampleRate}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
-              <CardHeader>
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
+                <Dialog open={openModals.lyrics} onOpenChange={() => toggleModal("lyrics")}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-sm">
+                      Add Lyrics
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add Lyrics</DialogTitle>
+                      <DialogDescription>Paste or write the lyrics for your project.</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <Label htmlFor="lyrics">Lyrics</Label>
+                      <Textarea id="lyrics" placeholder="Paste your lyrics here..." className="mt-2 min-h-96" />
+                    </div>
+                    <DialogFooter>
+                      <Button className="text-gray-500" variant="outline" onClick={() => toggleModal("lyrics")}>
+                        Cancel
+                      </Button>
+                      <Button className="bg-blue-600 hover:bg-blue-700">Save Lyrics</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 <p>No lyrics posted for this project.</p>
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Project Files</CardTitle>
               </CardHeader>
@@ -319,31 +750,27 @@ const ProjectPage = ({
 
           {/* Right Column */}
           <div className="lg:w-1/4">
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Collaborators</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Add collaborator avatars or info here */}
+                <p className="text-sm text-muted-foreground">No collaborators yet</p>
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Project Timeline</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
                   <Avatar>
-                    <AvatarImage src={project?.authorImageUrl} />
-                    <AvatarFallback>
-                      {project?.author.slice(0, 1)}
-                    </AvatarFallback>
+                    <AvatarImage src={project?.authorImageUrl || "/placeholder.svg"} />
+                    <AvatarFallback>{project?.author.slice(0, 1)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">
-                      Started the project &quot;Yay&quot;
-                    </p>
+                    <p className="text-sm font-medium">Started the project &quot;{project?.projectTitle}&quot;</p>
                     <p className="text-xs text-muted-foreground">
                       {project?.author} - {formatDate(project?._creationTime)}
                     </p>
@@ -352,42 +779,94 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Project Kudos</CardTitle>
               </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full">
-                  <Mic className="mr-2 h-6 w-6" /> Leave a comment
-                </Button>
+              <CardContent className="space-y-4">
+                {!showCommentForm ? (
+                  <Button
+                    variant="outline"
+                    className="w-full bg-transparent text-sm"
+                    onClick={() => setShowCommentForm(true)}
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    Leave a comment
+                  </Button>
+                ) : (
+                  <div className="space-y-3">
+                    <Textarea
+                      placeholder="Add your comment here..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      className="min-h-20"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs" onClick={handleAddComment}>
+                        Post
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs bg-transparent text-gray-500"
+                        onClick={() => {
+                          setShowCommentForm(false)
+                          setCommentText("")
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {comments.length > 0 && (
+                  <div className="mt-4 space-y-3 border-t pt-4">
+                    {comments.map((comment, idx) => (
+                      <div key={idx} className="text-sm">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-xs">{comment.user}</span>
+                          <span className="text-xs text-muted-foreground">{comment.date}</span>
+                        </div>
+                        <p className="text-xs text-slate-700 dark:text-slate-300">{comment.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Credits</CardTitle>
               </CardHeader>
-              <CardContent>{/* Add credits info here */}</CardContent>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">No credits assigned yet</p>
+              </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Copyright</CardTitle>
               </CardHeader>
-              <CardContent>{/* Add copyright info here */}</CardContent>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Copyright details pending</p>
+              </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-gray-400">
+            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Derivative Works</CardTitle>
               </CardHeader>
-              <CardContent>{/* Add derivative works info here */}</CardContent>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">No derivative works yet</p>
+              </CardContent>
             </Card>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProjectPage;
+export default ProjectPage
