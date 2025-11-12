@@ -71,7 +71,7 @@ const ProjectPage = ({
 
   const [comments, setComments] = useState<{ user: string; text: string; date: string }[]>([])
   const [commentText, setCommentText] = useState("")
-  const [shareUrl, setShareUrl] = useState("")
+//   const [shareUrl, setShareUrl] = useState("")
   const [showCommentForm, setShowCommentForm] = useState(false)
 
   const toggleModal = (modalName: keyof typeof openModals) => {
@@ -395,7 +395,7 @@ const ProjectPage = ({
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full bg-transparent text-xs">
                         <FileText className="w-4 h-4 mr-1" />
-                        Files
+                        Project Files
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-slate-400">
@@ -431,7 +431,7 @@ const ProjectPage = ({
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full text-purple-600 bg-transparent text-xs">
                         <Mic className="w-4 h-4 mr-1" />
-                        Audition
+                        List for Audition
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md bg-slate-400">
@@ -527,7 +527,7 @@ const ProjectPage = ({
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full text-green-600 bg-transparent text-xs">
                         <DollarSign className="w-4 h-4 mr-1" />
-                        Sell
+                        List for Sell
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-slate-400">
@@ -574,7 +574,7 @@ const ProjectPage = ({
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full bg-transparent text-xs">
                         <CheckCircle2 className="w-4 h-4 mr-1" />
-                        Agreement
+                       Collab Agreement
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-slate-400">
