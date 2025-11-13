@@ -6,10 +6,31 @@ import { formatTime } from "@/lib/formatTime";
 import { cn } from "@/lib/utils";
 import { useAudio } from "@/app/providers/AudioProvider";
 import { Progress } from "./ui/progress";
+import { Button } from "./ui/button";
+import { ToastClose } from "./ui/toast";
 
 interface ProjectPlayerProps {
-  onClose?: () => void; // Make onClose optional to prevent errors
+  onClose?: () => void; // optional
 }
+
+const pickAudioSrc = (audio: any): string => {
+  if (!audio) return "";
+  // audio.audioUrl might be string OR object
+  if (typeof audio.audioUrl === "string" && audio.audioUrl.trim() !== "")
+    return audio.audioUrl;
+  // nested object possibilities
+  if (audio.audioUrl && typeof audio.audioUrl === "object") {
+    return (
+      audio.audioUrl.audioUrl ??
+      audio.audioUrl.url ??
+      audio.audioUrl.fileUrl ??
+      audio.audioUrl.audio_url ??
+      ""
+    );
+  }
+  // fallback top-level keys
+  return audio.url ?? audio.fileUrl ?? audio.audio_url ?? "";
+};
 
 const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -19,137 +40,142 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const { audio, resetAudio } = useAudio();
 
+  const src = pickAudioSrc(audio);
+
+  // toggle play/pause
   const togglePlayPause = () => {
-    if (audioRef.current) {
-      if (audioRef.current.paused) {
-        audioRef.current
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.error("Error playing audio:", error);
-          });
-      } else {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      }
+    const el = audioRef.current;
+    if (!el) return;
+    if (el.paused) {
+      el.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.error("Error playing audio:", err);
+          setIsPlaying(false);
+        });
+    } else {
+      el.pause();
+      setIsPlaying(false);
     }
   };
 
   const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted((prev) => !prev);
+    const el = audioRef.current;
+    if (!el) {
+      setIsMuted((p) => !p);
+      return;
     }
+    el.muted = !el.muted;
+    setIsMuted(el.muted);
   };
 
   const forward = () => {
-    if (
-      audioRef.current &&
-      audioRef.current.currentTime &&
-      audioRef.current.duration &&
-      audioRef.current.currentTime + 5 < audioRef.current.duration
-    ) {
-      audioRef.current.currentTime += 5;
-    }
+    const el = audioRef.current;
+    if (!el || !el.duration) return;
+    el.currentTime = Math.min(el.currentTime + 5, el.duration);
   };
 
   const rewind = () => {
-    if (audioRef.current && audioRef.current.currentTime - 5 > 0) {
-      audioRef.current.currentTime -= 5;
-    } else if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-    }
+    const el = audioRef.current;
+    if (!el) return;
+    el.currentTime = Math.max(el.currentTime - 5, 0);
   };
 
   const handleClose = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current.src = "";
+    const el = audioRef.current;
+    if (el) {
+      el.pause();
+      el.currentTime = 0;
+      el.src = "";
       setIsPlaying(false);
       setCurrentTime(0);
       setDuration(0);
       setIsMuted(false);
     }
     resetAudio();
-    if (onClose) {
-      onClose();
-    } else {
-      console.warn("onClose is not provided");
-    }
+    if (onClose) onClose();
   };
 
+  // keep currentTime updated
   useEffect(() => {
-    const updateCurrentTime = () => {
-      if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
-      }
-    };
-    const audioElement = audioRef.current;
-    if (audioElement) {
-      audioElement.addEventListener("timeupdate", updateCurrentTime);
-      return () => {
-        audioElement.removeEventListener("timeupdate", updateCurrentTime);
-      };
-    }
+    const el = audioRef.current;
+    if (!el) return;
+    const onTime = () => setCurrentTime(el.currentTime);
+    el.addEventListener("timeupdate", onTime);
+    return () => el.removeEventListener("timeupdate", onTime);
   }, []);
 
+  // respond to audio/source changes
   useEffect(() => {
-    console.log("Audio:", audio);
-    console.log("Audio URL:", audio?.audioUrl?.audioUrl);
-    const audioElement = audioRef.current;
-    if (audio?.audioUrl?.audioUrl && audioElement) {
-      audioElement.src = audio.audioUrl.audioUrl;
-      const handlePlay = () => {
-        audioElement
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-            console.log("Audio is playing:", audio.audioUrl.audioUrl);
-          })
-          .catch((error) => {
-            console.error("Error playing audio:", error);
-            setIsPlaying(false);
-          });
-      };
-      audioElement.addEventListener("loadedmetadata", handlePlay);
-      return () => {
-        audioElement.removeEventListener("loadedmetadata", handlePlay);
-      };
-    } else if (audioElement) {
-      audioElement.pause();
-      audioElement.src = "";
+    const el = audioRef.current;
+    if (!el) return;
+
+    // helper to play when metadata is ready
+    const handleLoaded = () => {
+      setDuration(el.duration || 0);
+      // attempt autoplay if desired
+      el.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          // autoplay may be blocked; keep state sane
+          console.debug("Autoplay prevented or error:", err);
+          setIsPlaying(!el.paused && !el.ended);
+        });
+    };
+
+    // if there's a src, set it and attach listener
+    if (src) {
+      // only set if different to avoid reloads
+      if (el.src !== src) {
+        el.src = src;
+      }
+      el.addEventListener("loadedmetadata", handleLoaded);
+    } else {
+      // no src -> clear
+      el.pause();
+      el.src = "";
       setIsPlaying(false);
+      setDuration(0);
+      setCurrentTime(0);
     }
-  }, [audio?.audioUrl?.audioUrl, audio]);
+
+    // Ensure muted state reflects local flag
+    el.muted = isMuted;
+
+    return () => {
+      el.removeEventListener("loadedmetadata", handleLoaded);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src]); // only when src changes
 
   const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
-    }
+    const el = audioRef.current;
+    if (!el) return;
+    setDuration(el.duration || 0);
   };
 
   const handleAudioEnded = () => {
     setIsPlaying(false);
   };
 
+  // Visible only when we have a playable src
+  const visible = !!src && src !== "";
+
   return (
     <div
       className={cn("sticky bottom-0 z-10 flex size-full flex-col", {
-        hidden: !audio?.audioUrl?.audioUrl || audio?.audioUrl?.audioUrl === "",
+        hidden: !visible,
       })}
     >
       <Progress
-        value={(currentTime / duration) * 100}
+        value={duration > 0 ? (currentTime / duration) * 100 : 0}
         className="w-full"
         max={duration > 0 ? duration : 100}
       />
       <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 max-md:justify-center max-md:gap-5 md:px-12">
         <audio
           ref={audioRef}
-          src={audio?.audioUrl?.audioUrl || ""}
+          src={src || ""}
           className="hidden"
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
@@ -212,24 +238,31 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
             {formatTime(currentTime)} / {formatTime(duration)}
           </h2>
           <div className="flex items-center gap-2">
-            <Image
-              src={
-                isMuted ? "/assets/icons/unmute.svg" : "/assets/icons/mute.svg"
-              }
-              width={24}
-              height={24}
-              alt="mute unmute"
-              onClick={toggleMute}
-              className="cursor-pointer"
-            />
-            <Image
-              src="/assets/icons/close.svg"
-              width={24}
-              height={24}
-              alt="close"
-              onClick={handleClose}
-              className="cursor-pointer absolute top-1 right-1"
-            />
+            <Button className="top-1 right-1">
+              <Image
+                src={
+                  isMuted
+                    ? "/assets/icons/unmute.svg"
+                    : "/assets/icons/mute.svg"
+                }
+                width={24}
+                height={24}
+                alt="mute unmute"
+                onClick={toggleMute}
+                className="cursor-pointer"
+              />
+            </Button>
+            <Button className="absolute top-1 right-1">
+                <ToastClose className="cursor-pointer " onClick={handleClose} />
+              {/* <Image
+                src="/assets/icons/close.svg"
+                width={24}
+                height={24}
+                alt="close"
+                onClick={handleClose}
+                className="cursor-pointer absolute top-1 right-1"
+              /> */}
+            </Button>
           </div>
         </div>
       </section>
