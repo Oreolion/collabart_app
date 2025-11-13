@@ -2,38 +2,26 @@
 import React, { Suspense, useEffect, useState } from "react";
 import styles from "@/styles/projects.module.css";
 import { useUser } from "@clerk/nextjs";
-import { useAudio } from "@/app/providers/AudioProvider";
 import {
   Loader,
-  Play,
-  Share2,
-  Heart,
-  MessageCircle,
   Search,
 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import LoaderSpinner from "@/components/LoaderSpinner";
-import { formatDate } from "@/lib/formatTime";
-import { AudioProps } from "@/types";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/lib/useDebounce";
+import ProjectCard from "@/components/ProjectCard";
 
 const ProjectPage = () => {
-  const { setAudio } = useAudio();
-  const { isLoaded } = useUser();
+  const { isLoaded, user } = useUser();
   const [listMostActive, setListMostActive] = useState(false);
 
   const searchParams = useSearchParams();
@@ -80,33 +68,21 @@ const ProjectPage = () => {
   // Fetch projects along with their associated project files
   const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
 
+  // Wait for auth and data
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  const handlePlay = (project: AudioProps) => {
-    // Assuming each project has a 'projectFiles' array
-    const projectFile = projectsWithFiles[0]?.projectFiles[0];
-    console.log("Playing project file:", projectFile);
-    console.log("Playing project:", project);
-
-    if (projectFile) {
-      setAudio({
-        title:
-          projectFile.projectFileTitle ||
-          project.title ||
-          "Unknown Title",
-        audioUrl: project.audioUrl,
-        projectId: project.projectId,
-        author: project.author || "Unknown Author",
-        imageUrl: project.imageUrl || "/images/player1.png",
-      });
-    } else {
-      console.warn("No project file available for this project.");
-    }
-  };
+  // Filter to only projects that belong to the logged-in user
+  const myProjects = Array.isArray(projectsWithFiles)
+    ? projectsWithFiles.filter(
+        (p: any) => p.authorId && user && String(p.authorId) === String(user.id)
+      )
+    : [];
 
   return (
     <section className={styles.project__feeds}>
       <Suspense fallback={<Loader />}></Suspense>
+
+      {/* Search Section (unchanged) */}
       <div className={styles.search__section}>
         <div className={styles.search__title}>
           <Search size={24} />
@@ -133,10 +109,7 @@ const ProjectPage = () => {
               placeholder="Search by talent..."
               value={searchFilters.talent}
               onChange={(e) =>
-                setSearchFilters((prev) => ({
-                  ...prev,
-                  talent: e.target.value,
-                }))
+                setSearchFilters((prev) => ({ ...prev, talent: e.target.value }))
               }
             />
           </div>
@@ -147,10 +120,7 @@ const ProjectPage = () => {
               placeholder="Search by genre..."
               value={searchFilters.genre}
               onChange={(e) =>
-                setSearchFilters((prev) => ({
-                  ...prev,
-                  genre: e.target.value,
-                }))
+                setSearchFilters((prev) => ({ ...prev, genre: e.target.value }))
               }
             />
           </div>
@@ -161,10 +131,7 @@ const ProjectPage = () => {
               placeholder="Search by mood..."
               value={searchFilters.mood}
               onChange={(e) =>
-                setSearchFilters((prev) => ({
-                  ...prev,
-                  mood: e.target.value,
-                }))
+                setSearchFilters((prev) => ({ ...prev, mood: e.target.value }))
               }
             />
           </div>
@@ -197,113 +164,68 @@ const ProjectPage = () => {
           </div>
         </div>
       </div>
-      <h1 className="text-2xl font-bold mb-6 ml-4">
-        Active Collaboration Projects
-      </h1>
+
+      <h1 className="text-2xl font-bold mb-6 ml-4">My Projects</h1>
+
       <main className={styles.content__box}>
         <div className="space-y-4">
-          {projectsWithFiles?.map((project) => (
-            <Card key={project._id} className="bg-neutral-900">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-700 underline hover:text-gray-300">
-                  <Link href={`/project/${project._id}`}>
-                    {project.projectTitle}
-                  </Link>
-                </CardTitle>
-                <div className="flex space-x-2">
-                  <Button
-                    className="p-2"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handlePlay(project.projectFiles[0])}
-                  >
-                    <Play className="h-6 w-6" />
-                  </Button>
-                  <Button className="p-2" variant="ghost" size="icon">
-                    <Share2 className="h-6 w-6" />
-                  </Button>
-                  <Button className="p-2" variant="ghost" size="icon">
-                    <Heart className="h-6 w-6" />
-                  </Button>
-                  <Button className="p-2" variant="ghost" size="icon">
-                    <MessageCircle className="h-6 w-6" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                  <Image
-                    src="/assets/images/producer.webp"
-                    alt={project.projectTitle}
-                    width={80}
-                    height={40}
-                    className="rounded-md"
-                  />
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage
-                          src={
-                            project.authorImageUrl ||
-                            "/assets/images/default-avatar.png"
-                          }
-                          alt={project.author}
-                        />
-                        <AvatarFallback className="text-gray-500">
-                          {project.author ? project.author[0] : "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium text-gray-500">
-                        {project.author || "Unknown Author"}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      Project Type: Public • Started:{" "}
-                      {formatDate(project._creationTime)}
+          {myProjects.length === 0 ? (
+            // prettier, actionable empty state
+            <div className="max-w-3xl mx-auto">
+              <Card className="bg-gradient-to-br from-neutral-900/60 to-neutral-900/40 border border-neutral-800">
+                <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
+                  {/* inline SVG illustration */}
+                  <div className="flex-shrink-0">
+                    <svg
+                      width="120"
+                      height="120"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="opacity-90"
+                    >
+                      <rect x="2" y="3" width="20" height="14" rx="2" stroke="#9CA3AF" strokeWidth="1.2" />
+                      <path d="M8 10h.01M12 10h.01M16 10h.01" stroke="#9CA3AF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M6 18v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="#9CA3AF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl font-semibold text-gray-100">
+                      You don&apos;t have any projects yet
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-2">
+                      Start a project to collaborate, list it for sale, or share your work with the community.
+                      You can also explore other projects for inspiration.
                     </p>
-                    <div className="flex flex-wrap gap-1">
-                      {project?.instruments &&
-                        project.instruments.map((instrument, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {instrument}
-                          </Badge>
-                        ))}
+
+                    <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                      <Link href="/project/new">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                          Create new project
+                        </Button>
+                      </Link>
+
+                      <Link href="/projects">
+                        <Button variant="outline" className="text-gray-500  border-neutral-700">
+                          Explore projects
+                        </Button>
+                      </Link>
                     </div>
-                    <div className="flex flex-wrap gap-1 text-gray-500">
-                      {project.genres &&
-                        project.genres.map((genre, index) => (
-                          <Badge
-                            key={index}
-                            variant="default"
-                            className="text-xs"
-                          >
-                            {genre}
-                          </Badge>
-                        ))}
+
+                    <div className="mt-6 text-xs text-gray-500">
+                      Tip: You can upload project files and list your project for sale when you&apos;re ready.
                     </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className="flex space-x-2">
-                  {project.projectSampleRate && (
-                    <Badge variant="secondary" className="text-xs">
-                      {project.projectSampleRate} bpm
-                    </Badge>
-                  )}
-                  {project.projectBitDepth && (
-                    <Badge variant="secondary" className="text-xs">
-                      {project.projectBitDepth}
-                    </Badge>
-                  )}
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            // Render each project using your ProjectCard component (keeps dialogs/styles consistent)
+            myProjects.map((project: any) => (
+              <ProjectCard key={project._id} project={project} />
+            ))
+          )}
         </div>
       </main>
     </section>

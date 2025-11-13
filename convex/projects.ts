@@ -314,6 +314,54 @@ export const listProjectForSale = mutation({
   },
 });
 
+// Adds a comment to a project
+export const addProjectComment = mutation({
+  args: {
+    projectId: v.id("projects"),
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // optional: require auth and attach user info
+    const identity = await ctx.auth.getUserIdentity();
+    let username = "Anonymous";
+    let userId = null;
+    if (identity) {
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), identity.email))
+        .first();
+      if (user) {
+        username = user.name ?? identity.email ?? "Anonymous";
+        userId = user._id;
+      }
+    }
+
+    const inserted = await ctx.db.insert("comments", {
+      projectId: args.projectId,
+      userId,
+      user: username,
+      text: args.text,
+      createdAt: Date.now(),
+    });
+
+    return inserted;
+  },
+});
+
+// Query comments for a project (most recent first)
+export const getCommentsByProject = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("comments")
+      .filter((q) => q.eq(q.field("projectId"), args.projectId))
+      .order("desc")
+      .collect();
+  },
+});
+
 export const createBlockradarPaymentLinkPublic = mutation({
   args: {
     projectId: v.id("projects"),

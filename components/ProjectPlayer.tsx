@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useAudio } from "@/app/providers/AudioProvider";
 import { Progress } from "./ui/progress";
 import { Button } from "./ui/button";
-import { ToastClose } from "./ui/toast";
+import CloseIcon from "./icons/CloseIcion";
 
 interface ProjectPlayerProps {
   onClose?: () => void; // optional
@@ -252,8 +252,8 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
                 className="cursor-pointer"
               />
             </Button>
-            <Button className="absolute top-1 right-1">
-                <ToastClose className="cursor-pointer " onClick={handleClose} />
+            <Button onClick={handleClose} className="cursor-pointer absolute top-1 right-1">
+                <CloseIcon />
               {/* <Image
                 src="/assets/icons/close.svg"
                 width={24}

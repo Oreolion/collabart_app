@@ -7,5 +7,5 @@ const MyProjectsClient = dynamic(
 );
 
 export default function MyProjectsPage() {
-  return <MyProjectsClient />;
+return <MyProjectsClient />;
 }
