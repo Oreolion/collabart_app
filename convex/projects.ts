@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { mutation, query } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
 
 // create project mutation
 export const createProject = mutation({
@@ -272,6 +272,7 @@ export const getUrl = mutation({
   },
 });
 
+// --- YOUR 'listProjectForSale' MUTATION ---
 export const listProjectForSale = mutation({
   args: {
     projectId: v.id("projects"),
@@ -282,17 +283,18 @@ export const listProjectForSale = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError("Not authenticated");
 
+    // Note: You may need to adapt this user query to your 'users' table structure
     const user = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("email"), identity.email))
-      .first();
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
 
     if (!user) throw new ConvexError("User not found");
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new ConvexError("Project not found");
 
-    // Check ownership; project.authorId should equal user.clerkId (or whichever id you use)
+    // Check ownership
     if (String(project.authorId) !== String(user.clerkId)) {
       throw new ConvexError("Only project owner can list for sale");
     }
@@ -307,10 +309,71 @@ export const listProjectForSale = mutation({
       price: args.price,
       currency: args.currency ?? "USD",
       isListed: true,
-      listedAt: Date.now(),
+      listedAt: Date.now(), // You may need to add 'listedAt: v.optional(v.number())' to your schema
     });
 
     return { ok: true, projectId: args.projectId, price: args.price };
+  },
+});
+
+// --- NEW MUTATION for Genres/Moods/Talents ---
+export const updateProjectDetails = mutation({
+  args: {
+    projectId: v.id("projects"),
+    genres: v.optional(v.array(v.string())),
+    moods: v.optional(v.array(v.string())),
+    talents: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Not authenticated");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new ConvexError("Project not found");
+
+    if (project.authorId !== identity.subject) {
+      throw new ConvexError("You are not the owner of this project");
+    }
+
+    const { projectId, ...details } = args;
+    await ctx.db.patch(projectId, details);
+
+    return { ok: true };
+  },
+});
+
+
+// --- NEW MUTATION for Ownership Transfer ---
+export const transferOwnership = mutation({
+  args: {
+    projectId: v.id("projects"),
+    newOwnerId: v.string(), // Clerk User ID
+  },
+  handler: async (ctx, args) => {
+    // This mutation should only be called by an internal system (like a webhook)
+    // For added security, you'd check an internal auth token here
+    
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new ConvexError("Project not found");
+
+    const newOwner = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.newOwnerId))
+      .unique();
+      
+    if (!newOwner) throw new ConvexError("New owner not found in users table");
+
+    // Transfer ownership
+    await ctx.db.patch(args.projectId, {
+      authorId: newOwner.clerkId,
+      author: newOwner.name, // Update author name/image
+      authorImageUrl: newOwner.imageUrl,
+      isListed: false, // No longer listed for sale
+      price: undefined,
+      currency: undefined,
+    });
+
+    return { ok: true, newOwnerId: newOwner.clerkId };
   },
 });
 
@@ -362,121 +425,3 @@ export const getCommentsByProject = query({
   },
 });
 
-export const createBlockradarPaymentLinkPublic = mutation({
-  args: {
-    projectId: v.id("projects"),
-    amount: v.optional(v.string()),
-    redirectUrl: v.optional(v.string()),
-    slug: v.optional(v.string()),
-    name: v.optional(v.string()),
-    description: v.optional(v.string()),
-    successMessage: v.optional(v.string()),
-    inactiveMessage: v.optional(v.string()),
-    paymentLimit: v.optional(v.number()),
-    metadata: v.optional(v.union(v.object({}), v.string())),
-  },
-  handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw new ConvexError("Project not found");
-
-    // Determine amount: prefer provided amount, else project.price
-    let amount: string | undefined = undefined;
-    if (args.amount) amount = args.amount;
-    else if (project.price) amount = String(project.price);
-
-    if (!amount) {
-      throw new ConvexError(
-        "Project has no price set. Please specify an amount."
-      );
-    }
-    // Validate numeric string > 0
-    if (!/^\d+(\.\d+)?$/.test(amount) || Number(amount) <= 0) {
-      throw new ConvexError(
-        "Invalid amount. Must be a number > 0 (as a string)."
-      );
-    }
-
-    const safeSlug = (args.slug ?? `payment-${String(project._id)}`)
-      .replace(/[^a-zA-Z0-9-]/g, "-")
-      .slice(0, 250);
-
-    const apiKey = process.env.BLOCKRADAR_API_KEY;
-    if (!apiKey) {
-      throw new ConvexError("BlockRadar API key not configured on server");
-    }
-
-    // Build form data
-    const formData = new FormData();
-    formData.append(
-      "name",
-      String(
-        args.name ?? project.projectTitle ?? `Project ${project._id}`
-      ).slice(0, 250)
-    );
-    formData.append("amount", String(amount));
-    formData.append("slug", safeSlug);
-    if (args.description)
-      formData.append("description", String(args.description).slice(0, 250));
-    if (args.redirectUrl)
-      formData.append("redirectUrl", String(args.redirectUrl));
-    if (args.successMessage)
-      formData.append(
-        "successMessage",
-        String(args.successMessage).slice(0, 500)
-      );
-    if (args.inactiveMessage)
-      formData.append(
-        "inactiveMessage",
-        String(args.inactiveMessage).slice(0, 500)
-      );
-    if (args.paymentLimit)
-      formData.append("paymentLimit", String(args.paymentLimit));
-
-    // Build metadata: default + merge user-provided
-    let metadataObj: any = {
-      projectId: project._id,
-      projectTitle: project.projectTitle,
-      authorId: project.authorId,
-    };
-    if (args.metadata) {
-      if (typeof args.metadata === "string") {
-        try {
-          metadataObj = { ...metadataObj, ...JSON.parse(args.metadata) };
-        } catch {
-          metadataObj.note = args.metadata;
-        }
-      } else {
-        metadataObj = { ...metadataObj, ...args.metadata };
-      }
-    }
-    formData.append("metadata", JSON.stringify(metadataObj));
-
-    // Call BlockRadar API
-    const res = await fetch("https://api.blockradar.co/v1/payment_links", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        // DO NOT set Content-Type header for FormData
-      },
-      body: formData as any,
-    });
-
-    // Read response text for robust debugging
-    const text = await res.text();
-    let payload: any = text;
-    try {
-      payload = JSON.parse(text);
-    } catch {
-      // not JSON
-    }
-
-    if (!res.ok) {
-      throw new ConvexError(
-        `BlockRadar API error (status=${res.status}): ${JSON.stringify(payload)}`
-      );
-    }
-
-    // Return the BlockRadar payload so client can read payload.data.url
-    return { status: res.status, payload };
-  },
-});

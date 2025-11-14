@@ -46,6 +46,12 @@ export interface ProjectProps {
   authorImageUrl: string;
   views: number;
   likes: number;
+  price: number | null;
+  currency: string | null;
+  genres: string[] | null;
+  talents: string[] | null;
+  moods: string[] | null;
+  isListed: boolean;
 }
 
 export interface ProjectFileType {

@@ -12,18 +12,26 @@ export default defineSchema({
     projectDescription: v.string(),
     projectBrief: v.string(),
     projectFile: v.optional(
-        v.object({
-          audioStorageId: v.string(),
-          audioUrl: v.string(),
-          audioDuration: v.number(),
-        })
-      ),
+      v.object({
+        audioStorageId: v.string(),
+        audioUrl: v.string(),
+        audioDuration: v.number(),
+      })
+    ),
     collaborationAgreement: v.string(),
     author: v.string(),
     authorId: v.string(),
     authorImageUrl: v.string(),
     views: v.number(),
     likes: v.optional(v.number()),
+    // --- NEW FIELDS TO ADD ---
+    price: v.optional(v.string()),
+    currency: v.optional(v.string()), // Recommended to add this with price
+    isListed: v.optional(v.boolean()),
+
+    genres: v.optional(v.array(v.string())),
+    moods: v.optional(v.array(v.string())),
+    talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
   })
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
@@ -57,16 +65,16 @@ export default defineSchema({
     confirmCopyright: v.boolean(),
   }).index("by_project", ["projectId"]),
 
-  // comment tables ...
-  //   comments: defineTable({
-  //     projectId: v.id("projects"),
-  //     userId: v.id("users"),
-  //     commentUserImage: v.optional(v.string()),
-  //     commentId: v.optional(v.id("comment")),
-  //     content: v.string(),
-  //     username: v.optional(v.string()),
-  //     createdAt: v.number(),
-  //   }).index("by_project", ["projectId"]),
+  //   comment tables ...
+  comments: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    commentUserImage: v.optional(v.string()),
+    commentId: v.optional(v.id("comment")),
+    content: v.string(),
+    username: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_project", ["projectId"]),
 
   // user open ai call count table...
   //   userCallCounts: defineTable({
@@ -98,5 +106,12 @@ export default defineSchema({
     views: v.number(),
     likes: v.number(),
     savedAt: v.number(),
+    // --- NEW FIELDS TO ADD ---
+    price: v.optional(v.string()),
+    currency: v.optional(v.string()), // Recommended to add this with price
+    isListed: v.optional(v.boolean()),
+    genres: v.optional(v.array(v.string())),
+    moods: v.optional(v.array(v.string())),
+    talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
   }),
 });

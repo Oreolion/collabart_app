@@ -1,10 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"; 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,8 +37,10 @@ import {
 } from "lucide-react";
 import { ProjectProps } from "@/types";
 import { useRouter } from "next/navigation";
+import FavoriteGenres from "./Genres"; // <-- IMPORT
+import SkillsAndTalents from "./Talents"; // <-- IMPORT
+import FavoriteMoods from "./FavoriteMoods"; // <-- IMPORT
 
-/* Props expected in parent: project, projectId */
 export default function ProjectActionsAndMeta({
   project,
 }: {
@@ -48,14 +49,10 @@ export default function ProjectActionsAndMeta({
   const { user, isLoaded } = useUser();
   const [openModals, setOpenModals] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
-  const [listingModalOpen, setListingModalOpen] = useState(false);
-  const [listingPrice, setListingPrice] = useState("");
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false); // <-- NEW STATE for genres/moods
+  const [listingPrice, setListingPrice] = useState(project?.price ?? ""); // <-- Initialize with project price
   const listProjectForSale = useMutation(api.projects.listProjectForSale);
   const router = useRouter();
-
-  const createPublicLink = useMutation(
-    api.projects.createBlockradarPaymentLinkPublic
-  );
 
   const isOwner =
     isLoaded && user?.id && String(user.id) === String(project?.authorId);
@@ -80,165 +77,151 @@ export default function ProjectActionsAndMeta({
         projectId: project._id,
         price: String(listingPrice),
         currency: "USD",
-      });
+      }); // refresh data after listing
 
-      // refresh data after listing
       router.refresh();
-      setListingModalOpen(false);
-      setListingPrice("");
-    } catch (err) {
+      toggleModal("selling"); // Close modal
+    } catch (err: any) {
       console.error("list for sale error", err);
-      alert("Failed to list project for sale.");
+      alert("Failed to list project for sale: " + err.message);
     } finally {
       setBusy(false);
     }
   };
 
-  const handleBuyClick = async () => {
-    try {
-      const amount = project.price ? String(project.price) : undefined; // or ask buyer to enter amount
-      const result = await createPublicLink({
-        projectId: project._id,
-        amount, // required by improved mutation if project.price missing
-        redirectUrl: `${window.location.origin}/project/${project._id}?paid=1`,
-      });
-      // result.payload.data.url might be present (see mutation return shape)
-      const url =
-        result?.payload?.data?.url ?? result?.payload?.data?.data?.url ?? null;
-      if (!url) throw new Error("No url returned");
-      window.location.href = url;
-    } catch (err) {
-      console.error("create link error", err);
-      alert("Failed to create payment link: " + (err.message || String(err)));
+  // This component will wrap the "None set" badges
+  const EditDetailsTrigger = ({ children }: { children: React.ReactNode }) => {
+    if (!isOwner) {
+      return (
+        <Badge variant="outline" className="flex items-center gap-1 w-fit">
+          None set
+        </Badge>
+      );
     }
+    return (
+      <DialogTrigger asChild>
+        <Badge
+          variant="outline"
+          className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1 w-fit"
+        >
+          {children} <ArrowRight className="w-3 h-3" />
+        </Badge>
+      </DialogTrigger>
+    );
   };
 
   return (
     <div>
-      {/* Tabs for talent / genre / mood */}
-      <Tabs defaultValue="talent" className="mt-4">
-        <TabsList className="grid w-full gap-2 grid-cols-3">
-          <TabsTrigger value="talent" className="text-xs">
-            Talent
-          </TabsTrigger>
-          <TabsTrigger value="genre" className="text-xs">
-            Genre
-          </TabsTrigger>
-          <TabsTrigger value="mood" className="text-xs">
-            Mood
-          </TabsTrigger>
-        </TabsList>
+      {/* --- NEW DIALOG for Genres/Moods/Talents --- */}
+      <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
+        <Tabs defaultValue="talent" className="">
+          <TabsList className="grid w-full gap-2 grid-cols-3">
+            <TabsTrigger value="talent" className="text-xs">
+              Talent
+            </TabsTrigger>
+            <TabsTrigger value="genre" className="text-xs">
+              Genre
+            </TabsTrigger>
+            <TabsTrigger value="mood" className="text-xs">
+              Mood
+            </TabsTrigger>
+          </TabsList>
+          {/* Talent */} 
+          <TabsContent value="talent">
+            {project?.talents && project.talents.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {project.talents.map((t: string) => (
+                  <Badge key={t} className="text-xs">
+                    {t}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <EditDetailsTrigger>None set</EditDetailsTrigger>
+            )}
+          </TabsContent>
+          {/* Genre */} 
+          <TabsContent value="genre">
+            {project?.genres && project.genres.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {project.genres.map((g: string) => (
+                  <Badge key={g} className="text-xs">
+                    {g}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <EditDetailsTrigger>None set</EditDetailsTrigger>
+            )}
+          </TabsContent>
+          {/* Mood */} 
+          <TabsContent value="mood">
+            {/* Note: Schema uses 'moods', your component used 'mood'. I'll use 'moods' */}
+            {project?.moods && project.moods.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {project.moods.map((m: string) => (
+                  <Badge key={m} className="text-xs">
+                    {m}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <EditDetailsTrigger>None set</EditDetailsTrigger>
+            )}
+          </TabsContent>
+        </Tabs>
 
-        {/* Talent */}
-        <TabsContent value="talent">
-          {project?.talents && project.talents.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {project.talents.map((t: string) => (
-                <Badge key={t} className="text-xs">
-                  {t}
-                </Badge>
-              ))}
-            </div>
-          ) : // None set -> owner -> edit; non-owner -> suggest
-          isOwner ? (
-            <Link href={`/project/${project._id}/edit`}>
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-              >
-                None set <ArrowRight className="w-3 h-3" />
-              </Badge>
-            </Link>
-          ) : (
-            <Link href={`/project/${project?._id}/suggest`}>
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-              >
-                None set <ArrowRight className="w-3 h-3" />
-              </Badge>
-            </Link>
-          )}
-        </TabsContent>
-
-        {/* Genre */}
-        <TabsContent value="genre">
-          {project?.genres && project.genres.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {project.genres.map((g: string) => (
-                <Badge key={g} className="text-xs">
-                  {g}
-                </Badge>
-              ))}
-            </div>
-          ) : isOwner ? (
-            <Link href={`/project/${project._id}/edit`}>
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-              >
-                None set <ArrowRight className="w-3 h-3" />
-              </Badge>
-            </Link>
-          ) : (
-            <Badge
-              variant="outline"
-              className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-            >
-              None set <ArrowRight className="w-3 h-3" />
-            </Badge>
-          )}
-        </TabsContent>
-
-        {/* Mood */}
-        <TabsContent value="mood">
-          {project?.mood && project.mood.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {project.mood.map((m: string) => (
-                <Badge key={m} className="text-xs">
-                  {m}
-                </Badge>
-              ))}
-            </div>
-          ) : isOwner ? (
-            <Link href={`/project/${project._id}/edit`}>
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-              >
-                None set <ArrowRight className="w-3 h-3" />
-              </Badge>
-            </Link>
-          ) : (
-            <Badge
-              variant="outline"
-              className="cursor-pointer hover:bg-slate-100 flex items-center gap-1 w-fit"
-            >
-              None set <ArrowRight className="w-3 h-3" />
-            </Badge>
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Buy button (visible to everyone) */}
-      <div className="mt-4">
-        <Button onClick={handleBuyClick} className="w-full" disabled={busy}>
-          {busy ? "Processing..." : "Buy / Support Project"}
-        </Button>
-      </div>
-
-      {/* Owner-only controls: only render if isOwner === true */}
+        {/* --- Dialog Content for Details --- */}
+        <DialogContent className="max-w-4xl bg-white dark:bg-slate-900">
+          <DialogHeader>
+            <DialogTitle>Update Project Details</DialogTitle>
+            <DialogDescription>
+              Add genres, moods, and talents to help others discover your
+              project.
+            </DialogDescription>
+          </DialogHeader>
+          <Tabs defaultValue="genre" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="genre">Genre</TabsTrigger>
+              <TabsTrigger value="mood">Mood</TabsTrigger>
+              <TabsTrigger value="talent">Talent</TabsTrigger>
+            </TabsList>
+            <TabsContent value="genre">
+              <FavoriteGenres
+                projectId={project._id}
+                initialValues={project.genres}
+                onSave={() => setDetailsModalOpen(false)}
+              />
+            </TabsContent>
+            <TabsContent value="mood">
+              <FavoriteMoods
+                projectId={project._id}
+                initialValues={project.moods}
+                onSave={() => setDetailsModalOpen(false)}
+              />
+            </TabsContent>
+            <TabsContent value="talent">
+              <SkillsAndTalents
+                projectId={project._id}
+                initialValues={project.talents}
+                onSave={() => setDetailsModalOpen(false)}
+              />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+      {/* --- NEW DIALOG --- */} 
+      {/* Owner-only controls: only render if isOwner === true */} 
       {isOwner && (
-        <div className="space-y-2 mt-4">
-          {/* Close Project dialog */}
+        <div className="">
+          {/* Close Project dialog */} 
           <Dialog
             open={!!openModals.closeProject}
             onOpenChange={() => toggleModal("closeProject")}
           >
             <DialogTrigger asChild>
               <Button variant="destructive" className="w-full text-xs">
-                <AlertTriangle className="w-4 h-4 mr-1" />
-                Close Project
+                <AlertTriangle className="w-4 h-4 mr-1" /> Close Project
               </Button>
             </DialogTrigger>
             <DialogContent className="bg-gray-400">
@@ -250,7 +233,7 @@ export default function ProjectActionsAndMeta({
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4">
-                <Label htmlFor="close-reason">Reason for closing</Label>
+                <Label htmlFor="close-reason">Reason for closing</Label> 
                 <Textarea
                   id="close-reason"
                   placeholder="Tell us why you're closing this project..."
@@ -265,12 +248,11 @@ export default function ProjectActionsAndMeta({
                 >
                   Cancel
                 </Button>
-                <Button variant="destructive">Close Project</Button>
+                <Button variant="destructive">Close Project</Button> 
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* Settings */}
+          {/* Settings */} 
           <Dialog
             open={!!openModals.projectSettings}
             onOpenChange={() => toggleModal("projectSettings")}
@@ -280,8 +262,7 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full bg-transparent text-xs"
               >
-                <Settings className="w-4 h-4 mr-1" />
-                Settings
+                <Settings className="w-4 h-4 mr-1" /> Settings
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-slate-400">
@@ -296,39 +277,39 @@ export default function ProjectActionsAndMeta({
                   <Label htmlFor="visibility">Visibility</Label>
                   <Select>
                     <SelectTrigger id="visibility" className="mt-2">
-                      <SelectValue placeholder="Select visibility" />
+                      <SelectValue placeholder="Select visibility" /> 
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
+                      <SelectItem value="public">Public</SelectItem> 
+                      <SelectItem value="private">Private</SelectItem> 
                       <SelectItem value="unlisted">Unlisted</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="comments">Comments</Label>
+                  <Label htmlFor="comments">Comments</Label> 
                   <Select>
                     <SelectTrigger id="comments" className="mt-2">
-                      <SelectValue placeholder="Who can comment?" />
+                      <SelectValue placeholder="Who can comment?" /> 
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="everyone">Everyone</SelectItem>
+                      <SelectItem value="everyone">Everyone</SelectItem> 
                       <SelectItem value="collaborators">
                         Collaborators Only
                       </SelectItem>
-                      <SelectItem value="disabled">Disabled</SelectItem>
+                      <SelectItem value="disabled">Disabled</SelectItem> 
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="invites">Invite Type</Label>
+                  <Label htmlFor="invites">Invite Type</Label> 
                   <Select>
                     <SelectTrigger id="invites" className="mt-2">
                       <SelectValue placeholder="Who can join?" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="open">Open to All</SelectItem>
-                      <SelectItem value="invite-only">Invite Only</SelectItem>
+                      <SelectItem value="open">Open to All</SelectItem> 
+                      <SelectItem value="invite-only">Invite Only</SelectItem> 
                     </SelectContent>
                   </Select>
                 </div>
@@ -347,8 +328,7 @@ export default function ProjectActionsAndMeta({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* Project Files */}
+          {/* Project Files */} 
           <Dialog
             open={!!openModals.fileManagement}
             onOpenChange={() => toggleModal("fileManagement")}
@@ -358,8 +338,7 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full bg-transparent text-xs"
               >
-                <FileText className="w-4 h-4 mr-1" />
-                Project Files
+                <FileText className="w-4 h-4 mr-1" /> Project Files
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl bg-slate-400">
@@ -407,8 +386,7 @@ export default function ProjectActionsAndMeta({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* Audition */}
+          {/* Audition */} 
           <Dialog
             open={!!openModals.audition}
             onOpenChange={() => toggleModal("audition")}
@@ -418,8 +396,7 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full text-purple-600 bg-transparent text-xs"
               >
-                <Mic className="w-4 h-4 mr-1" />
-                List for Audition
+                <Mic className="w-4 h-4 mr-1" /> List for Audition
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-slate-400">
@@ -439,7 +416,7 @@ export default function ProjectActionsAndMeta({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="audition-brief">Audition Brief</Label>
+                  <Label htmlFor="audition-brief">Audition Brief</Label> 
                   <Textarea
                     id="audition-brief"
                     placeholder="Describe what you're looking for..."
@@ -447,8 +424,8 @@ export default function ProjectActionsAndMeta({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="audition-deadline">Deadline</Label>
-                  <Input id="audition-deadline" type="date" className="mt-2" />
+                  S <Label htmlFor="audition-deadline">Deadline</Label> 
+                  <Input id="audition-deadline" type="date" className="mt-2" /> 
                 </div>
               </div>
               <DialogFooter>
@@ -465,8 +442,7 @@ export default function ProjectActionsAndMeta({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* Collaboration Invite */}
+          {/* Collaboration Invite */} 
           <Dialog
             open={!!openModals.collaboration}
             onOpenChange={() => toggleModal("collaboration")}
@@ -476,13 +452,12 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full text-blue-600 bg-transparent text-xs"
               >
-                <Users className="w-4 h-4 mr-1" />
-                Send Invite
+                <Users className="w-4 h-4 mr-1" /> Send Invite
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-slate-400">
               <DialogHeader>
-                <DialogTitle>Send Collaboration Invite</DialogTitle>
+                <DialogTitle>Send Collaboration Invite</DialogTitle> 
                 <DialogDescription>
                   Invite collaborators to join your project.
                 </DialogDescription>
@@ -501,19 +476,20 @@ export default function ProjectActionsAndMeta({
                   <Label htmlFor="role">Role</Label>
                   <Select>
                     <SelectTrigger id="role" className="mt-2">
-                      <SelectValue placeholder="Select a role" />
+                      S <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="producer">Producer</SelectItem>
-                      <SelectItem value="vocalist">Vocalist</SelectItem>
-                      <SelectItem value="guitarist">Guitarist</SelectItem>
-                      <SelectItem value="bassist">Bassist</SelectItem>
-                      <SelectItem value="drummer">Drummer</SelectItem>
-                      <SelectItem value="engineer">Engineer</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="producer">Producer</SelectItem> 
+                      <SelectItem value="vocalist">Vocalist</SelectItem> 
+                      <SelectItem value="guitarist">Guitarist</SelectItem> 
+                      <SelectItem value="bassist">Bassist</SelectItem> 
+                      <SelectItem value="drummer">Drummer</SelectItem> 
+                      <SelectItem value="engineer">Engineer</SelectItem> 
+                      <SelectItem value="other">Other</SelectItem> 
                     </SelectContent>
                   </Select>
                 </div>
+                s
                 <div>
                   <Label htmlFor="invite-message">Message</Label>
                   <Textarea
@@ -531,12 +507,11 @@ export default function ProjectActionsAndMeta({
                 >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">Send</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">Send</Button> 
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* List for Sell */}
+          {/* --- List for Sell (Your existing dialog) --- */} 
           <Dialog
             open={!!openModals.selling}
             onOpenChange={() => toggleModal("selling")}
@@ -547,69 +522,51 @@ export default function ProjectActionsAndMeta({
                 className="w-full text-green-600 bg-transparent text-xs"
               >
                 <DollarSign className="w-4 h-4 mr-1" />
-                List for Sell
+                {project?.isListed ? "Update Listing" : "List for Sell"} 
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-slate-400">
+            <DialogContent className="max-w-md bg-slate-400">
               <DialogHeader>
-                <DialogTitle>List for Selling</DialogTitle>
+                <DialogTitle>List Project for Sale</DialogTitle> 
                 <DialogDescription>
-                  Configure pricing and licensing options.
+                  Set a price to make this project purchasable.
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <div>
-                  <Label htmlFor="selling-price">Price ($)</Label>
+                  <Label htmlFor="selling-price">Price (USD)</Label> 
                   <Input
                     id="selling-price"
-                    type="number"
-                    placeholder="0.00"
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="license-type">License Type</Label>
-                  <Select>
-                    <SelectTrigger id="license-type" className="mt-2">
-                      <SelectValue placeholder="Select license type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="exclusive">Exclusive</SelectItem>
-                      <SelectItem value="non-exclusive">
-                        Non-Exclusive
-                      </SelectItem>
-                      <SelectItem value="lease">Lease</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="terms">Terms & Conditions</Label>
-                  <Textarea
-                    id="terms"
-                    placeholder="Describe the licensing terms..."
+                    type="text"
+                    value={listingPrice}
+                    onChange={(e) => setListingPrice(e.target.value)}
+                    placeholder="e.g. 10.00"
                     className="mt-2"
                   />
                 </div>
               </div>
               <DialogFooter>
+                S
                 <Button
                   className="text-gray-500"
                   variant="outline"
                   onClick={() => toggleModal("selling")}
+                  disabled={busy}
                 >
                   Cancel
                 </Button>
+                s
                 <Button
                   className="bg-green-600 hover:bg-green-700"
                   onClick={handleListForSale}
+                  disabled={busy}
                 >
-                  List
+                  {busy ? "Listing..." : "List Project"}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* Collaboration Agreement */}
+          {/* Collaboration Agreement */} 
           <Dialog
             open={!!openModals.collaborationAgreement}
             onOpenChange={() => toggleModal("collaborationAgreement")}
@@ -619,38 +576,37 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full bg-transparent text-xs"
               >
-                <CheckCircle2 className="w-4 h-4 mr-1" />
-                Collab Agreement
+                <CheckCircle2 className="w-4 h-4 mr-1" /> Collab Agreement
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl bg-slate-400">
               <DialogHeader>
-                <DialogTitle>Collaboration Agreement</DialogTitle>
+                <DialogTitle>Collaboration Agreement</DialogTitle>s
                 <DialogDescription>
                   Define terms and agreements for collaborators on this project.
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <div>
-                  <Label htmlFor="agreement-type">Agreement Type</Label>
+                  <Label htmlFor="agreement-type">Agreement Type</Label> 
                   <Select>
                     <SelectTrigger id="agreement-type" className="mt-2">
-                      <SelectValue placeholder="Select agreement type" />
+                      <SelectValue placeholder="Select agreement type" /> 
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="royalty-split">
                         Royalty Split
                       </SelectItem>
                       <SelectItem value="work-for-hire">
-                        Work for Hire
+                        Work for Hire D
                       </SelectItem>
                       <SelectItem value="profit-share">Profit Share</SelectItem>
-                      <SelectItem value="fixed-fee">Fixed Fee</SelectItem>
+                      <SelectItem value="fixed-fee">Fixed Fee</SelectItem> 
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="payment-terms">Payment Terms</Label>
+                  <Label htmlFor="payment-terms">Payment Terms</Label> 
                   <Input
                     id="payment-terms"
                     placeholder="e.g., 50/50 split, $500 upfront"
@@ -658,7 +614,7 @@ export default function ProjectActionsAndMeta({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="agreement-terms">Agreement Details</Label>
+                  <Label htmlFor="agreement-terms">Agreement Details</Label> 
                   <Textarea
                     id="agreement-terms"
                     placeholder="Describe the full terms and conditions..."
@@ -675,6 +631,7 @@ export default function ProjectActionsAndMeta({
                 >
                   Cancel
                 </Button>
+                s
                 <Button className="bg-blue-600 hover:bg-blue-700">
                   Save Agreement
                 </Button>

@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/formatTime";
 import { useAudio } from "@/app/providers/AudioProvider";
 import { useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,28 +71,9 @@ export default function ProjectCard({ project }: { project: any }) {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState("");
 
-  // Convex: queries + mutations
-  const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
   const commentsQuery = useQuery(api.projects.getCommentsByProject, {
     projectId: project._id,
   });
-  const addComment = useMutation(api.projects.addProjectComment);
-
-  const createPublicLink = useMutation(
-    api.projects.createBlockradarPaymentLinkPublic
-  );
-  const listProjectForSale = useMutation(api.projects.listProjectForSale);
-
-  const isOwner =
-    isLoaded &&
-    user &&
-    project?.authorId &&
-    String(user.id) === String(project.authorId);
-
-  // loader guard (keeps behavior)
-  if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
-
-  // Pull comments into local state so we can prepend optimistically
   const [comments, setComments] = useState<
     { user: string; date: string; text: string; _id?: any }[]
   >([]);
@@ -110,6 +91,24 @@ export default function ProjectCard({ project }: { project: any }) {
     }
   }, [commentsQuery]);
 
+  // Convex: queries + mutations
+  const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
+
+  const addComment = useMutation(api.projects.addProjectComment);
+const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction as unknown as any);
+  const listProjectForSale = useMutation(api.projects.listProjectForSale);
+
+  const isOwner =
+    isLoaded &&
+    user &&
+    project?.authorId &&
+    String(user.id) === String(project.authorId);
+
+  // loader guard (keeps behavior)
+  if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
+
+  // Pull comments into local state so we can prepend optimistically
+
   // Play handler (unchanged behavior, but robust picking of file)
   const handlePlay = (projectFile: AudioProps | undefined) => {
     const file =
@@ -124,16 +123,22 @@ export default function ProjectCard({ project }: { project: any }) {
         (file as any).url ??
         "";
       if (!audioUrl) {
-        console.warn("No audio URL found on project file keys:", Object.keys(file));
+        console.warn(
+          "No audio URL found on project file keys:",
+          Object.keys(file)
+        );
         return;
       }
       setAudio({
         title:
-          (file as any).projectFileTitle || project.projectTitle || "Unknown Title",
+          (file as any).projectFileTitle ||
+          project.projectTitle ||
+          "Unknown Title",
         audioUrl,
         projectId: project._id,
         author: project.author || "Unknown Author",
-        imageUrl: project.imageUrl || project.authorImageUrl || "/images/player1.png",
+        imageUrl:
+          project.imageUrl || project.authorImageUrl || "/images/player1.png",
       });
     } else {
       console.warn("No project file available for this project.");
@@ -243,7 +248,9 @@ export default function ProjectCard({ project }: { project: any }) {
 
       const persisted = {
         user: inserted.user ?? optimistic.user,
-        date: inserted.createdAt ? new Date(inserted.createdAt).toLocaleString() : optimistic.date,
+        date: inserted.createdAt
+          ? new Date(inserted.createdAt).toLocaleString()
+          : optimistic.date,
         text: inserted.text ?? optimistic.text,
         _id: inserted._id,
       };
@@ -427,7 +434,10 @@ export default function ProjectCard({ project }: { project: any }) {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="ghost" onClick={() => setBuyModalOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setBuyModalOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button
@@ -438,7 +448,11 @@ export default function ProjectCard({ project }: { project: any }) {
                     }
                     disabled={busy}
                   >
-                    {busy ? "Processing..." : project.price ? `Pay ${project.currency ?? "USD"} ${project.price}` : "Proceed to Pay"}
+                    {busy
+                      ? "Processing..."
+                      : project.price
+                        ? `Pay ${project.currency ?? "USD"} ${project.price}`
+                        : "Proceed to Pay"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -551,7 +565,6 @@ export default function ProjectCard({ project }: { project: any }) {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-
             </div>
           )}
         </div>
