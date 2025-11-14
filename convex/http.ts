@@ -49,12 +49,80 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
   return new Response(null, { status: 200 });
 });
 
+// --- 2. THE NEW BLOCKRADAR WEBHOOK HANDLER ---
+// This is the function you provided earlier, for payment processing.
+const handleBlockradarWebhook = httpAction(async (ctx, request) => {
+  const payload = await request.json();
+
+  // TODO: Add security by verifying the webhook signature from BlockRadar
+  // const signature = request.headers.get("blockradar-signature");
+  // ... verification logic ...
+
+  // Handle successful payment event
+  if (payload.event === "payment.successful") {
+    const paymentData = payload.data;
+    const metadata = paymentData.metadata;
+
+    // Check for the metadata you passed from your action
+    if (metadata && metadata.projectId && metadata.buyerId) {
+      try {
+        // Run the internal mutation to transfer ownership
+        await ctx.runMutation(api.projects.transferOwnership, {
+          projectId: metadata.projectId,
+          newOwnerId: metadata.buyerId,
+        });
+
+        return new Response(
+          JSON.stringify({ ok: true, message: "Ownership transferred" }),
+          {
+            status: 200,
+          }
+        );
+      } catch (error: any) {
+        console.error("Webhook Error: Failed to transfer ownership", error);
+        return new Response(
+          JSON.stringify({ ok: false, message: error.message }),
+          {
+            status: 500,
+          }
+        );
+      }
+    } else {
+      console.warn(
+        "BlockRadar webhook missing metadata (projectId or buyerId)"
+      );
+      return new Response(
+        JSON.stringify({ ok: false, message: "Missing metadata" }),
+        {
+          status: 400, // Bad request
+        }
+      );
+    }
+  }
+
+  // Acknowledge other events
+  return new Response(
+    JSON.stringify({ ok: true, message: "Webhook received" }),
+    {
+      status: 200,
+    }
+  );
+});
+
 const http = httpRouter();
 
 http.route({
   path: "/clerk",
   method: "POST",
   handler: handleClerkWebhook,
+});
+
+// Register the new BlockRadar webhook
+// This 'path' is the URL you must provide to your BlockRadar dashboard
+http.route({
+  path: "/blockradar", // e.g., https://<your-convex-url>.convex.site/blockradar
+  method: "POST",
+  handler: handleBlockradarWebhook,
 });
 
 const validateRequest = async (
