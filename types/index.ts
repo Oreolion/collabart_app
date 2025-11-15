@@ -52,6 +52,7 @@ export interface ProjectProps {
   talents: string[] | null;
   moods: string[] | null;
   isListed: boolean;
+    listedAt: number | null;
 }
 
 export interface ProjectFileType {
@@ -94,18 +95,6 @@ export type projectBitDepth = "8 bits" | "16 bits" | "24 bits" | "32 bits";
 export type projectAuditionPrivacy =
   | "Keep auditions private [recommended]"
   | "Keep auditions visible to the community";
-
-// export interface GenerateProjectProps {
-//   projectType: projectType;
-//   projectPrivacy: string;
-//   setAudio: Dispatch<SetStateAction<string>>;
-//   audio: string;
-//   setAudioStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>;
-//   postContent: string;
-//   setProjectContent: Dispatch<SetStateAction<string>>;
-//   prompt: string;
-//   setPrompt: Dispatch<SetStateAction<string>>;
-// }
 
 export interface AudioProps {
   title: string;

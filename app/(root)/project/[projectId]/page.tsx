@@ -60,12 +60,17 @@ const ProjectPage = ({
     projectSettings: false,
     lyrics: false,
     share: false,
-    comments: false, // This key seems unused, but keeping it per original code
+    comments: false,
   });
 
   const [commentText, setCommentText] = useState("");
   const [busy, setBusy] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
+  const [buyAmount, setBuyAmount] = useState("");
+
+  // ephemeral success message
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   useEffect(() => {
     console.log("Project ID:", projectId);
     console.log("Project data:", project);
@@ -120,30 +125,51 @@ const ProjectPage = ({
     }
   };
 
-  // --- UPDATED: Buy click handler ---
-  const handleBuyClick = async () => {
-    if (!user) {
-      alert("Please sign in to purchase.");
-      return;
-    }
-    setBusy(true);
+  const createPaymentAndRedirect = async ({ amount }: { amount?: string }) => {
     try {
-      const amount = project?.price ? String(project.price) : undefined;
-      const result = await createPublicLink({
-        projectId: project!._id, // Project is guaranteed to be loaded by this point
-        buyerId: user.id, // <-- NEW: Pass buyerId for ownership transfer
-        amount,
-        redirectUrl: `${window.location.origin}/project/${project!._id}?paid=1`,
+      setBusy(true);
+      const slug = `payment-${String(project?._id)}`
+        .replace(/[^a-zA-Z0-9-]/g, "-")
+        .slice(0, 250);
+      const redirectUrl = `${window.location.origin}/project/${project?._id}?paid=1`;
+      const payload = await createPublicLink({
+        projectId: project?._id,
+        amount, // optional: if undefined, server uses project.price
+        slug,
+        redirectUrl,
+        name: project?.projectTitle,
+        description:
+          project?.projectDescription ?? `Purchase ${project?.projectTitle}`,
+        metadata: {
+          projectTitle: project?.projectTitle,
+          projectId: project?._id,
+          authorId: project?.authorId,
+        },
       });
+
       const url =
-        result?.payload?.data?.url ?? result?.payload?.data?.data?.url ?? null;
-      if (!url) throw new Error("No url returned");
+        payload?.payload?.data?.url ??
+        payload?.payload?.data?.data?.url ??
+        payload?.payload?.url ??
+        payload?.url ??
+        null;
+
+      if (!url) {
+        console.error("No payment URL in response:", payload);
+        setSuccessMessage("Failed to create payment link.");
+        setTimeout(() => setSuccessMessage(null), 3000);
+        return;
+      }
+
       window.location.href = url;
     } catch (err: any) {
-      console.error("create link error", err);
-      alert("Failed to create payment link: " + (err.message || String(err)));
+      console.error("create payment error", err);
+      setSuccessMessage("Error creating payment link.");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } finally {
       setBusy(false);
+      setBuyModalOpen(false);
+      setBuyAmount("");
     }
   };
 
@@ -285,30 +311,33 @@ const ProjectPage = ({
                   {/* Only show if NOT owner and project IS listed */}
                   {!isOwner && project.isListed && project.price && (
                     <Button
-                      onClick={handleBuyClick}
+                      onClick={createPaymentAndRedirect}
                       disabled={busy}
                       className="p-2 flex-grow"
                       variant="secondary"
                       title="Buy Project"
                     >
-                      <ShoppingCart className="h-5 w-5 text-green-500 mr-2" />
-                      <span className="text-sm">Buy for ${project.price}</span>
+                      <ShoppingCart className="h-5 w-5 text-green-500" />
+                      {project.isListed && (
+                        <span className="text-sm font-bold text-green-500">
+                          ${project.price}
+                        </span>
+                      )}
                     </Button>
                   )}
                   {/* Show simple support button if NOT listed or owner */}
                   {(!project.isListed || isOwner) && (
                     <Button
-                      onClick={handleBuyClick}
+                      onClick={createPaymentAndRedirect}
                       disabled={busy}
                       className="p-2"
                       variant="secondary"
                       size="icon"
-                      title="Support Project"
+                      title="Buy Project"
                     >
                       <ShoppingCart className="h-5 w-5 text-green-500" />
                     </Button>
                   )}
-                  {/* --- END UPDATED BUY BUTTON --- */} 
                   <Button
                     className="p-2 bg-transparent"
                     variant="outline"

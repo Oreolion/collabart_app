@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +50,15 @@ export default function ProjectActionsAndMeta({
   const [openModals, setOpenModals] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false); // <-- NEW STATE for genres/moods
-  const [listingPrice, setListingPrice] = useState(project?.price ?? ""); // <-- Initialize with project price
+  const [listingPrice, setListingPrice] = useState(project?.price ?? ""); 
+   const [buyModalOpen, setBuyModalOpen] = useState(false);
+  const [buyAmount, setBuyAmount] = useState("");
+  
+  // ephemeral success message
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+
+
   const listProjectForSale = useMutation(api.projects.listProjectForSale);
   const router = useRouter();
 
@@ -89,6 +97,59 @@ export default function ProjectActionsAndMeta({
     }
   };
 
+    // const createPublicLink = useAction(
+    //   api.actions.createBlockradarPaymentLinkAction
+    // );
+
+//     const createPaymentAndRedirect = async ({ amount }: { amount?: string }) => {
+//     try {
+//       setBusy(true);
+//       const slug = `payment-${String(project._id)}`
+//         .replace(/[^a-zA-Z0-9-]/g, "-")
+//         .slice(0, 250);
+//       const redirectUrl = `${window.location.origin}/project/${project._id}?paid=1`;
+//       const payload = await createPublicLink({
+//         projectId: project._id,
+//         amount, // optional: if undefined, server uses project.price
+//         slug,
+//         redirectUrl,
+//         name: project.projectTitle,
+//         description:
+//           project.projectDescription ?? `Purchase ${project.projectTitle}`,
+//         metadata: {
+//           projectTitle: project.projectTitle,
+//           projectId: project._id,
+//           authorId: project.authorId,
+//         },
+//       });
+
+//       const url =
+//         payload?.payload?.data?.url ??
+//         payload?.payload?.data?.data?.url ??
+//         payload?.payload?.url ??
+//         payload?.url ??
+//         null;
+
+//       if (!url) {
+//         console.error("No payment URL in response:", payload);
+//         setSuccessMessage("Failed to create payment link.");
+//         setTimeout(() => setSuccessMessage(null), 3000);
+//         return;
+//       }
+
+//       window.location.href = url;
+//     } catch (err: any) {
+//       console.error("create payment error", err);
+//       setSuccessMessage("Error creating payment link.");
+//       setTimeout(() => setSuccessMessage(null), 3000);
+//     } finally {
+//       setBusy(false);
+//       setBuyModalOpen(false);
+//       setBuyAmount("");
+//     }
+//   };
+
+ 
   // This component will wrap the "None set" badges
   const EditDetailsTrigger = ({ children }: { children: React.ReactNode }) => {
     if (!isOwner) {
@@ -546,7 +607,6 @@ export default function ProjectActionsAndMeta({
                 </div>
               </div>
               <DialogFooter>
-                S
                 <Button
                   className="text-gray-500"
                   variant="outline"
@@ -554,8 +614,7 @@ export default function ProjectActionsAndMeta({
                   disabled={busy}
                 >
                   Cancel
-                </Button>
-                s
+                </Button>     
                 <Button
                   className="bg-green-600 hover:bg-green-700"
                   onClick={handleListForSale}

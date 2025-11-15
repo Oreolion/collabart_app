@@ -28,7 +28,7 @@ export default defineSchema({
     price: v.optional(v.string()),
     currency: v.optional(v.string()), // Recommended to add this with price
     isListed: v.optional(v.boolean()),
-
+    listedAt: v.optional(v.number()),
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
     talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
@@ -43,8 +43,7 @@ export default defineSchema({
     imageUrl: v.string(),
     clerkId: v.string(),
     name: v.string(),
-  }),
-
+  }).index("by_clerk_id", ["clerkId"]),
   // project file tables ...
   projectFile: defineTable({
     projectId: v.id("projects"),
@@ -110,6 +109,7 @@ export default defineSchema({
     price: v.optional(v.string()),
     currency: v.optional(v.string()), // Recommended to add this with price
     isListed: v.optional(v.boolean()),
+    listedAt: v.optional(v.number()),
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
     talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
