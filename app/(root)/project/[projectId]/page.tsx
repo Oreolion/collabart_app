@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { LyricSubmissionCard } from "@/components/LyricsSubmissionCard";
 
 const ProjectPage = ({
   params: { projectId },
@@ -49,6 +50,16 @@ const ProjectPage = ({
   });
   const comments = useQuery(api.projects.getCommentsByProject, { projectId });
   const addComment = useMutation(api.projects.addProjectComment);
+  // --- LYRIC HOOKS ---
+  const pendingSubmissions = useQuery(api.lyrics.getPendingSubmissions, {
+    projectId,
+  });
+  const myPendingSubmission = useQuery(api.lyrics.getMyPendingSubmission, {
+    projectId,
+  });
+  const setProjectLyrics = useMutation(api.lyrics.setProjectLyrics);
+  const submitLyrics = useMutation(api.lyrics.submitLyrics);
+  const updateLyricSubmission = useMutation(api.lyrics.updateLyricSubmission);
 
   const [openModals, setOpenModals] = useState({
     selling: false,
@@ -68,7 +79,7 @@ const ProjectPage = ({
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [buyModalOpen, setBuyModalOpen] = useState(false);
   const [buyAmount, setBuyAmount] = useState("");
-
+  const [lyricsText, setLyricsText] = useState("");
   // ephemeral success message
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   useEffect(() => {
@@ -87,7 +98,7 @@ const ProjectPage = ({
     }));
   };
 
-  // --- UPDATED: Comment handler ---
+  // --- Comment handler ---
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
     setBusy(true);
@@ -176,6 +187,92 @@ const ProjectPage = ({
   // --- Check if user is the owner ---
   const isOwner =
     isUserLoaded && user?.id && String(user.id) === String(project?.authorId);
+
+  // This effect loads the correct lyrics into the dialog
+  useEffect(() => {
+    if (isOwner) {
+      setLyricsText(project?.lyrics ?? ""); // Owner always sees official lyrics
+    } else if (myPendingSubmission) {
+      setLyricsText(myPendingSubmission.lyrics); // Non-owner with submission sees their draft
+    } else {
+      setLyricsText(""); // New submitter sees a blank slate
+    }
+  }, [project?.lyrics, myPendingSubmission, isOwner, openModals.lyrics]);
+
+  // 4. Load project lyrics into the dialog state when it changes
+  useEffect(() => {
+    if (project?.lyrics) {
+      setLyricsText(project.lyrics);
+    } else {
+      setLyricsText(""); // Clear for non-owners or if no lyrics
+    }
+  }, [project?.lyrics, isOwner]);
+
+  // --- UPDATED LYRIC SAVE/SUBMIT HANDLER ---
+  const handleSaveLyrics = async () => {
+    if (!lyricsText.trim()) {
+      alert("Lyrics cannot be empty.");
+      return;
+    }
+    setBusy(true);
+
+    try {
+      if (isOwner) {
+        // --- Owner Path: Edit official lyrics ---
+        await setProjectLyrics({
+          projectId: projectId,
+          lyrics: lyricsText.trim(),
+        });
+        alert("Lyrics updated!");
+      } else if (myPendingSubmission) {
+        // --- Non-Owner Path 1: Edit existing submission ---
+        await updateLyricSubmission({
+          submissionId: myPendingSubmission._id,
+          lyrics: lyricsText.trim(),
+        });
+        alert("Your submission has been updated!");
+      } else {
+        // --- Non-Owner Path 2: Create new submission ---
+        await submitLyrics({
+          projectId: projectId,
+          lyrics: lyricsText.trim(),
+        });
+        alert("Lyrics submitted for review!");
+      }
+      toggleModal("lyrics"); // Close dialog
+    } catch (err: any) {
+      console.error("Failed to save/submit lyrics:", err);
+      alert("Error: " + err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // --- Helper variables for dialog text ---
+  const getLyricsButtonText = () => {
+    if (isOwner) return "Edit Lyrics";
+    if (myPendingSubmission) return "Edit My Submission";
+    return "Submit Lyrics";
+  };
+
+  const getLyricsDialogTitle = () => {
+    if (isOwner) return "Update Lyrics";
+    if (myPendingSubmission) return "Edit Your Submission";
+    return "Submit Lyrics for Audition";
+  };
+
+  const getLyricsDialogDescription = () => {
+    if (isOwner) return "Update the official lyrics for this project.";
+    if (myPendingSubmission) return "Edit and re-submit your pending lyrics.";
+    return "Your submission will be sent to the project owner for review.";
+  };
+
+  const getLyricsSubmitButtonText = () => {
+    if (busy) return "Saving...";
+    if (isOwner) return "Save Lyrics";
+    if (myPendingSubmission) return "Update Submission";
+    return "Submit for Review";
+  };
 
   if (!isUserLoaded || !project) {
     // Wait for both user and project
@@ -475,9 +572,10 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
+            {/* --- LYRICS CARD & DIALOG --- */}
             <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Lyrics</CardTitle> 
+                <CardTitle>Lyrics</CardTitle>
                 <Dialog
                   open={openModals.lyrics}
                   onOpenChange={() => toggleModal("lyrics")}
@@ -487,14 +585,14 @@ const ProjectPage = ({
                       size="sm"
                       className="bg-blue-600 hover:bg-blue-700 text-sm"
                     >
-                      Add Lyrics
+                      {getLyricsButtonText()}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                      <DialogTitle>Add Lyrics</DialogTitle> 
+                      <DialogTitle>{getLyricsDialogTitle()}</DialogTitle>
                       <DialogDescription>
-                        Paste or write the lyrics for your project. 
+                        {getLyricsDialogDescription()}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
@@ -502,7 +600,15 @@ const ProjectPage = ({
                       <Textarea
                         id="lyrics"
                         placeholder="Paste your lyrics here..."
-                        className="mt-2 min-h-96"
+                        className="mt-2 min-h-96 font-mono"
+                        value={lyricsText}
+                        onChange={(e) => setLyricsText(e.target.value)}
+                        // Prevent editing if they are not owner AND have a submission that is *not* pending
+                        disabled={
+                          !isOwner &&
+                          !!myPendingSubmission &&
+                          myPendingSubmission.status !== "pending"
+                        }
                       />
                     </div>
                     <DialogFooter>
@@ -510,20 +616,48 @@ const ProjectPage = ({
                         className="text-gray-500"
                         variant="outline"
                         onClick={() => toggleModal("lyrics")}
+                        disabled={busy}
                       >
                         Cancel
                       </Button>
-                      <Button className="bg-blue-600 hover:bg-blue-700">
-                        Save Lyrics
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={handleSaveLyrics}
+                        disabled={busy}
+                      >
+                        {getLyricsSubmitButtonText()}
                       </Button>
                     </DialogFooter>
+                    D{" "}
                   </DialogContent>
                 </Dialog>
               </CardHeader>
               <CardContent>
-                <p>No lyrics posted for this project.</p> 
+                {project.lyrics ? (
+                  <pre className="w-full whitespace-pre-wrap text-sm">
+                    {project.lyrics}
+                  </pre>
+                ) : (
+                  <p>No lyrics posted for this project.</p>
+                )}
               </CardContent>
             </Card>
+
+            {/* --- SUBMISSIONS CARD (OWNER ONLY) --- */}
+            {isOwner && pendingSubmissions && pendingSubmissions.length > 0 && (
+              <Card className="mt-6 border-blue-600">
+                <CardHeader>
+                  <CardTitle className="text-blue-600">
+                    Pending Lyric Submissions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {pendingSubmissions.map((sub) => (
+                    <LyricSubmissionCard key={sub._id} submission={sub} />
+                  ))}
+                </CardContent>
+              </Card>
+            )}
             <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
               <CardHeader>
                 <CardTitle>Project Files</CardTitle> 

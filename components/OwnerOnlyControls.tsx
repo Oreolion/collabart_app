@@ -50,23 +50,45 @@ export default function ProjectActionsAndMeta({
   const [openModals, setOpenModals] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false); // <-- NEW STATE for genres/moods
-  const [listingPrice, setListingPrice] = useState(project?.price ?? ""); 
-   const [buyModalOpen, setBuyModalOpen] = useState(false);
-  const [buyAmount, setBuyAmount] = useState("");
-  
+  const [listingPrice, setListingPrice] = useState(project?.price ?? "");
+  //    const [buyModalOpen, setBuyModalOpen] = useState(false);
+  //   const [buyAmount, setBuyAmount] = useState("");
+
   // ephemeral success message
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  //   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-
-
-  const listProjectForSale = useMutation(api.projects.listProjectForSale);
   const router = useRouter();
+  const listProjectForSale = useMutation(api.projects.listProjectForSale);
+  // --- NEW MUTATIONS ---
+  const updateAudition = useMutation(api.collaborations.updateAuditionSettings);
+  const sendInvite = useMutation(api.collaborations.sendProjectInvite);
 
+  // --- NEW STATES for FORMS ---
+  const [auditionTalent, setAuditionTalent] = useState(
+    project.auditionTalents?.join(", ") ?? ""
+  );
+  const [auditionBrief, setAuditionBrief] = useState(
+    project.auditionBrief ?? ""
+  );
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("");
+  const [inviteMessage, setInviteMessage] = useState("");
   const isOwner =
     isLoaded && user?.id && String(user.id) === String(project?.authorId);
 
   const toggleModal = (name: string) => {
     setOpenModals((s) => ({ ...s, [name]: !s[name] }));
+
+    // Reset forms when closing
+    if (name === "audition" && openModals.audition) {
+      setAuditionTalent(project.auditionTalents?.join(", ") ?? "");
+      setAuditionBrief(project.auditionBrief ?? "");
+    }
+    if (name === "collaboration" && openModals.collaboration) {
+      setInviteEmail("");
+      setInviteRole("");
+      setInviteMessage("");
+    }
   };
 
   const handleListForSale = async () => {
@@ -97,59 +119,54 @@ export default function ProjectActionsAndMeta({
     }
   };
 
-    // const createPublicLink = useAction(
-    //   api.actions.createBlockradarPaymentLinkAction
-    // );
+  // --- NEW HANDLER for Auditions ---
+  const handleListForAudition = async () => {
+    setBusy(true);
+    try {
+      const talentsArray = auditionTalent
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+      await updateAudition({
+        projectId: project._id,
+        isAuditioning: true,
+        talents: talentsArray,
+        brief: auditionBrief,
+      });
+      router.refresh();
+      toggleModal("audition");
+    } catch (err: any) {
+      console.error("Failed to list for audition:", err);
+      alert("Error: " + err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-//     const createPaymentAndRedirect = async ({ amount }: { amount?: string }) => {
-//     try {
-//       setBusy(true);
-//       const slug = `payment-${String(project._id)}`
-//         .replace(/[^a-zA-Z0-9-]/g, "-")
-//         .slice(0, 250);
-//       const redirectUrl = `${window.location.origin}/project/${project._id}?paid=1`;
-//       const payload = await createPublicLink({
-//         projectId: project._id,
-//         amount, // optional: if undefined, server uses project.price
-//         slug,
-//         redirectUrl,
-//         name: project.projectTitle,
-//         description:
-//           project.projectDescription ?? `Purchase ${project.projectTitle}`,
-//         metadata: {
-//           projectTitle: project.projectTitle,
-//           projectId: project._id,
-//           authorId: project.authorId,
-//         },
-//       });
+  // --- NEW HANDLER for Invites ---
+  const handleSendInvite = async () => {
+    if (!inviteEmail) {
+      alert("Please enter an email address.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await sendInvite({
+        projectId: project._id,
+        inviteeEmail: inviteEmail,
+        role: inviteRole,
+        message: inviteMessage,
+      });
+      alert("Invite sent!");
+      toggleModal("collaboration");
+    } catch (err: any) {
+      console.error("Failed to send invite:", err);
+      alert("Error: " + err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-//       const url =
-//         payload?.payload?.data?.url ??
-//         payload?.payload?.data?.data?.url ??
-//         payload?.payload?.url ??
-//         payload?.url ??
-//         null;
-
-//       if (!url) {
-//         console.error("No payment URL in response:", payload);
-//         setSuccessMessage("Failed to create payment link.");
-//         setTimeout(() => setSuccessMessage(null), 3000);
-//         return;
-//       }
-
-//       window.location.href = url;
-//     } catch (err: any) {
-//       console.error("create payment error", err);
-//       setSuccessMessage("Error creating payment link.");
-//       setTimeout(() => setSuccessMessage(null), 3000);
-//     } finally {
-//       setBusy(false);
-//       setBuyModalOpen(false);
-//       setBuyAmount("");
-//     }
-//   };
-
- 
   // This component will wrap the "None set" badges
   const EditDetailsTrigger = ({ children }: { children: React.ReactNode }) => {
     if (!isOwner) {
@@ -271,10 +288,9 @@ export default function ProjectActionsAndMeta({
           </Tabs>
         </DialogContent>
       </Dialog>
-      {/* --- NEW DIALOG --- */} 
       {/* Owner-only controls: only render if isOwner === true */} 
       {isOwner && (
-        <div className="">
+        <div className="flex flex-col gap-2">
           {/* Close Project dialog */} 
           <Dialog
             open={!!openModals.closeProject}
@@ -447,7 +463,7 @@ export default function ProjectActionsAndMeta({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {/* Audition */} 
+          {/* --- NEW: Audition --- */}
           <Dialog
             open={!!openModals.audition}
             onOpenChange={() => toggleModal("audition")}
@@ -457,7 +473,10 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full text-purple-600 bg-transparent text-xs"
               >
-                <Mic className="w-4 h-4 mr-1" /> List for Audition
+                <Mic className="w-4 h-4 mr-1" />
+                {project.isAuditioning
+                  ? "Update Audition"
+                  : "List for Audition"}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-slate-400">
@@ -472,21 +491,24 @@ export default function ProjectActionsAndMeta({
                   <Label htmlFor="audition-talent">Required Talent</Label>
                   <Input
                     id="audition-talent"
+                    value={auditionTalent}
+                    onChange={(e) => setAuditionTalent(e.target.value)}
                     placeholder="e.g., Lead Vocals, Guitar"
                     className="mt-2"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Separate talents with a comma.
+                  </p>
                 </div>
                 <div>
-                  <Label htmlFor="audition-brief">Audition Brief</Label> 
+                  <Label htmlFor="audition-brief">Audition Brief</Label>
                   <Textarea
                     id="audition-brief"
+                    value={auditionBrief}
+                    onChange={(e) => setAuditionBrief(e.target.value)}
                     placeholder="Describe what you're looking for..."
                     className="mt-2"
                   />
-                </div>
-                <div>
-                  S <Label htmlFor="audition-deadline">Deadline</Label> 
-                  <Input id="audition-deadline" type="date" className="mt-2" /> 
                 </div>
               </div>
               <DialogFooter>
@@ -494,16 +516,21 @@ export default function ProjectActionsAndMeta({
                   className="text-gray-500"
                   variant="outline"
                   onClick={() => toggleModal("audition")}
+                  disabled={busy}
                 >
                   Cancel
                 </Button>
-                <Button className="bg-purple-600 hover:bg-purple-700">
-                  Open
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={handleListForAudition}
+                  disabled={busy}
+                >
+                  {busy ? "Saving..." : "Open Auditions"}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {/* Collaboration Invite */} 
+          {/* --- NEW: Collaboration Invite --- */}
           <Dialog
             open={!!openModals.collaboration}
             onOpenChange={() => toggleModal("collaboration")}
@@ -513,48 +540,45 @@ export default function ProjectActionsAndMeta({
                 variant="outline"
                 className="w-full text-blue-600 bg-transparent text-xs"
               >
-                <Users className="w-4 h-4 mr-1" /> Send Invite
+                <Users className="w-4 h-4 mr-1" />
+                Send Invite
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-slate-400">
               <DialogHeader>
-                <DialogTitle>Send Collaboration Invite</DialogTitle> 
+                <DialogTitle>Send Collaboration Invite</DialogTitle>
                 <DialogDescription>
                   Invite collaborators to join your project.
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <div>
-                  <Label htmlFor="collaborator-email">Email</Label>
+                  <Label htmlFor="collaborator-email">User Email</Label>
                   <Input
                     id="collaborator-email"
                     type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="collaborator@example.com"
                     className="mt-2"
                   />
                 </div>
                 <div>
                   <Label htmlFor="role">Role</Label>
-                  <Select>
-                    <SelectTrigger id="role" className="mt-2">
-                      S <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="producer">Producer</SelectItem> 
-                      <SelectItem value="vocalist">Vocalist</SelectItem> 
-                      <SelectItem value="guitarist">Guitarist</SelectItem> 
-                      <SelectItem value="bassist">Bassist</SelectItem> 
-                      <SelectItem value="drummer">Drummer</SelectItem> 
-                      <SelectItem value="engineer">Engineer</SelectItem> 
-                      <SelectItem value="other">Other</SelectItem> 
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    id="role"
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    placeholder="e.g., Vocalist, Producer (Optional)"
+                    className="mt-2"
+                  />
                 </div>
-                s
                 <div>
                   <Label htmlFor="invite-message">Message</Label>
                   <Textarea
                     id="invite-message"
+                    value={inviteMessage}
+                    onChange={(e) => setInviteMessage(e.target.value)}
                     placeholder="Add a personal message (optional)..."
                     className="mt-2"
                   />
@@ -565,14 +589,21 @@ export default function ProjectActionsAndMeta({
                   className="text-gray-500"
                   variant="outline"
                   onClick={() => toggleModal("collaboration")}
+                  disabled={busy}
                 >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">Send</Button> 
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={handleSendInvite}
+                  disabled={busy}
+                >
+                  {busy ? "Sending..." : "Send Invite"}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {/* --- List for Sell (Your existing dialog) --- */} 
+          {/* --- List for Sell  --- */} 
           <Dialog
             open={!!openModals.selling}
             onOpenChange={() => toggleModal("selling")}
@@ -614,7 +645,7 @@ export default function ProjectActionsAndMeta({
                   disabled={busy}
                 >
                   Cancel
-                </Button>     
+                </Button>
                 <Button
                   className="bg-green-600 hover:bg-green-700"
                   onClick={handleListForSale}

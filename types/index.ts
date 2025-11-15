@@ -52,7 +52,11 @@ export interface ProjectProps {
   talents: string[] | null;
   moods: string[] | null;
   isListed: boolean;
-    listedAt: number | null;
+  listedAt: number | null;
+  lyrics: string | null;
+  isAuditioning: boolean | null;
+  auditionTalents: string[] | null;
+  auditionBrief: string | null;
 }
 
 export interface ProjectFileType {

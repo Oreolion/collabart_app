@@ -29,9 +29,13 @@ export default defineSchema({
     currency: v.optional(v.string()), // Recommended to add this with price
     isListed: v.optional(v.boolean()),
     listedAt: v.optional(v.number()),
+    lyrics: v.optional(v.string()), // This will store the official project lyrics
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
     talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
+    isAuditioning: v.optional(v.boolean()),
+    auditionTalents: v.optional(v.array(v.string())),
+    auditionBrief: v.optional(v.string()),
   })
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
@@ -105,13 +109,43 @@ export default defineSchema({
     views: v.number(),
     likes: v.number(),
     savedAt: v.number(),
-    // --- NEW FIELDS TO ADD ---
     price: v.optional(v.string()),
     currency: v.optional(v.string()), // Recommended to add this with price
     isListed: v.optional(v.boolean()),
     listedAt: v.optional(v.number()),
+    lyrics: v.optional(v.string()), // This will store the official project lyrics
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
     talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
+    isAuditioning: v.optional(v.boolean()),
+    auditionTalents: v.optional(v.array(v.string())),
+    auditionBrief: v.optional(v.string()),
   }),
+
+  // --- 'lyricSubmissions' TABLE ---
+  lyricSubmissions: defineTable({
+    projectId: v.id("projects"),
+    authorId: v.string(),
+    authorName: v.optional(v.string()),
+    authorImageUrl: v.optional(v.string()),
+    lyrics: v.string(), // The submitted lyrics
+    status: v.string(), // "pending", "approved", "rejected"
+  })
+    // Indexes to find submissions for a project
+    .index("by_projectId", ["projectId"])
+    .index("by_status", ["status"])
+    .index("by_project_and_status", ["projectId", "status"]),
+
+  // --- 'projectInvites' TABLE ---
+    projectInvites: defineTable({
+    projectId: v.id("projects"),
+    inviterId: v.string(),      // Clerk ID of the project owner
+    inviteeEmail: v.string(),   // Email of the person being invited
+    status: v.string(),         // "pending", "accepted", "declined"
+    role: v.optional(v.string()), // e.g., "Vocalist", "Producer"
+    message: v.optional(v.string()),
+  })
+  .index("by_projectId", ["projectId"])
+  .index("by_inviteeEmail", ["inviteeEmail"])
+  .index("by_project_and_status", ["projectId", "status"]),
 });
