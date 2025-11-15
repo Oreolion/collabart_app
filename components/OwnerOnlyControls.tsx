@@ -290,14 +290,14 @@ export default function ProjectActionsAndMeta({
       </Dialog>
       {/* Owner-only controls: only render if isOwner === true */} 
       {isOwner && (
-        <div className="flex flex-col gap-2">
+        <div className="">
           {/* Close Project dialog */} 
           <Dialog
             open={!!openModals.closeProject}
             onOpenChange={() => toggleModal("closeProject")}
           >
             <DialogTrigger asChild>
-              <Button variant="destructive" className="w-full text-xs">
+              <Button variant="destructive" className="w-full text-xs ">
                 <AlertTriangle className="w-4 h-4 mr-1" /> Close Project
               </Button>
             </DialogTrigger>
@@ -413,7 +413,7 @@ export default function ProjectActionsAndMeta({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full bg-transparent text-xs"
+                className="w-full bg-transparent text-xs mb-6"
               >
                 <FileText className="w-4 h-4 mr-1" /> Project Files
               </Button>
@@ -471,7 +471,7 @@ export default function ProjectActionsAndMeta({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full text-purple-600 bg-transparent text-xs"
+                className="w-full text-purple-600 bg-transparent text-xs mb-6"
               >
                 <Mic className="w-4 h-4 mr-1" />
                 {project.isAuditioning
