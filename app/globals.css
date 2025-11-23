@@ -1,3 +1,4 @@
+/* app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -39,7 +40,7 @@ ul {
 
 section {
   padding: 2rem 7%;
-} 
+}
 
 button {
   background: rgba(249, 120, 120, 0.6);

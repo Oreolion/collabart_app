@@ -1,3 +1,4 @@
+// app/(dashboard)/layout.tsx
 "use client";
 import DashboardNav from "@/components/DashboardNav";
 import MobileDashBoardNav from "@/components/MobileDashBoardNav";

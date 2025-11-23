@@ -1,3 +1,4 @@
+/* styles/mobiledashboardnav.module.css */
 .logo {
   margin-right: auto;
   background-color: rgba(05, 05, 05, 0.1);
@@ -50,6 +51,8 @@
 .logo {
   margin: 2rem 0 -2rem;
   color: #e67e22;
+  z-index: 100;
+  cursor: pointer;
 }
 
 .logo .p {
