@@ -24,18 +24,18 @@ export default defineSchema({
     authorImageUrl: v.string(),
     views: v.number(),
     likes: v.optional(v.number()),
-    // --- NEW FIELDS TO ADD ---
     price: v.optional(v.string()),
-    currency: v.optional(v.string()), // Recommended to add this with price
+    currency: v.optional(v.string()),
     isListed: v.optional(v.boolean()),
     listedAt: v.optional(v.number()),
-    lyrics: v.optional(v.string()), // This will store the official project lyrics
+    lyrics: v.optional(v.string()),
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
-    talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
+    talents: v.optional(v.array(v.string())),
     isAuditioning: v.optional(v.boolean()),
     auditionTalents: v.optional(v.array(v.string())),
     auditionBrief: v.optional(v.string()),
+    status: v.optional(v.string()),
   })
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
@@ -47,20 +47,23 @@ export default defineSchema({
     imageUrl: v.string(),
     clerkId: v.string(),
     name: v.string(),
+    bio: v.optional(v.string()),
+    genres: v.optional(v.array(v.string())),
+    talents: v.optional(v.array(v.string())),
+    moods: v.optional(v.array(v.string())),
+    onboardingComplete: v.optional(v.boolean()),
   }).index("by_clerk_id", ["clerkId"]),
-  // project file tables ...
+
+  // project file tables
   projectFile: defineTable({
     projectId: v.id("projects"),
     userId: v.id("users"),
     username: v.optional(v.string()),
     projectFileTitle: v.optional(v.string()),
     projectFileLabel: v.string(),
-    // projectFile: v.optional(v.string()),
     audioUrl: v.optional(v.string()),
     audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
     audioDuration: v.optional(v.number()),
-    // imageUrl: v.string(),
-    // imageStorageId: v.optional(v.id("_storage")),
     createdAt: v.number(),
     isProjectOwner: v.boolean(),
     hasExplicitLyrics: v.boolean(),
@@ -68,7 +71,7 @@ export default defineSchema({
     confirmCopyright: v.boolean(),
   }).index("by_project", ["projectId"]),
 
-  //   comment tables ...
+  // comment tables
   comments: defineTable({
     projectId: v.id("projects"),
     userId: v.id("users"),
@@ -79,13 +82,7 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_project", ["projectId"]),
 
-  // user open ai call count table...
-  //   userCallCounts: defineTable({
-  //     userId: v.string(),
-  //     count: v.number(),
-  //   }).index("by_userId", ["userId"]),
-
-  // bookmarks tables for schema ...
+  // bookmarks tables
   savedProjects: defineTable({
     user: v.id("users"),
     userId: v.optional(v.id("users")),
@@ -97,55 +94,85 @@ export default defineSchema({
     projectAuditionPrivacy: v.string(),
     projectBitDepth: v.string(),
     projectSampleRate: v.string(),
-    // audioUrl: v.optional(v.string()),
     imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
-    // audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
     author: v.string(),
     authorId: v.string(),
     authorImageUrl: v.string(),
-    // imageUrl: v.string(),
-    // imagePrompt: v.string(),
-    // audioDuration: v.number(),
     views: v.number(),
     likes: v.number(),
     savedAt: v.number(),
     price: v.optional(v.string()),
-    currency: v.optional(v.string()), // Recommended to add this with price
+    currency: v.optional(v.string()),
     isListed: v.optional(v.boolean()),
     listedAt: v.optional(v.number()),
-    lyrics: v.optional(v.string()), // This will store the official project lyrics
+    lyrics: v.optional(v.string()),
     genres: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
-    talents: v.optional(v.array(v.string())), // e.g., ["Vocalist", "Producer"]
+    talents: v.optional(v.array(v.string())),
     isAuditioning: v.optional(v.boolean()),
     auditionTalents: v.optional(v.array(v.string())),
     auditionBrief: v.optional(v.string()),
   }),
 
-  // --- 'lyricSubmissions' TABLE ---
+  // lyric submissions
   lyricSubmissions: defineTable({
     projectId: v.id("projects"),
     authorId: v.string(),
     authorName: v.optional(v.string()),
     authorImageUrl: v.optional(v.string()),
-    lyrics: v.string(), // The submitted lyrics
-    status: v.string(), // "pending", "approved", "rejected"
+    lyrics: v.string(),
+    status: v.string(),
   })
-    // Indexes to find submissions for a project
     .index("by_projectId", ["projectId"])
     .index("by_status", ["status"])
     .index("by_project_and_status", ["projectId", "status"]),
 
-  // --- 'projectInvites' TABLE ---
-    projectInvites: defineTable({
+  // project invites
+  projectInvites: defineTable({
     projectId: v.id("projects"),
-    inviterId: v.string(),      // Clerk ID of the project owner
-    inviteeEmail: v.string(),   // Email of the person being invited
-    status: v.string(),         // "pending", "accepted", "declined"
-    role: v.optional(v.string()), // e.g., "Vocalist", "Producer"
+    inviterId: v.string(),
+    inviteeEmail: v.string(),
+    status: v.string(),
+    role: v.optional(v.string()),
     message: v.optional(v.string()),
   })
-  .index("by_projectId", ["projectId"])
-  .index("by_inviteeEmail", ["inviteeEmail"])
-  .index("by_project_and_status", ["projectId", "status"]),
+    .index("by_projectId", ["projectId"])
+    .index("by_inviteeEmail", ["inviteeEmail"])
+    .index("by_project_and_status", ["projectId", "status"]),
+
+  // notifications
+  notifications: defineTable({
+    userId: v.string(),
+    type: v.string(),
+    title: v.string(),
+    message: v.string(),
+    projectId: v.optional(v.id("projects")),
+    fromUserId: v.optional(v.string()),
+    fromUserName: v.optional(v.string()),
+    fromUserImage: v.optional(v.string()),
+    isRead: v.boolean(),
+    createdAt: v.number(),
+    link: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_read", ["userId", "isRead"]),
+
+  // activity log
+  activityLog: defineTable({
+    projectId: v.id("projects"),
+    userId: v.optional(v.string()),
+    userName: v.optional(v.string()),
+    userImage: v.optional(v.string()),
+    action: v.string(),
+    metadata: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_project", ["projectId"]),
+
+  // likes
+  likes: defineTable({
+    userId: v.string(),
+    projectId: v.id("projects"),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user_and_project", ["userId", "projectId"]),
 });

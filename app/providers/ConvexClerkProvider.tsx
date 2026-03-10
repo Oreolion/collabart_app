@@ -19,11 +19,11 @@ const ConvexClerkProvider = ({ children }: { children: ReactNode }) => (
     appearance={{
       layout: { socialButtonsVariant: "iconButton" },
       variables: {
-        colorBackground: "#15171c",
-        colorPrimary: "",
-        colorText: "white",
-        colorInputBackground: "#1b1f29",
-        colorInputText: "white",
+        colorBackground: "#0e0f11",
+        colorPrimary: "#7c3aed",
+        colorText: "#f2f2f2",
+        colorInputBackground: "#141518",
+        colorInputText: "#f2f2f2",
       },
     }}
   >

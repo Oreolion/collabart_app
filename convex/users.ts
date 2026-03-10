@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 export const getUserById = query({
   args: { clerkId: v.string() },
@@ -88,19 +88,68 @@ export const updateUser = internalMutation({
       email: args.email,
     });
 
-    const podcast = await ctx.db
-
-      .query("podcasts")
+    // Update author image on all owned projects
+    const projects = await ctx.db
+      .query("projects")
       .filter((q) => q.eq(q.field("authorId"), args.clerkId))
       .collect();
 
     await Promise.all(
-      podcast.map(async (p) => {
+      projects.map(async (p) => {
         await ctx.db.patch(p._id, {
           authorImageUrl: args.imageUrl,
         });
       })
     );
+  },
+});
+
+export const updateUserProfile = mutation({
+  args: {
+    bio: v.optional(v.string()),
+    genres: v.optional(v.array(v.string())),
+    talents: v.optional(v.array(v.string())),
+    moods: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Not authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) throw new ConvexError("User not found");
+
+    const { ...updates } = args;
+    await ctx.db.patch(user._id, updates);
+    return { ok: true };
+  },
+});
+
+export const completeOnboarding = mutation({
+  args: {
+    talents: v.optional(v.array(v.string())),
+    genres: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Not authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) throw new ConvexError("User not found");
+
+    await ctx.db.patch(user._id, {
+      talents: args.talents,
+      genres: args.genres,
+      onboardingComplete: true,
+    });
+    return { ok: true };
   },
 });
 

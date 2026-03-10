@@ -42,14 +42,11 @@ export const createProject = mutation({
     }
 
     return await ctx.db.insert("projects", {
-      //   audioStorageId: args.audioStorageId,
       user: user[0]._id,
       projectTitle: args.projectTitle,
       projectDescription: args.projectDescription,
       projectBrief: args.projectBrief,
       collaborationAgreement: args.collaborationAgreement,
-      //   imageUrl: args.imageUrl,
-      //   imageStorageId: args.imageStorageId,
       author: user[0].name,
       authorId: user[0].clerkId,
       projectType: args.projectType,
@@ -60,6 +57,7 @@ export const createProject = mutation({
       likes: args.likes,
       authorImageUrl: user[0].imageUrl,
       projectFile: args.projectFile,
+      status: "draft",
     });
   },
 });
@@ -403,8 +401,8 @@ export const addProjectComment = mutation({
     const inserted = await ctx.db.insert("comments", {
       projectId: args.projectId,
       userId,
-      user: username,
-      text: args.text,
+      username: username,
+      content: args.text,
       createdAt: Date.now(),
     });
 
@@ -423,6 +421,71 @@ export const getCommentsByProject = query({
       .filter((q) => q.eq(q.field("projectId"), args.projectId))
       .order("desc")
       .collect();
+  },
+});
+
+// Update project status (owner-only)
+export const updateProjectStatus = mutation({
+  args: {
+    projectId: v.id("projects"),
+    status: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Not authenticated");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new ConvexError("Project not found");
+
+    if (project.authorId !== identity.subject) {
+      throw new ConvexError("Only the project owner can update status");
+    }
+
+    await ctx.db.patch(args.projectId, { status: args.status });
+    return { ok: true };
+  },
+});
+
+// Get projects with optional filters
+export const getProjectsByFilters = query({
+  args: {
+    genre: v.optional(v.string()),
+    mood: v.optional(v.string()),
+    talent: v.optional(v.string()),
+    projectType: v.optional(v.string()),
+    isAuditioning: v.optional(v.boolean()),
+    isListed: v.optional(v.boolean()),
+    sortBy: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    let projects = await ctx.db.query("projects").order("desc").collect();
+
+    if (args.genre) {
+      projects = projects.filter((p) => p.genres?.includes(args.genre!));
+    }
+    if (args.mood) {
+      projects = projects.filter((p) => p.moods?.includes(args.mood!));
+    }
+    if (args.talent) {
+      projects = projects.filter((p) => p.talents?.includes(args.talent!));
+    }
+    if (args.projectType) {
+      projects = projects.filter((p) => p.projectType === args.projectType);
+    }
+    if (args.isAuditioning !== undefined) {
+      projects = projects.filter((p) => p.isAuditioning === args.isAuditioning);
+    }
+    if (args.isListed !== undefined) {
+      projects = projects.filter((p) => p.isListed === args.isListed);
+    }
+
+    if (args.sortBy === "views") {
+      projects.sort((a, b) => b.views - a.views);
+    } else if (args.sortBy === "likes") {
+      projects.sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0));
+    }
+
+    return projects;
   },
 });
 

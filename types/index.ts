@@ -24,6 +24,8 @@ export type UseDotButtonType = {
   onDotButtonClick: (index: number) => void;
 };
 
+export type ProjectStatus = "draft" | "in_progress" | "mixing" | "mastering" | "complete";
+
 export interface ProjectProps {
   _id: Id<"projects">;
   _creationTime: number;
@@ -38,8 +40,6 @@ export interface ProjectProps {
   projectBrief: string;
   audioStorageId: Id<"_storage"> | null;
   audioUrl: string | null;
-  //   imageUrl: string | null;
-  //   imageStorageId: Id<"_storage"> | null;
   audioDuration: number;
   author: string;
   authorId: string;
@@ -57,6 +57,35 @@ export interface ProjectProps {
   isAuditioning: boolean | null;
   auditionTalents: string[] | null;
   auditionBrief: string | null;
+  status?: ProjectStatus;
+}
+
+export interface NotificationProps {
+  _id: Id<"notifications">;
+  _creationTime: number;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  projectId?: Id<"projects">;
+  fromUserId?: string;
+  fromUserName?: string;
+  fromUserImage?: string;
+  isRead: boolean;
+  createdAt: number;
+  link?: string;
+}
+
+export interface ActivityLogProps {
+  _id: Id<"activityLog">;
+  _creationTime: number;
+  projectId: Id<"projects">;
+  userId?: string;
+  userName?: string;
+  userImage?: string;
+  action: string;
+  metadata?: string;
+  createdAt: number;
 }
 
 export interface ProjectFileType {

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(grep \"\"userType\"\":\"\"external\"\":*)",
+      "Bash(cd \"C:\\\\Users\\\\HP 240 G9\\\\Desktop\\\\nextJSApps\\\\collabArtApp\\\\collabart_app\" && grep '\"lucide-react\"' package.json)"
+    ]
+  }
+}
