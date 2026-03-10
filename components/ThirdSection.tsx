@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import styles from "../styles/thirdsection.module.css";
 import { fourthSection } from "@/constants";
 import Image from "next/image";
 
@@ -12,66 +11,47 @@ const ThirdSection = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-        }
+        if (entry.isIntersecting && !hasAnimated) setHasAnimated(true);
       },
       { threshold: 0.1 }
     );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      if (ref.current) observer.unobserve(ref.current);
     };
   }, [hasAnimated]);
 
-  const variants = {
-    hidden: { x: "-100%", opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: { duration: 0.8, ease: "easeOut" },
-    },
-  };
   return (
-    <section className="bg-red-500" ref={ref}>
-      <motion.div 
-        initial="hidden"
-        animate={hasAnimated ? "visible" : "hidden"}
-        variants={variants}
+    <section id="features" ref={ref} className="py-20 px-6 bg-background">
+      <motion.div
+        className="max-w-6xl mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <h2 className={styles.h2}>
-          Platform <strong className="font-bold">Features</strong>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 text-foreground">
+          Platform <span className="text-gradient-primary">Features</span>
         </h2>
-        <p className="mb-[2rem] text-center font-bold">
+        <p className="text-muted-foreground text-center max-w-lg mx-auto mb-12">
           Members have access to a number of cool features on the site.
           We&lsquo;ve listed some of the main ones below.
         </p>
-        <ul className={styles.ul}>
-          {fourthSection.map((item) => {
-            return (
-              <>
-                <li key={item.id} className={styles.li}>
-                  <Image
-                    src={item.svgUrl}
-                    alt="svg"
-                    height={40}
-                    width={40}
-                  ></Image>
-                  <div className="texts">
-                    <h4 className={styles.h4}>{item.h4}</h4>
-                    <p className={styles.p}>{item.p}</p>
-                  </div>
-                </li>
-              </>
-            );
-          })}
-        </ul>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {fourthSection.map((item) => (
+            <div
+              key={item.id}
+              className="surface-elevated p-5 flex gap-4 hover:border-primary/30 transition-all duration-200"
+            >
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Image src={item.svgUrl} alt={item.h4} height={22} width={22} />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-1">{item.h4}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.p}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </section>
   );

@@ -1,26 +1,25 @@
-// app/(dashboard)/layout.tsx
 "use client";
 import DashboardNav from "@/components/DashboardNav";
 import MobileDashBoardNav from "@/components/MobileDashBoardNav";
 import { Toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import React from "react";
-import styles from "@/styles/dashboardlayout.module.css";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [showNav, setShowNav] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
 
-  const handleNavToggle = (navState: boolean) => {
-    setShowNav(navState);
-  };
   return (
-    <div className={styles.dashboard_layout}>
-      <DashboardNav onNavToggle={handleNavToggle} />{" "}
-      <MobileDashBoardNav></MobileDashBoardNav>
+    <div className="flex min-h-screen bg-background">
+      <DashboardNav collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      <MobileDashBoardNav />
       <main
-        className={`${styles.dashboard_content} ${showNav ? "" : styles.expanded}`}
-      >{children}</main>
-      <Toaster/>
+        className={`flex-1 transition-all duration-300 ${
+          collapsed ? "md:ml-[4.5rem]" : "md:ml-[15rem]"
+        } mt-[3.5rem] md:mt-0 overflow-y-auto`}
+      >
+        {children}
+      </main>
+      <Toaster />
     </div>
   );
 };

@@ -6,16 +6,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="relative h-screen w-full">
-      <div className="absolute size-full">
+    <main className="relative h-screen w-full bg-background">
+      <div className="absolute inset-0 opacity-20">
         <Image
           src="/images/austin-distel-wD1LRb9OeEo-unsplash.jpg"
           alt="background"
           fill
-          className="size-full"
+          className="object-cover"
         ></Image>
       </div>
-      {children}
+      <div className="relative z-10 flex h-full items-center justify-center">
+        {children}
+      </div>
     </main>
   );
 }

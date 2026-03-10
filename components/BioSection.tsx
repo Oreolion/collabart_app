@@ -7,29 +7,29 @@ const BioSection = () => {
 
     if (!isUserLoaded) return <LoaderSpinner></LoaderSpinner>
   return (
-    <div className="mt-8 grid grid-cols-1 gap-4 ">
-      <Card className="bg-slate-500 ">
+    <div className="mt-8 grid grid-cols-1 gap-4">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-100 bg-slate-800 p-2 max-md:ml-[-1rem]">Biography</h3>
+          <h3 className="text-lg font-semibold text-foreground bg-muted/50 p-2 rounded-md">Biography</h3>
         </CardHeader>
-        <CardContent className="max-md:ml-[-1rem]">
-          <p>Musician, Songwriter, Composer, Lyricist, Artist</p>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Musician, Songwriter, Composer, Lyricist, Artist</p>
         </CardContent>
       </Card>
-      <Card className="bg-slate-500 ">
-        <CardHeader className="max-md:ml-[-1rem]">
-          <h3 className="text-lg font-semibold bg-slate-800 p-2 text-gray-100">Contact Information</h3>
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <h3 className="text-lg font-semibold text-foreground bg-muted/50 p-2 rounded-md">Contact Information</h3>
         </CardHeader>
-        <CardContent className="max-md:ml-[-1rem]">
-          <p>{user?.emailAddresses[0].emailAddress}</p>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{user?.emailAddresses[0].emailAddress}</p>
         </CardContent>
       </Card>
-      <Card className="bg-slate-500 ">
-        <CardHeader className="max-md:ml-[-1rem]">
-          <h3 className="text-lg font-semibold bg-slate-800 p-2 text-gray-100">Recent Activity</h3>
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <h3 className="text-lg font-semibold text-foreground bg-muted/50 p-2 rounded-md">Recent Activity</h3>
         </CardHeader>
-        <CardContent className="max-md:ml-[-1rem]">
-          <p>{user?.username} just joined CollabArts - WELCOME!</p>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{user?.username} just joined CollabArts - WELCOME!</p>
         </CardContent>
       </Card>
     </div>

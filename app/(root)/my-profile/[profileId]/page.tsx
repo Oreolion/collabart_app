@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import styles from "@/styles/profile.module.css";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -78,19 +77,18 @@ const ProfilePage = ({
         "Everything in the Silver membership plan plus a total of 15 simultaneous projects and 10 GB of project or media space. Additionally, this plan comes with project privacy and custom profile icon features included. This plan can be customized at anytime with add-on features.",
       amount: 50.0,
     },
-    // Add more services here...
   ];
 
   return (
-    <div className={styles.profile__feeds}>
-      <h1 className="text-3xl font-bold mb-2">My Profile</h1>
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4 text-foreground">My Profile</h1>
 
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="w-full bg-gray-400"
+        className="w-full"
       >
-        <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6 max-md:gap-1">
+        <TabsList className="grid h-12 w-full gap-1 grid-cols-6 lg:grid-cols-6 max-md:gap-1 bg-card border border-border">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="talents">Talents</TabsTrigger>
@@ -98,51 +96,50 @@ const ProfilePage = ({
           <TabsTrigger value="banner">Banner</TabsTrigger>
           <TabsTrigger value="picture">Picture</TabsTrigger>
         </TabsList>
-        <TabsContent value="profile" className="bg-gray-400">
-          <div className="container mx-auto p-4 space-y-8 max-sm:ml-[-1.5rem] max-sm:max-w-[25rem] bg-gray-400">
-            <h1 className="text-2xl font-bold mb-4">Member Profile</h1>
 
-            <section className="space-y-4 max-sm:ml-[-1.5rem]  bg-gray-400">
-              <h2 className="text-xl font-semibold">About Me</h2>
+        {/* Profile Tab */}
+        <TabsContent value="profile">
+          <div className="space-y-8">
+            <h2 className="text-2xl font-bold text-foreground">Member Profile</h2>
+
+            <section className="space-y-4">
+              <h3 className="text-xl font-semibold text-foreground">About Me</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="industry">Industry</Label>
+                  <Label htmlFor="industry" className="text-muted-foreground">Industry</Label>
                   <Input
                     id="industry"
                     placeholder="I am an Musician and Hip-hop Artist & Songwriter"
+                    className="border-border bg-muted/50 text-foreground"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="experience">Experience</Label>
-                  <Input id="experience" placeholder="5-10 years" />
+                  <Label htmlFor="experience" className="text-muted-foreground">Experience</Label>
+                  <Input id="experience" placeholder="5-10 years" className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="website">Website</Label>
+                  <Label htmlFor="website" className="text-muted-foreground">Website</Label>
                   <Input
                     id="website"
                     placeholder="https://soundcloud.com/username"
+                    className="border-border bg-muted/50 text-foreground"
                   />
                 </div>
               </div>
             </section>
 
-            <Card className="mb-6 bg-gray-400">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle>Purpose on ProCollabs</CardTitle>
+                <CardTitle className="text-foreground">Purpose on ProCollabs</CardTitle>
               </CardHeader>
               <CardContent>
-                <Slider
-                  defaultValue={[50]}
-                  max={100}
-                  step={1}
-                  className="mb-4"
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Slider defaultValue={[50]} max={100} step={1} className="mb-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
                   <div>I&apos;m Here for Fun</div>
                   <div className="text-right">I&apos;m Here to Work</div>
                 </div>
                 <div className="mt-4">
-                  <p className="mb-2">
+                  <p className="mb-2 text-sm text-muted-foreground">
                     Why are you on ProCollabs? Select all that apply. I am:
                   </p>
                   <div className="space-y-2">
@@ -156,10 +153,7 @@ const ProfilePage = ({
                     ].map((option, index) => (
                       <div key={index} className="flex items-center">
                         <Checkbox id={`purpose-${index}`} />
-                        <label
-                          htmlFor={`purpose-${index}`}
-                          className="ml-2 text-sm"
-                        >
+                        <label htmlFor={`purpose-${index}`} className="ml-2 text-sm text-muted-foreground">
                           {option}
                         </label>
                       </div>
@@ -170,35 +164,35 @@ const ProfilePage = ({
             </Card>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">Biography</h2>
+              <h3 className="text-xl font-semibold text-foreground">Biography</h3>
               <Textarea
                 placeholder="Musician, Songwriter, Composer, Lyricist"
-                className="min-h-[100px]"
+                className="min-h-[100px] border-border bg-muted/50 text-foreground"
               />
-              <p className="text-sm text-gray-500">Max. 10,000 characters</p>
+              <p className="text-sm text-muted-foreground">Max. 10,000 characters</p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">
+              <h3 className="text-xl font-semibold text-foreground">
                 My Gear, Equipment, Setup...
-              </h2>
+              </h3>
               <Textarea
                 placeholder="Tell us about your gear..."
-                className="min-h-[100px]"
+                className="min-h-[100px] border-border bg-muted/50 text-foreground"
               />
-              <p className="text-sm text-gray-500">Max. 5,000 characters</p>
+              <p className="text-sm text-muted-foreground">Max. 5,000 characters</p>
               <Button>Save Changes</Button>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">My Social Media</h2>
-              <Label>Add your social music links:</Label>
+              <h3 className="text-xl font-semibold text-foreground">My Social Media</h3>
+              <Label className="text-muted-foreground">Add your social music links:</Label>
               <div className="flex flex-col md:flex-row gap-2">
                 <Select>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-border bg-muted/50 text-foreground">
                     <SelectValue placeholder="YouTube" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-border bg-card text-foreground">
                     <SelectItem value="youtube">YouTube</SelectItem>
                     <SelectItem value="soundcloud">SoundCloud</SelectItem>
                     <SelectItem value="spotify">Spotify</SelectItem>
@@ -206,38 +200,37 @@ const ProfilePage = ({
                 </Select>
                 <Input
                   placeholder="https://youtube.com/user"
-                  className="flex-grow"
+                  className="flex-grow border-border bg-muted/50 text-foreground"
                 />
                 <Button>Add</Button>
               </div>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">Personal Information</h2>
-              <p className="text-red-500">
-                DO NOT put your house or apartment address. Others can see this
-                information.
+              <h3 className="text-xl font-semibold text-foreground">Personal Information</h3>
+              <p className="text-destructive text-sm">
+                DO NOT put your house or apartment address. Others can see this information.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="first-name">First Name</Label>
-                  <Input id="first-name" placeholder={user?.firstName} />
+                  <Label htmlFor="first-name" className="text-muted-foreground">First Name</Label>
+                  <Input id="first-name" placeholder={user?.firstName} className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="last-name">Last Name</Label>
-                  <Input id="last-name" placeholder={user?.lastName} />
+                  <Label htmlFor="last-name" className="text-muted-foreground">Last Name</Label>
+                  <Input id="last-name" placeholder={user?.lastName} className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="state">State</Label>
-                  <Input id="state" placeholder="Nevada" />
+                  <Label htmlFor="state" className="text-muted-foreground">State</Label>
+                  <Input id="state" placeholder="Nevada" className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="country">Country</Label>
+                  <Label htmlFor="country" className="text-muted-foreground">Country</Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border bg-muted/50 text-foreground">
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-border bg-card text-foreground">
                       <SelectItem value="us">United States</SelectItem>
                       <SelectItem value="ca">Canada</SelectItem>
                       <SelectItem value="uk">United Kingdom</SelectItem>
@@ -251,10 +244,8 @@ const ProfilePage = ({
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">
-                Direct Contact Information
-              </h2>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-xl font-semibold text-foreground">Direct Contact Information</h3>
+              <p className="text-sm text-muted-foreground">
                 If you would like to include direct contact information on your
                 profile, such as a telephone number or email for your business
                 then you can include it here. NOTE that this information will be
@@ -263,89 +254,79 @@ const ProfilePage = ({
               </p>
               <Textarea
                 placeholder="Enter your contact information"
-                className="min-h-[100px]"
+                className="min-h-[100px] border-border bg-muted/50 text-foreground"
               />
               <Button>Save Changes</Button>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">
+              <h3 className="text-xl font-semibold text-foreground">
                 Performance Rights Organization (PRO) Affiliation
-              </h2>
-              <p className="text-sm text-gray-600">
+              </h3>
+              <p className="text-sm text-muted-foreground">
                 If you are affiliated with a PRO, enter your CAE/IPI number
                 here. Your details will be automatically entered on songwriter
-                split sheets and shared with co-writers. Optionally, you can
-                also display this information on your personal profile.
+                split sheets and shared with co-writers.
               </p>
               <div className="flex flex-col md:flex-row gap-2">
                 <Select>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-border bg-muted/50 text-foreground">
                     <SelectValue placeholder="Select PRO" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-border bg-card text-foreground">
                     <SelectItem value="ascap">ASCAP</SelectItem>
                     <SelectItem value="bmi">BMI</SelectItem>
                     <SelectItem value="sesac">SESAC</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input placeholder="CAE/IPI Number" className="flex-grow" />
+                <Input placeholder="CAE/IPI Number" className="flex-grow border-border bg-muted/50 text-foreground" />
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="display-pro" />
-                <Label htmlFor="display-pro">Display on my profile</Label>
+                <Label htmlFor="display-pro" className="text-sm text-muted-foreground">Display on my profile</Label>
               </div>
               <Button>Save Changes</Button>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">
-                Shared Collaboration Information
-              </h2>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-xl font-semibold text-foreground">Shared Collaboration Information</h3>
+              <p className="text-sm text-muted-foreground">
                 Rather than your username, your Artist Name will be used
                 whenever you close a project and accept copyright ownership or
                 credit in a completed song.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="artist-name">Artist Name</Label>
-                  <Input id="artist-name" placeholder="Your artist name" />
+                  <Label htmlFor="artist-name" className="text-muted-foreground">Artist Name</Label>
+                  <Input id="artist-name" placeholder="Your artist name" className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="shared-contact">Shared Contact</Label>
-                  <Input
-                    id="shared-contact"
-                    placeholder="Shared contact information"
-                  />
+                  <Label htmlFor="shared-contact" className="text-muted-foreground">Shared Contact</Label>
+                  <Input id="shared-contact" placeholder="Shared contact information" className="border-border bg-muted/50 text-foreground" />
                 </div>
               </div>
               <Button>Save Changes</Button>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">Tip Jar Setup</h2>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-xl font-semibold text-foreground">Tip Jar Setup</h3>
+              <p className="text-sm text-muted-foreground">
                 Members can activate the Tip Jar feature on their profile page
                 by adding a valid PayPal email or Merchant ID here.
               </p>
-              <Input placeholder="PayPal email or Merchant ID" />
+              <Input placeholder="PayPal email or Merchant ID" className="border-border bg-muted/50 text-foreground" />
               <div className="flex items-center space-x-2">
-                <Info className="text-blue-500" />
-                <p className="text-sm text-gray-600">
+                <Info className="text-primary w-4 h-4 flex-shrink-0" />
+                <p className="text-sm text-muted-foreground">
                   Please be aware that if using your PayPal email, the email
-                  address will be visible to others. PayPal Business accounts
-                  can use their Merchant ID instead. However, make sure that
-                  your PayPal account is configured to accept this method.
+                  address will be visible to others.
                 </p>
               </div>
               <Button>Save Changes</Button>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold">
-                Privacy and Security Settings
-              </h2>
+              <h3 className="text-xl font-semibold text-foreground">Privacy and Security Settings</h3>
               <div className="space-y-2">
                 {[
                   "Full-on Publicity Google can see my profile information, including my main profile picture",
@@ -357,7 +338,7 @@ const ProfilePage = ({
                 ].map((option, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <Checkbox id={`privacy-${index}`} />
-                    <Label htmlFor={`privacy-${index}`}>{option}</Label>
+                    <Label htmlFor={`privacy-${index}`} className="text-sm text-muted-foreground">{option}</Label>
                   </div>
                 ))}
               </div>
@@ -365,50 +346,50 @@ const ProfilePage = ({
             </section>
           </div>
         </TabsContent>
-        <TabsContent value="account" className="bg-gray-400">
-          <Card className="bg-gray-400">
+
+        {/* Account Tab */}
+        <TabsContent value="account">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>My Membership Plan</CardTitle>
+              <CardTitle className="text-foreground">My Membership Plan</CardTitle>
             </CardHeader>
-            <CardContent className="bg-gray-400">
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold">Membership Plan</h3>
-                  <p>{membershipData.plan}</p>
+                  <h3 className="font-semibold text-foreground">Membership Plan</h3>
+                  <p className="text-sm text-muted-foreground">{membershipData.plan}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">
-                    Space and Project Allocation
-                  </h3>
-                  <p>{membershipData.spaceAllocation}</p>
+                  <h3 className="font-semibold text-foreground">Space and Project Allocation</h3>
+                  <p className="text-sm text-muted-foreground">{membershipData.spaceAllocation}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Period From</h3>
-                  <p>{membershipData.periodFrom}</p>
+                  <h3 className="font-semibold text-foreground">Period From</h3>
+                  <p className="text-sm text-muted-foreground">{membershipData.periodFrom}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Period To</h3>
-                  <p>{membershipData.periodTo}</p>
+                  <h3 className="font-semibold text-foreground">Period To</h3>
+                  <p className="text-sm text-muted-foreground">{membershipData.periodTo}</p>
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="mt-4 text-sm text-muted-foreground">
                 <p>Total Open Projects: {membershipData.totalOpenProjects}</p>
                 <p>Total Space Used: {membershipData.totalSpaceUsed}</p>
               </div>
               <Table className="mt-4">
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Summary</TableHead>
-                    <TableHead>Files</TableHead>
-                    <TableHead>Used</TableHead>
+                  <TableRow className="border-border">
+                    <TableHead className="text-muted-foreground">Summary</TableHead>
+                    <TableHead className="text-muted-foreground">Files</TableHead>
+                    <TableHead className="text-muted-foreground">Used</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {usageData.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.type}</TableCell>
-                      <TableCell>{item.files}</TableCell>
-                      <TableCell>{item.used}</TableCell>
+                    <TableRow key={index} className="border-border">
+                      <TableCell className="text-foreground">{item.type}</TableCell>
+                      <TableCell className="text-muted-foreground">{item.files}</TableCell>
+                      <TableCell className="text-muted-foreground">{item.used}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -416,56 +397,53 @@ const ProfilePage = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="mt-4 bg-card border-border">
             <CardHeader>
-              <CardTitle>My Invoices</CardTitle>
+              <CardTitle className="text-foreground">My Invoices</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>You have no outstanding invoice payments due.</p>
+              <p className="text-sm text-muted-foreground">You have no outstanding invoice payments due.</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="mt-4 bg-card border-border">
             <CardHeader>
-              <CardTitle>Purchase Membership Services</CardTitle>
+              <CardTitle className="text-foreground">Purchase Membership Services</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-4">
+              <p className="mb-4 text-sm text-muted-foreground">
                 An &apos;annual membership plan&apos; is required for
                 participation on ProCollabs. You can customize your plan by
-                adding additional service/product features at any time. Add-on
-                features are included into your annual plan and pricing is
-                calculated based on your remaining membership subscription
-                period.
+                adding additional service/product features at any time.
               </p>
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Item #</TableHead>
-                    <TableHead>Product/Service</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Purchase Quantity</TableHead>
+                  <TableRow className="border-border">
+                    <TableHead className="text-muted-foreground">Item #</TableHead>
+                    <TableHead className="text-muted-foreground">Product/Service</TableHead>
+                    <TableHead className="text-muted-foreground">Description</TableHead>
+                    <TableHead className="text-muted-foreground">Amount</TableHead>
+                    <TableHead className="text-muted-foreground">Qty</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {membershipServices.map((service) => (
-                    <TableRow key={service.id}>
-                      <TableCell>{service.id}</TableCell>
-                      <TableCell>{service.name}</TableCell>
-                      <TableCell>{service.description}</TableCell>
-                      <TableCell>${service.amount.toFixed(2)}</TableCell>
+                    <TableRow key={service.id} className="border-border">
+                      <TableCell className="text-foreground">{service.id}</TableCell>
+                      <TableCell className="text-foreground">{service.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{service.description}</TableCell>
+                      <TableCell className="text-foreground">${service.amount.toFixed(2)}</TableCell>
                       <TableCell>
                         <Input
                           type="number"
                           defaultValue="1"
                           min="1"
-                          className="w-16"
+                          className="w-16 border-border bg-muted/50 text-foreground"
                         />
                       </TableCell>
                       <TableCell>
-                        <Button variant="outline">Add to Invoice</Button>
+                        <Button variant="outline" size="sm">Add to Invoice</Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -474,19 +452,20 @@ const ProfilePage = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="mt-4 bg-card border-border">
             <CardHeader>
-              <CardTitle>My Payment History</CardTitle>
+              <CardTitle className="text-foreground">My Payment History</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>You have no paid invoices on record.</p>
+              <p className="text-sm text-muted-foreground">You have no paid invoices on record.</p>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="talents" className="bg-gray-400">
+
+        <TabsContent value="talents">
           <SkillsAndTalents />
         </TabsContent>
-        <TabsContent value="genres" className="bg-gray-400">
+        <TabsContent value="genres">
           <FavoriteGenres />
         </TabsContent>
       </Tabs>

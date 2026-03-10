@@ -4,8 +4,7 @@ import React from 'react'
 const LoaderSpinner = () => {
   return (
     <div className='flex-center h-screen w-full'>
-        <Loader className="animate-spin text-orange-1 text-[#ef4444]" size={40}></Loader>
-
+        <Loader className="animate-spin text-primary" size={40}></Loader>
     </div>
   )
 }

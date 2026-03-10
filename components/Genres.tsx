@@ -142,7 +142,7 @@ export default function FavoriteGenres({
       </CardHeader>{" "}
       <CardContent>
         {" "}
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mb-4 text-sm text-muted-foreground">
           What do you love the most?{" "}
         </p>{" "}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-6 max-h-60 overflow-y-auto pr-2">
@@ -166,7 +166,7 @@ export default function FavoriteGenres({
         </div>{" "}
         <div>
           <h3 className="text-lg font-semibold mb-2">Custom List</h3>{" "}
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-muted-foreground mb-2">
             Can&lsquo;t see it here? Add your own.{" "}
           </p>{" "}
           <div className="flex space-x-2 mb-4">

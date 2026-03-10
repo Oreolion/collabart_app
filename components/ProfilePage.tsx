@@ -72,7 +72,7 @@ export default function ProfilePage() {
     <div className="container mx-auto p-4 space-y-8 max-[480px]:max-w-[25rem] max-md:ml-[-1.9rem] max-[320px]:ml-[-.5rem]">
       <h1 className="text-3xl font-bold">Account</h1>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-gray-400">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-card">
         <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6 max-md:gap-1">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -81,8 +81,8 @@ export default function ProfilePage() {
           <TabsTrigger value="banner">Banner</TabsTrigger>
           <TabsTrigger value="picture">Picture</TabsTrigger>
         </TabsList>
-        <TabsContent value="account" className="bg-gray-400">
-          <Card className="bg-gray-400">
+        <TabsContent value="account" className="bg-card">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle>My Membership Plan</CardTitle>
             </CardHeader>
@@ -132,7 +132,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle>My Invoices</CardTitle>
             </CardHeader>
@@ -141,7 +141,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle>Purchase Membership Services</CardTitle>
             </CardHeader>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-400">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle>My Payment History</CardTitle>
             </CardHeader>
@@ -199,19 +199,19 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="profile" className="bg-gray-400">
+        <TabsContent value="profile" className="bg-card">
           <h1 className="text-2xl font-bold mb-6">Member Profile</h1>
 
-          <Card className="bg-gray-400 mb-6">
-            <CardHeader className="bg-gray-400">
-              <CardTitle className="bg-gray-400">About Me</CardTitle>
+          <Card className="bg-card mb-6">
+            <CardHeader className="bg-card">
+              <CardTitle className="bg-card">About Me</CardTitle>
             </CardHeader>
-            <CardContent className="bg-gray-400">
+            <CardContent className="bg-card">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor="industry"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     Industry
                   </label>
@@ -223,7 +223,7 @@ export default function ProfilePage() {
                 <div>
                   <label
                     htmlFor="website"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     Website
                   </label>
@@ -233,7 +233,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6 bg-gray-400">
+          <Card className="mb-6 bg-card">
             <CardHeader>
               <CardTitle>Purpose on ProCollabs</CardTitle>
             </CardHeader>
@@ -280,7 +280,7 @@ export default function ProfilePage() {
                 placeholder="Enter your biography here"
                 className="min-h-[150px]"
               />
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Max. 10,000 characters
               </p>
             </CardContent>
@@ -295,7 +295,7 @@ export default function ProfilePage() {
                 placeholder="Describe your gear and setup"
                 className="min-h-[150px]"
               />
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Max. 5,000 characters
               </p>
             </CardContent>
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                 <div>
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     First Name
                   </label>
@@ -359,7 +359,7 @@ export default function ProfilePage() {
                 <div>
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     Last Name
                   </label>
@@ -368,7 +368,7 @@ export default function ProfilePage() {
                 <div>
                   <label
                     htmlFor="city"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     City
                   </label>
@@ -377,7 +377,7 @@ export default function ProfilePage() {
                 <div>
                   <label
                     htmlFor="state"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     State
                   </label>
@@ -386,7 +386,7 @@ export default function ProfilePage() {
                 <div className="md:col-span-2">
                   <label
                     htmlFor="country"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-muted-foreground"
                   >
                     Country
                   </label>
@@ -473,10 +473,10 @@ export default function ProfilePage() {
             <Button>Save Changes</Button>
           </div>
         </TabsContent>
-        <TabsContent value="talents" className="bg-gray-400">
+        <TabsContent value="talents" className="bg-card">
           <SkillsAndTalents />
         </TabsContent>
-        <TabsContent value="genres" className="bg-gray-400">
+        <TabsContent value="genres" className="bg-card">
           <FavoriteGenres />
         </TabsContent>
       </Tabs>

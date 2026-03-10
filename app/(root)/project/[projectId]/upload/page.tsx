@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import styles from "@/styles/upload.module.css";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,7 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { cn } from "@/lib/utils";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -52,7 +50,6 @@ export default function ProjectUploadForm({
   const { startUpload } = useUploadFiles(generateUploadUrl);
   const getFileUrl = useMutation(api.projects.getUrl);
 
-  // Define the form schema including projectFileLabel and checkboxes
   const formSchema = z.object({
     projectFileTitle: z.string().min(2, "Title must be at least 2 characters"),
     projectFileLabel: z.string().nonempty("Label is required"),
@@ -79,8 +76,6 @@ export default function ProjectUploadForm({
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
-      console.log("projectFile:", projectFile);
-    //   console.log("projectId:", projectId);
       if (!projectFile) {
         toast({
           title: "Missing File",
@@ -93,7 +88,6 @@ export default function ProjectUploadForm({
 
       const blob = new Blob([projectFile], { type: "audio/mpeg" });
       const fileName = fileRef.current?.files[0]?.name;
-      console.log(fileName);
 
       const file = new File([blob], fileName, { type: "audio/mpeg" });
 
@@ -102,10 +96,7 @@ export default function ProjectUploadForm({
       setAudioStorageId(storageId);
 
       const result = await getFileUrl({ storageId });
-      console.log(result)
       setAudioUrl(result);
-      console.log(audioUrl);
-      console.log(audioStorageId);
 
       const projectFileData = {
         projectFileTitle: data.projectFileTitle,
@@ -114,17 +105,13 @@ export default function ProjectUploadForm({
         hasExplicitLyrics: data.hasExplicitLyrics,
         containsLoops: data.containsLoops,
         confirmCopyright: data.confirmCopyright,
-        // projectFile: storageId,
         projectId: projectId,
         audioStorageId: audioStorageId,
         audioDuration: audioDuration,
         audioUrl: audioUrl
       };
 
-      console.log("projectFileData:", projectFileData);
-
-      const projectdata = await addProjectFile(projectFileData);
-      console.log("projectdata:", projectdata);
+      await addProjectFile(projectFileData);
 
       toast({
         title: "Project File Added Successfully",
@@ -144,14 +131,13 @@ export default function ProjectUploadForm({
     if (e.target.files && e.target.files[0]) {
       setProjectFile(e.target.files[0]);
     }
-    console.log(projectFile)
   };
 
   return (
-    <div className={styles.upload}>
-      <Card className="w-full max-w-3xl mx-auto bg-slate-400">
+    <div className="p-4 md:p-6 max-w-3xl mx-auto">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-2xl font-bold text-foreground">
             Upload Project File(s)
           </CardTitle>
         </CardHeader>
@@ -159,25 +145,23 @@ export default function ProjectUploadForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold">1. Submission of Work</h2>
+                <h2 className="text-xl font-semibold text-foreground">1. Submission of Work</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
                       name="projectFileTitle"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col gap-2.5">
-                          <FormLabel>Title</FormLabel>
-
+                        <FormItem className="flex flex-col gap-2">
+                          <FormLabel className="text-foreground">Title</FormLabel>
                           <FormControl>
                             <Input
-                              className="input-class focus-visible:ring-offset-orange-1"
+                              className="border-border bg-muted/50 text-foreground focus-visible:ring-primary"
                               placeholder="Title..."
                               {...field}
                             />
                           </FormControl>
-
-                          <FormMessage className="text-red-300" />
+                          <FormMessage className="text-destructive" />
                         </FormItem>
                       )}
                     />
@@ -187,27 +171,22 @@ export default function ProjectUploadForm({
                       control={form.control}
                       name="projectFileLabel"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col gap-2.5">
-                          <FormLabel>Label</FormLabel>
+                        <FormItem className="flex flex-col gap-2">
+                          <FormLabel className="text-foreground">Label</FormLabel>
                           <Select
                             value={field.value}
                             onValueChange={field.onChange}
                           >
                             <FormControl>
-                              <SelectTrigger
-                                className={cn(
-                                  "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                                )}
-                              >
+                              <SelectTrigger className="border-border bg-muted/50 text-foreground">
                                 <SelectValue placeholder="Select a label" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="ideas">Ideas</SelectItem>
-                              {/* Add more options as needed */}
+                            <SelectContent className="border-border bg-card text-foreground">
+                              <SelectItem value="ideas" className="focus:bg-primary/10">Ideas</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-300" />
+                          <FormMessage className="text-destructive" />
                         </FormItem>
                       )}
                     />
@@ -225,7 +204,7 @@ export default function ProjectUploadForm({
                           id="project-owner"
                         />
                       </FormControl>
-                      <FormLabel htmlFor="project-owner">
+                      <FormLabel htmlFor="project-owner" className="text-sm text-muted-foreground">
                         Submitting work as the Project Owner
                       </FormLabel>
                     </FormItem>
@@ -234,9 +213,9 @@ export default function ProjectUploadForm({
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold">2. File Upload</h2>
+                <h2 className="text-xl font-semibold text-foreground">2. File Upload</h2>
                 <div className="space-y-2">
-                  <Label htmlFor="file-upload">
+                  <Label htmlFor="file-upload" className="text-sm text-muted-foreground">
                     Upload your project audio, sheet music, chord charts, or
                     lyrics from here.
                   </Label>
@@ -245,26 +224,26 @@ export default function ProjectUploadForm({
                     ref={fileRef}
                     onChange={uploadFile}
                     type="file"
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                    className="border-border bg-muted/50 text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                   />
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Accepted audio formats are: &apos;mp3&apos;, &apos;mda&apos;
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Other formats: &apos;txt&apos;, &apos;rtf&apos;,
                   &apos;doc&apos;, &apos;docx&apos;, &apos;pdf&apos;,
                   &apos;mid&apos;
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Avoid the use of odd characters in file names as they may
                   cause errors.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold">3. Work Content</h2>
-                <p className="text-sm">
+                <h2 className="text-xl font-semibold text-foreground">3. Work Content</h2>
+                <p className="text-sm text-muted-foreground">
                   Select any of the options below that apply to your uploaded
                   file and confirm that you have the right to upload and
                   contribute this file to the project.
@@ -281,7 +260,7 @@ export default function ProjectUploadForm({
                           id="explicit-lyrics"
                         />
                       </FormControl>
-                      <FormLabel htmlFor="explicit-lyrics">
+                      <FormLabel htmlFor="explicit-lyrics" className="text-sm text-muted-foreground">
                         Lyrics in my submission are explicit
                       </FormLabel>
                     </FormItem>
@@ -299,7 +278,7 @@ export default function ProjectUploadForm({
                           id="contains-loops"
                         />
                       </FormControl>
-                      <FormLabel htmlFor="contains-loops">
+                      <FormLabel htmlFor="contains-loops" className="text-sm text-muted-foreground">
                         Audio in my submission contains loops
                       </FormLabel>
                     </FormItem>
@@ -308,8 +287,8 @@ export default function ProjectUploadForm({
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Copyright Declaration</h2>
-                <p className="text-sm">
+                <h2 className="text-xl font-semibold text-foreground">Copyright Declaration</h2>
+                <p className="text-sm text-muted-foreground">
                   I confirm that I am the legal owner of the work that I am
                   uploading; or that I have the necessary permission, as
                   provided by the legal copyright owner(s), to upload and use
@@ -328,14 +307,14 @@ export default function ProjectUploadForm({
                           required
                         />
                       </FormControl>
-                      <FormLabel htmlFor="confirm-copyright">CONFIRM</FormLabel>
-                      <FormMessage className="text-red-300" />
+                      <FormLabel htmlFor="confirm-copyright" className="text-foreground font-semibold">CONFIRM</FormLabel>
+                      <FormMessage className="text-destructive" />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full py-6 font-bold" disabled={isSubmitting}>
                 {isSubmitting
                   ? "Submitting..."
                   : "Confirm, Agree, and Submit to Project!"}

@@ -7,18 +7,16 @@ import { cn } from "@/lib/utils";
 import { useAudio } from "@/app/providers/AudioProvider";
 import { Progress } from "./ui/progress";
 import { Button } from "./ui/button";
-import CloseIcon from "./icons/CloseIcion";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X } from "lucide-react";
 
 interface ProjectPlayerProps {
-  onClose?: () => void; // optional
+  onClose?: () => void;
 }
 
 const pickAudioSrc = (audio: any): string => {
   if (!audio) return "";
-  // audio.audioUrl might be string OR object
   if (typeof audio.audioUrl === "string" && audio.audioUrl.trim() !== "")
     return audio.audioUrl;
-  // nested object possibilities
   if (audio.audioUrl && typeof audio.audioUrl === "object") {
     return (
       audio.audioUrl.audioUrl ??
@@ -28,7 +26,6 @@ const pickAudioSrc = (audio: any): string => {
       ""
     );
   }
-  // fallback top-level keys
   return audio.url ?? audio.fileUrl ?? audio.audio_url ?? "";
 };
 
@@ -42,7 +39,6 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
 
   const src = pickAudioSrc(audio);
 
-  // toggle play/pause
   const togglePlayPause = () => {
     const el = audioRef.current;
     if (!el) return;
@@ -96,7 +92,6 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
     if (onClose) onClose();
   };
 
-  // keep currentTime updated
   useEffect(() => {
     const el = audioRef.current;
     if (!el) return;
@@ -105,33 +100,26 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
     return () => el.removeEventListener("timeupdate", onTime);
   }, []);
 
-  // respond to audio/source changes
   useEffect(() => {
     const el = audioRef.current;
     if (!el) return;
 
-    // helper to play when metadata is ready
     const handleLoaded = () => {
       setDuration(el.duration || 0);
-      // attempt autoplay if desired
       el.play()
         .then(() => setIsPlaying(true))
         .catch((err) => {
-          // autoplay may be blocked; keep state sane
           console.debug("Autoplay prevented or error:", err);
           setIsPlaying(!el.paused && !el.ended);
         });
     };
 
-    // if there's a src, set it and attach listener
     if (src) {
-      // only set if different to avoid reloads
       if (el.src !== src) {
         el.src = src;
       }
       el.addEventListener("loadedmetadata", handleLoaded);
     } else {
-      // no src -> clear
       el.pause();
       el.src = "";
       setIsPlaying(false);
@@ -139,14 +127,13 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
       setCurrentTime(0);
     }
 
-    // Ensure muted state reflects local flag
     el.muted = isMuted;
 
     return () => {
       el.removeEventListener("loadedmetadata", handleLoaded);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src]); // only when src changes
+  }, [src]);
 
   const handleLoadedMetadata = () => {
     const el = audioRef.current;
@@ -158,7 +145,6 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
     setIsPlaying(false);
   };
 
-  // Visible only when we have a playable src
   const visible = !!src && src !== "";
 
   return (
@@ -169,10 +155,10 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
     >
       <Progress
         value={duration > 0 ? (currentTime / duration) * 100 : 0}
-        className="w-full"
+        className="w-full h-1"
         max={duration > 0 ? duration : 100}
       />
-      <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 max-md:justify-center max-md:gap-5 md:px-12">
+      <section className="flex h-[80px] w-full items-center justify-between px-4 md:px-8 bg-card/95 backdrop-blur-md border-t border-border">
         <audio
           ref={audioRef}
           src={src || ""}
@@ -180,90 +166,76 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
         />
-        <div className="flex items-center gap-4 max-md:hidden">
+        {/* Track info */}
+        <div className="flex items-center gap-3 max-md:hidden min-w-0">
           <Link href={`/project/${audio?.projectId}`}>
             <Image
               src={audio?.imageUrl || "/assets/images/producer.webp"}
-              width={64}
-              height={64}
+              width={48}
+              height={48}
               alt="player-img"
-              className="aspect-square rounded-xl"
+              className="aspect-square rounded-lg object-cover"
             />
           </Link>
-          <div className="flex w-[160px] flex-col">
-            <h2 className="text-14 truncate font-semibold text-gray-200">
+          <div className="flex w-[140px] flex-col min-w-0">
+            <h2 className="text-sm truncate font-semibold text-foreground">
               {audio?.title || "Unknown Title"}
             </h2>
-            <p className="text-12 font-normal text-gray-200">
+            <p className="text-xs text-muted-foreground truncate">
               {audio?.author || "Unknown Author"}
             </p>
           </div>
         </div>
-        <div className="flex-center cursor-pointer gap-3 md:gap-6">
-          <div className="flex items-center gap-1.5">
-            <Image
-              src={"/assets/icons/reverse.svg"}
-              width={24}
-              height={24}
-              alt="rewind"
-              onClick={rewind}
-              className="cursor-pointer"
-            />
-            <h2 className="text-12 font-bold text-gray-400">-5</h2>
-          </div>
-          <Image
-            src={
-              isPlaying ? "/assets/icons/Pause.svg" : "/assets/icons/Play.svg"
-            }
-            width={30}
-            height={30}
-            alt="play"
+
+        {/* Controls */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={rewind}
+          >
+            <SkipBack className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="default"
+            size="icon"
+            className="h-10 w-10 rounded-full"
             onClick={togglePlayPause}
-            className="cursor-pointer"
-          />
-          <div className="flex items-center gap-1.5">
-            <h2 className="text-12 font-bold text-gray-400">+5</h2>
-            <Image
-              src={"/assets/icons/forward.svg"}
-              width={24}
-              height={24}
-              alt="forward"
-              onClick={forward}
-              className="cursor-pointer"
-            />
-          </div>
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={forward}
+          >
+            <SkipForward className="h-4 w-4" />
+          </Button>
         </div>
-        <div className="flex items-center gap-6 max-sm:ml-[6rem]">
-          <h2 className="font-normal text-gray-200">
+
+        {/* Time & actions */}
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground hidden sm:block">
             {formatTime(currentTime)} / {formatTime(duration)}
-          </h2>
-          <div className="flex items-center gap-2">
-            <Button className="top-1 right-1">
-              <Image
-                src={
-                  isMuted
-                    ? "/assets/icons/unmute.svg"
-                    : "/assets/icons/mute.svg"
-                }
-                width={24}
-                height={24}
-                alt="mute unmute"
-                onClick={toggleMute}
-                className="cursor-pointer"
-              />
-            </Button>
-            <Button onClick={handleClose} className="cursor-pointer absolute top-1 right-1">
-                <CloseIcon />
-              {/* <Image
-                src="/assets/icons/close.svg"
-                width={24}
-                height={24}
-                alt="close"
-                onClick={handleClose}
-                className="cursor-pointer absolute top-1 right-1"
-              /> */}
-            </Button>
-          </div>
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={toggleMute}
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={handleClose}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       </section>
     </div>

@@ -1,211 +1,142 @@
-// components/MobileDashBoardNav.tsx
 "use client";
 import Link from "next/link";
 import { SignedIn, UserButton, useUser, useClerk } from "@clerk/nextjs";
-import React, { useEffect, useState } from "react";
-import styles from "@/styles/mobiledashboardNav.module.css";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { navbarLinks } from "@/constants";
-import SVGIcon from "@/components/SVGIcon";
+import { cn } from "@/lib/utils";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  PlusCircle,
+  Bookmark,
+  Wallet,
+  User,
+  LogOut,
+  Menu,
+  Bell,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const navItems = [
+  { route: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { route: "/projects", label: "Active Projects", icon: FolderKanban },
+  { route: "/create-project", label: "Create Project", icon: PlusCircle },
+  { route: "/my-projects", label: "My Projects", icon: Bookmark },
+  { route: "/my-balance", label: "Funds", icon: Wallet },
+];
 
 const MobileDashBoardNav = () => {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
   const { signOut } = useClerk();
   const { user } = useUser();
   const pathname = usePathname();
   const router = useRouter();
 
-  function toggleMenu() {
-    setOpen(!open);
-  }
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setOpen(false);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const isLinkActive = (href: string) => {
-    return (
-      pathname === href || (href !== "/dashboard" && pathname.startsWith(href))
-    );
-  };
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
     <>
+      {/* Mobile Sheet Sidebar */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className={`${styles.dashboard__nav} ${styles.mobile}`}>
-          <div className={`${styles.logo} ${styles.link}`}>
-            <Link href="/">
-              <h3 className={styles.h3}>
-                <span className={styles.span}>Collab</span>
-                <span className="text-red-600 font-bold bg-slate-200">@</span>
-                <span className="text-yellow-300">RT</span>
+        <SheetContent side="left" className="w-[16rem] bg-card border-r border-border p-0">
+          {/* Logo */}
+          <div className="flex h-14 items-center px-4 border-b border-border">
+            <Link href="/" onClick={() => setOpen(false)}>
+              <h3 className="text-lg font-bold tracking-tight">
+                <span className="text-foreground">Collab</span>
+                <span className="text-primary font-black">@</span>
+                <span className="text-accent">RT</span>
               </h3>
             </Link>
           </div>
 
-          <ul className={styles.dashboard__navlists}>
-            <h5 className={styles.h5}>Overview</h5>
-            <li className={styles.li}>
-              {navbarLinks.map((item) => {
-                return (
+          {/* Nav */}
+          <div className="py-4 px-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 px-2">
+              Overview
+            </p>
+            <ul className="space-y-1">
+              {navItems.map((item) => (
+                <li key={item.route}>
                   <Link
-                    key={item.label}
                     href={item.route}
-                    className={`${styles.link} ${
-                      isLinkActive(`${item.route}`) ? styles.active_link : ""
-                    }`}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      isActive(item.route)
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
                   >
-                    <SVGIcon svgString={item.svg} />
-
-                    {item.label}
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    <span>{item.label}</span>
                   </Link>
-                );
-              })}
-            </li>
+                </li>
+              ))}
+            </ul>
 
-            <h5 className={styles.h5}>Personal</h5>
-            <li className={styles.li}>
-              <Link className={styles.link} href={`/my-profile/${user?.id}`}>
-                <svg
-                  className={styles.svg}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-6 mb-2 px-2">
+              Personal
+            </p>
+            <ul className="space-y-1">
+              <li>
+                <Link
+                  href={`/my-profile/${user?.id}`}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    pathname.includes("/my-profile")
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
                 >
-                  <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
-                </svg>
-                <p className={styles.p}>My Profile</p>
-              </Link>
-            </li>
-
-            <li>
-              <div className={styles.link}>
-                <svg
-                  className={styles.svg}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                >
-                  <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z" />
-                </svg>
+                  <User className="h-5 w-5 shrink-0" />
+                  <span>My Profile</span>
+                </Link>
+              </li>
+              <li>
                 <SignedIn>
-                  <p
-                    className={styles.p}
-                    onClick={() => signOut(() => router.push("/sign-in"))}
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      signOut(() => router.push("/sign-in"));
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                   >
-                    Log Out
-                  </p>
+                    <LogOut className="h-5 w-5 shrink-0" />
+                    <span>Log Out</span>
+                  </button>
                 </SignedIn>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </SheetContent>
       </Sheet>
 
-      <main className={styles.innerdashboard__container}>
-        {/* <!-- header --> */}
-        <header className={styles.header}>
-          <div className={`${styles.logo} ${styles.link}`}>
-            <Link href="/">
-              <h3 className={styles.h3}>
-                <span className={styles.span}>Collab</span>
-                <span className="text-red-600 font-bold bg-slate-200">@</span>
-                <span className="text-yellow-300">RT</span>
-              </h3>
-            </Link>
-          </div>
-          <nav className={styles.right__nav}>
-            <div className={styles.nav__icons}>
-              {!open ? (
-                <>
-                  <svg
-                    onClick={toggleMenu}
-                    className={`${styles.menu_bar} ${styles.svg}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                  >
-                    <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-                  </svg>
-                </>
-              ) : (
-                <svg
-                  className={`${styles.close_btn} ${styles.svg}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 384 512"
-                  onClick={toggleMenu}
-                >
-                  <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                </svg>
-              )}
+      {/* Mobile Top Header */}
+      <header className="fixed top-0 left-0 right-0 z-20 flex md:hidden h-14 items-center justify-between border-b border-border bg-card/95 backdrop-blur-xl px-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="text-foreground">
+            <Menu className="h-5 w-5" />
+          </Button>
+          <Link href="/">
+            <h3 className="text-base font-bold tracking-tight">
+              <span className="text-foreground">Collab</span>
+              <span className="text-primary font-black">@</span>
+              <span className="text-accent">RT</span>
+            </h3>
+          </Link>
+        </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <svg
-                    className={styles.notification_icon}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                  >
-                    <path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
-                  </svg>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className={styles.notificationbox}>
-                  <DropdownMenuItem>
-                    You currently have no Notification.
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </nav>
-
-          <div className={styles.img__box}>
-            <UserButton></UserButton>
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <svg
-                className={styles.menulist__icon}
-                fill="#ccc"
-                viewBox="0 0 16 16"
-                height="1.5rem"
-                width="1.5rem"
-              >
-                <path d="M7.646.146a.5.5 0 01.708 0L10.207 2H14a2 2 0 012 2v9a2 2 0 01-2 2H2a2 2 0 01-2-2V4a2 2 0 012-2h3.793L7.646.146zM1 7v3h14V7H1zm14-1V4a1 1 0 00-1-1h-3.793a1 1 0 01-.707-.293L8 1.207l-1.5 1.5A1 1 0 015.793 3H2a1 1 0 00-1 1v2h14zm0 5H1v2a1 1 0 001 1h12a1 1 0 001-1v-2zM2 4.5a.5.5 0 01.5-.5h8a.5.5 0 010 1h-8a.5.5 0 01-.5-.5zm0 4a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm0 4a.5.5 0 01.5-.5h6a.5.5 0 010 1h-6a.5.5 0 01-.5-.5z" />
-              </svg>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className={styles.menulist}>
-              <DropdownMenuItem>
-                <Link href={`/my-profile/${user?.id}`} className={styles.link}>
-                  My Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/legals" className={styles.link}>
-                  Legals
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/" className={styles.link}>
-                  Contact Us
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/" className={styles.link}>
-                  Downloads
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </header>
-      </main>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Bell className="h-5 w-5" />
+          </Button>
+          <UserButton />
+        </div>
+      </header>
     </>
   );
 };

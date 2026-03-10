@@ -69,7 +69,7 @@ export default function FavoriteMoods({
         <CardTitle className="text-2xl font-bold">Project Moods</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mb-4 text-sm text-muted-foreground">
           What&apos;s the vibe of this project?
         </p>
         
@@ -93,7 +93,7 @@ export default function FavoriteMoods({
 
         <div>
           <h3 className="text-lg font-semibold mb-2">Custom List</h3>
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-muted-foreground mb-2">
             Can&lsquo;t see it here? Add your own.
           </p>
           <div className="flex space-x-2 mb-4">

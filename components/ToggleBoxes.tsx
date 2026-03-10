@@ -1,490 +1,181 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import IconMusic from "./IconMusic";
-import IconMix from "./IconMix";
-import IconPc from "./IconPc";
-import IconSave from "./IconSave";
-import styles from "../styles/about.module.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { FolderOpen, Music, Sliders, Barcode } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const tabs = [
+  { icon: FolderOpen, label: "Start a project", color: "text-primary" },
+  { icon: Music, label: "Write & record", color: "text-accent" },
+  { icon: Sliders, label: "Mix & produce", color: "text-[hsl(var(--warning))]" },
+  { icon: Barcode, label: "Publish & sell", color: "text-[hsl(var(--success))]" },
+];
 
 export default function ToggleBoxes() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const contentVariants = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -50 },
-  };
-// @ts-expect-error type-error
-  const handleToggle = (index) => {
-    setActiveIndex(index === activeIndex ? null : index);
+
+  const handleToggle = (index: number) => {
+    setActiveIndex(index === activeIndex ? activeIndex : index);
   };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.leftbox}>
-        <div className={styles.toggleicon} onClick={() => handleToggle(0)}>
-          <svg
-            className={styles.svg}
-            viewBox="0 0 1024 1024"
-            fill="currentColor"
-            height="4rem"
-            width="4rem"
+    <div className="flex flex-col gap-8">
+      {/* Tab icons */}
+      <div className="flex justify-center gap-4">
+        {tabs.map((tab, i) => (
+          <button
+            key={i}
+            onClick={() => handleToggle(i)}
+            className={cn(
+              "flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-200 cursor-pointer",
+              activeIndex === i
+                ? "bg-primary/10 border border-primary/30"
+                : "bg-muted/50 border border-transparent hover:bg-muted hover:border-border"
+            )}
           >
-            <title>Start a project</title>
-            <path d="M928 444H820V330.4c0-17.7-14.3-32-32-32H473L355.7 186.2a8.15 8.15 0 00-5.5-2.2H96c-17.7 0-32 14.3-32 32v592c0 17.7 14.3 32 32 32h698c13 0 24.8-7.9 29.7-20l134-332c1.5-3.8 2.3-7.9 2.3-12 0-17.7-14.3-32-32-32zm-180 0H238c-13 0-24.8 7.9-29.7 20L136 643.2V256h188.5l119.6 114.4H748V444z" />
-          </svg>
-        </div>
-        <div className={styles.toggleicon} onClick={() => handleToggle(1)}>
-          <IconMusic />
-        </div>
-        <div className={styles.toggleicon} onClick={() => handleToggle(2)}>
-          <IconMix />
-        </div>
-        <div className={styles.toggleicon} onClick={() => handleToggle(3)}>
-          <svg
-            viewBox="0 0 1024 1024"
-            fill="currentColor"
-            height="4rem"
-            width="4rem"
-            className={styles.svg}
-          >
-            <title>Publish, license and sell</title>
-            <path d="M120 160H72c-4.4 0-8 3.6-8 8v688c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8zm833 0h-48c-4.4 0-8 3.6-8 8v688c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8zM200 736h112c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm321 0h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm126 0h178c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8H647c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm-255 0h48c4.4 0 8-3.6 8-8V168c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v560c0 4.4 3.6 8 8 8zm-79 64H201c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm257 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm256 0H648c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h178c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm-385 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8z" />
-          </svg>
-        </div>
+            <tab.icon className={cn("h-8 w-8", activeIndex === i ? tab.color : "text-muted-foreground")} />
+            <span className={cn("text-xs font-medium hidden sm:block", activeIndex === i ? "text-foreground" : "text-muted-foreground")}>
+              {tab.label}
+            </span>
+          </button>
+        ))}
       </div>
 
-      {/* Right Boxes */}
-      <div className={styles.rightbox}>
-        {activeIndex === 0 && (
-          <motion.div
-            className={styles.content}
-            key={0}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={contentVariants}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.imgbox}>
-              <Image
-                src="/assets/images/william-hall-36WpSIixex0-unsplash-removebg-preview.png"
-                alt="pic"
-                height={500}
-                width={600}
-              ></Image>
-            </div>
-            <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
-                It all starts with an idea
-              </h3>
-              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Start or join a collaboration project
-              </h4>
-              <p className="mb-[1rem] text-sm">
-                Whether it&apos;s a guitar riff, drum loop, a vocal a cappella
-                or lyrics - just start your own music collaboration project and
-                upload your idea. Then, wait for others to join in, or send
-                invites to other members. You can also jump in on any other open
-                project by uploading your idea as an audition.
-              </p>
-              <h4 className="mb-[1rem] font-bold max-md:ml-[0rem] max-md:max-w-[17rem]">
-                Here&apos;s what you can expect as a CollabArts member
-              </h4>
+      {/* Content panels */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeIndex}
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -30 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col md:flex-row gap-8 surface-elevated p-6"
+        >
+          {activeIndex === 0 && <PanelStartProject />}
+          {activeIndex === 1 && <PanelWriteRecord />}
+          {activeIndex === 2 && <PanelMixProduce />}
+          {activeIndex === 3 && <PanelPublishSell />}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
-              <ul className="flex flex-col gap-[.4rem]">
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/music-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>{" "}
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Opportunities to co-write and produce music in all genres
-                    and styles
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/group-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    A like-minded community bubbling with experience and talent
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/headphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Privacy options and flexibilty in managing your
-                    collaboration projects
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/microphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    A safe and private environment to share and exchange ideas
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/copyright-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Transparency in song ownership and production credits
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/world-1-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    A secure, reliable, and feature filled platform for online
-                    music collaboration
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
-        {activeIndex === 1 && (
-          <motion.div
-            className={styles.content}
-            key={0}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={contentVariants}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.imgbox}>
-              <Image
-                src="/assets/images/vadim-artyukhin-IB1rjfAZQDk-unsplash-removebg-preview.png"
-                alt="pic"
-                height={450}
-                width={500}
-              ></Image>
-            </div>
-            <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
-                Write and record your music
-              </h3>
-              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Collaborate with other writers and musicians
-              </h4>
-              <p className="mb-[1rem] text-sm max-md:max-w-[14rem]">
-                All you need is a passion for music, some basic recording
-                equipment, and a willingness to interact and learn.
-              </p>
-              <p className="mb-[1rem] text-sm max-md:max-w-[14rem]">
-                You&apos;ll collaborate with others to write the lyrics and
-                music, then record and upload your individual performance to the
-                project area.{" "}
-              </p>
-              <h4 className="mb-[1rem] font-bold max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Some essentials you&apos;ll need:{" "}
-              </h4>
-              <ul className="flex flex-col gap-[.4rem]">
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <IconPc></IconPc>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    PC or Mac computer with a good quality audio interface
-                    styles
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <IconSave></IconSave>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Digital Audio Workstation (DAW) recording software{" "}
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/headphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Studio monitors or a good pair of headphones
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/microphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Microphone (if recording vocals or acoustic audio){" "}
-                  </p>
-                </li>
+function PanelImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="flex-shrink-0 flex items-center justify-center md:w-[280px]">
+      <Image src={src} alt={alt} height={300} width={300} className="rounded-xl object-cover" />
+    </div>
+  );
+}
 
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/discover.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    A recording room or quiet space
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
-        {activeIndex === 2 && (
-          <motion.div
-            className={styles.content}
-            key={0}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={contentVariants}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.imgbox}>
-              <Image
-                src="/assets/images/pexels-studioideahd-8568090-removebg-preview.png"
-                alt="pic"
-                height={450}
-                width={500}
-              ></Image>
-            </div>
-            <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem] max-md:text-xl max-md:mb-[.5rem] max-md:ml-[-3rem]">
-                Mix and produce your song
-              </h3>
-              <h4 className="font-bold text-center mb-[.5rem] max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Mix, master, and polish your songs to perfection!
-              </h4>
-              <p className="mb-[1rem] text-sm">
-                Once a song has taken shape and all collaborators have uploaded
-                and fined tuned their contributions, it&apos;s time to mix! And
-                if that ain&apos;t your specialty, no worries, you&apos;ll find
-                many talented audio engineers on CollabArts who&apos;ll be more
-                than happy to participate.
-              </p>
-
-              <h4 className="mb-[1rem] font-bold max-md:ml-[-2rem] max-md:max-w-[19rem]">
-                Completing your collaboration project on CollabArts
-              </h4>
-              <ul className="flex flex-col gap-[.4rem]">
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/like-shapes-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm">
-                    Collaborator agreement and final sign off
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/chart-pie-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm">
-                    Song datasheets for track information and collaborator
-                    splits
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/padlock-outlined-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm">
-                    Option to protect your songs with audio watermarking
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/dollar-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm">
-                    Publish to the CollabArts Music Library and pursue
-                    commercial interest
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/file-check-svgrepo-com.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm">
-                    Or, allow pre-approved uses with a Creative Commons license
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
-        {activeIndex === 3 && (
-          <motion.div
-            className={styles.content}
-            key={0}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={contentVariants}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.imgbox}>
-              <Image
-                src="/assets/images/publish.png"
-                alt="pic"
-                height={450}
-                width={300}
-              ></Image>
-            </div>
-            <div className={styles.textbox}>
-              <h3 className="text-2xl text-center mb-[1rem] max-md:text-sm max-md:mb-[.5rem] max-md:ml-[-2rem]">
-                Publish, license and sell your work
-              </h3>
-              <h4 className="font-bold text-center mb-[.5rem]">
-                Free to Use Anywhere
-              </h4>
-              <p className="mb-[1rem] text-sm">
-                Once your song is completed, you and your collaborators are free
-                to sell your song, give it away, or shop it around to music
-                publishers and licensors.
-              </p>
-
-              <h4 className="mb-[1rem] font-bold">Retain 100% Ownership</h4>
-              <p className="mb-[1rem] text-sm">
-                Songwriting and sound recording copyrights remain wholly owned
-                by collaborators.
-              </p>
-              <ul className="flex flex-col gap-[.4rem]">
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <IconPc></IconPc>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    PC or Mac computer with a good quality audio interface
-                    styles
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <IconSave></IconSave>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Digital Audio Workstation (DAW) recording software{" "}
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/headphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Studio monitors or a good pair of headphones
-                  </p>
-                </li>
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/microphone.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    Microphone (if recording vocals or acoustic audio){" "}
-                  </p>
-                </li>
-
-                <li className="flex gap-[1rem]">
-                  <div className={styles.icon}>
-                    <Image
-                      src="/assets/icons/discover.svg"
-                      alt="icon"
-                      height={20}
-                      width={20}
-                    ></Image>
-                  </div>
-                  <p className="text-sm max-md:max-w-[14rem]">
-                    A recording room or quiet space
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
+function ListItem({ icon, text }: { icon: string; text: string }) {
+  return (
+    <li className="flex gap-3 items-start">
+      <div className="flex-shrink-0 w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center mt-0.5">
+        <Image src={icon} alt="" height={14} width={14} />
       </div>
-    </main>
+      <p className="text-sm text-muted-foreground leading-relaxed">{text}</p>
+    </li>
+  );
+}
+
+function PanelStartProject() {
+  return (
+    <>
+      <PanelImage src="/assets/images/william-hall-36WpSIixex0-unsplash-removebg-preview.png" alt="Start a project" />
+      <div className="flex-1 space-y-4">
+        <h3 className="text-xl font-bold text-foreground">It all starts with an idea</h3>
+        <h4 className="text-sm font-semibold text-muted-foreground">Start or join a collaboration project</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Whether it&apos;s a guitar riff, drum loop, a vocal a cappella or lyrics - just start your own music collaboration project and upload your idea. Then, wait for others to join in, or send invites to other members.
+        </p>
+        <h4 className="text-sm font-semibold text-foreground">Here&apos;s what you can expect as a CollabArts member</h4>
+        <ul className="space-y-2">
+          <ListItem icon="/assets/icons/music-svgrepo-com.svg" text="Opportunities to co-write and produce music in all genres and styles" />
+          <ListItem icon="/assets/icons/group-svgrepo-com.svg" text="A like-minded community bubbling with experience and talent" />
+          <ListItem icon="/assets/icons/headphone.svg" text="Privacy options and flexibility in managing your collaboration projects" />
+          <ListItem icon="/assets/icons/microphone.svg" text="A safe and private environment to share and exchange ideas" />
+          <ListItem icon="/assets/icons/copyright-svgrepo-com.svg" text="Transparency in song ownership and production credits" />
+          <ListItem icon="/assets/icons/world-1-svgrepo-com.svg" text="A secure, reliable, and feature filled platform for online music collaboration" />
+        </ul>
+      </div>
+    </>
+  );
+}
+
+function PanelWriteRecord() {
+  return (
+    <>
+      <PanelImage src="/assets/images/vadim-artyukhin-IB1rjfAZQDk-unsplash-removebg-preview.png" alt="Write and record" />
+      <div className="flex-1 space-y-4">
+        <h3 className="text-xl font-bold text-foreground">Write and record your music</h3>
+        <h4 className="text-sm font-semibold text-muted-foreground">Collaborate with other writers and musicians</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          All you need is a passion for music, some basic recording equipment, and a willingness to interact and learn.
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          You&apos;ll collaborate with others to write the lyrics and music, then record and upload your individual performance to the project area.
+        </p>
+        <h4 className="text-sm font-semibold text-foreground">Some essentials you&apos;ll need:</h4>
+        <ul className="space-y-2">
+          <ListItem icon="/assets/icons/headphone.svg" text="PC or Mac computer with a good quality audio interface" />
+          <ListItem icon="/assets/icons/discover.svg" text="Digital Audio Workstation (DAW) recording software" />
+          <ListItem icon="/assets/icons/headphone.svg" text="Studio monitors or a good pair of headphones" />
+          <ListItem icon="/assets/icons/microphone.svg" text="Microphone (if recording vocals or acoustic audio)" />
+          <ListItem icon="/assets/icons/discover.svg" text="A recording room or quiet space" />
+        </ul>
+      </div>
+    </>
+  );
+}
+
+function PanelMixProduce() {
+  return (
+    <>
+      <PanelImage src="/assets/images/pexels-studioideahd-8568090-removebg-preview.png" alt="Mix and produce" />
+      <div className="flex-1 space-y-4">
+        <h3 className="text-xl font-bold text-foreground">Mix and produce your song</h3>
+        <h4 className="text-sm font-semibold text-muted-foreground">Mix, master, and polish your songs to perfection!</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Once a song has taken shape and all collaborators have uploaded and fine tuned their contributions, it&apos;s time to mix! And if that ain&apos;t your specialty, no worries, you&apos;ll find many talented audio engineers on CollabArts who&apos;ll be more than happy to participate.
+        </p>
+        <h4 className="text-sm font-semibold text-foreground">Completing your collaboration project</h4>
+        <ul className="space-y-2">
+          <ListItem icon="/assets/icons/like-shapes-svgrepo-com.svg" text="Collaborator agreement and final sign off" />
+          <ListItem icon="/assets/icons/chart-pie-svgrepo-com.svg" text="Song datasheets for track information and collaborator splits" />
+          <ListItem icon="/assets/icons/padlock-outlined-svgrepo-com.svg" text="Option to protect your songs with audio watermarking" />
+          <ListItem icon="/assets/icons/dollar-svgrepo-com.svg" text="Publish to the CollabArts Music Library and pursue commercial interest" />
+          <ListItem icon="/assets/icons/file-check-svgrepo-com.svg" text="Or, allow pre-approved uses with a Creative Commons license" />
+        </ul>
+      </div>
+    </>
+  );
+}
+
+function PanelPublishSell() {
+  return (
+    <>
+      <PanelImage src="/assets/images/publish.png" alt="Publish and sell" />
+      <div className="flex-1 space-y-4">
+        <h3 className="text-xl font-bold text-foreground">Publish, license and sell your work</h3>
+        <h4 className="text-sm font-semibold text-muted-foreground">Free to Use Anywhere</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Once your song is completed, you and your collaborators are free to sell your song, give it away, or shop it around to music publishers and licensors.
+        </p>
+        <h4 className="text-sm font-semibold text-foreground">Retain 100% Ownership</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Songwriting and sound recording copyrights remain wholly owned by collaborators.
+        </p>
+        <ul className="space-y-2">
+          <ListItem icon="/assets/icons/headphone.svg" text="PC or Mac computer with a good quality audio interface" />
+          <ListItem icon="/assets/icons/discover.svg" text="Digital Audio Workstation (DAW) recording software" />
+          <ListItem icon="/assets/icons/headphone.svg" text="Studio monitors or a good pair of headphones" />
+          <ListItem icon="/assets/icons/microphone.svg" text="Microphone (if recording vocals or acoustic audio)" />
+          <ListItem icon="/assets/icons/discover.svg" text="A recording room or quiet space" />
+        </ul>
+      </div>
+    </>
   );
 }

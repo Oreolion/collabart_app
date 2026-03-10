@@ -1,5 +1,4 @@
 "use client";
-import styles from "@/styles/addproject.module.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,28 +22,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader } from "lucide-react";
+import { Loader, Headphones, Disc3, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import CollaborationAgreement from "./CollaborationAgreement";
-// import { useUser } from "@clerk/nextjs";
 
 export default function AddProject() {
-  //   const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-  //     null
-  //   );
-  //   const [audioUrl, setAudioUrl] = useState("");
-  //   const [audioDuration, setAudioDuration] = useState(0);
-  //   const [imageUrl, setImageUrl] = useState("");
-  //   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
-  //     null
-  //   );
   const [projectType, setProjectType] = useState<string | null>(null);
   const [projectAuditionPrivacy, setProjectAuditionPrivacy] = useState<
     string | null
@@ -60,8 +47,6 @@ export default function AddProject() {
   const { toast } = useToast();
   const router = useRouter();
   const createProject = useMutation(api.projects.createProject);
-
-  //   const { user, isLoaded } = useUser();
 
   useEffect(() => {
     if (isDropdownOpen) {
@@ -109,15 +94,12 @@ export default function AddProject() {
   });
 
   const handleSaveAsDraft = () => {
-    // Implement draft-saving logic here
     toast({ title: "Draft Saved Successfully" });
   };
 
-  // 2. Define a submit handler.
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
-      console.log("projectType:", projectType);
 
       if (
         !projectType ||
@@ -147,10 +129,7 @@ export default function AddProject() {
         likes: 0,
       };
 
-      console.log("projectData:", projectData);
-
       const projectId = await createProject(projectData);
-      console.log("projectId:", projectId);
 
       toast({
         title: "Project Created Successfully",
@@ -174,130 +153,113 @@ export default function AddProject() {
   }
 
   return (
-    <section className={styles.bloginput__box}>
-      <h1 className="text-3xl font-bold text-white-1 max-[320px]:text-sm max-[320px]:font-normal">
-        {" "}
+    <section className="p-4 md:p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-foreground mb-8">
         Create New Project
       </h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-12 flex w-full flex-col"
+          className="flex w-full flex-col space-y-6"
         >
-          <div className="flex gap-2.5 items-center border-b border-black-5 pb-10 max-md:flex-col">
+          {/* Title + Type row */}
+          <div className="flex gap-4 items-start border-b border-border pb-8 max-md:flex-col">
             <FormField
               control={form.control}
               name="projectTitle"
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-2.5 md:w-[50%]">
-                  <FormLabel className="text-16 font-bold text-white-1">
+                <FormItem className="flex flex-col gap-2 md:w-[50%]">
+                  <FormLabel className="text-sm font-semibold text-foreground">
                     Project Title:
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="input-class focus-visible:ring-offset-orange-1"
+                      className="border-border bg-muted/50 text-foreground focus-visible:ring-primary"
                       placeholder="Title..."
                       {...field}
                     />
                   </FormControl>
-
-                  <FormMessage className="text-red-300" />
+                  <FormMessage className="text-destructive" />
                   <div className="space-x-2 flex items-center">
-                    <Label>Is this a cover song?</Label>
+                    <Label className="text-sm text-muted-foreground">Is this a cover song?</Label>
                     <RadioGroup
                       defaultValue="no"
                       className="inline-flex space-x-2"
                     >
                       <div className="flex items-center space-x-1">
                         <RadioGroupItem value="no" id="no" />
-                        <Label htmlFor="no">No</Label>
+                        <Label htmlFor="no" className="text-sm text-muted-foreground">No</Label>
                       </div>
                       <div className="flex items-center space-x-1">
                         <RadioGroupItem value="yes" id="yes" />
-                        <Label htmlFor="yes">Yes</Label>
+                        <Label htmlFor="yes" className="text-sm text-muted-foreground">Yes</Label>
                       </div>
                     </RadioGroup>
                   </div>
                 </FormItem>
               )}
             />
-            <div className="flex flex-col gap-2.5 md:w-[50%]">
-              <Label className="text-16 font-bold text-white-1">
+            <div className="flex flex-col gap-2 md:w-[50%]">
+              <Label className="text-sm font-semibold text-foreground">
                 Select Project Type:
               </Label>
               <Select
                 value={projectType}
                 onValueChange={(value) => setProjectType(value)}
               >
-                <SelectTrigger
-                  className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                  )}
-                >
-                  <SelectValue
-                    placeholder="Select Project type"
-                    className="placeholder:text-gray-100"
-                  />
+                <SelectTrigger className="border-border bg-muted/50 text-foreground">
+                  <SelectValue placeholder="Select Project type" />
                 </SelectTrigger>
-                <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                  {projectTypes.map((type) => {
-                    return (
-                      <SelectItem
-                        className="capitalize focus:bg-orange-1"
-                        key={type}
-                        value={type}
-                      >
-                        {type}
-                      </SelectItem>
-                    );
-                  })}
+                <SelectContent className="border-border bg-card text-foreground">
+                  {projectTypes.map((type) => (
+                    <SelectItem
+                      className="capitalize focus:bg-primary/10"
+                      key={type}
+                      value={type}
+                    >
+                      {type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <div className="flex gap-2.5">
+              <div className="flex gap-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="invite-only" />
-                  <Label htmlFor="invite-only">By invite only</Label>
+                  <Label htmlFor="invite-only" className="text-sm text-muted-foreground">By invite only</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="hide-project" />
-                  <Label htmlFor="hide-project">
+                  <Label htmlFor="hide-project" className="text-sm text-muted-foreground">
                     Hide this project (secret)
                   </Label>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2.5 mb-[1rem]">
-            <Label className="text-16 font-bold text-white-1">
+
+          {/* Audio Preference */}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-foreground">
               Project Audio Preference:
             </Label>
-            <div className="flex gap-[1rem] max-md:flex-col">
+            <div className="flex gap-4 max-md:flex-col">
               <Select
                 value={projectBitDepth ?? undefined}
                 onValueChange={(value) => setProjectBitDepth(value)}
               >
-                <SelectTrigger
-                  className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                  )}
-                >
-                  <SelectValue
-                    placeholder="Bit Depth"
-                    className="placeholder:text-gray-100"
-                  />
+                <SelectTrigger className="border-border bg-muted/50 text-foreground">
+                  <SelectValue placeholder="Bit Depth" />
                 </SelectTrigger>
-                <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                  {projectBitDepths.map((type) => {
-                    return (
-                      <SelectItem
-                        className="capitalize focus:bg-orange-1"
-                        key={type}
-                        value={type}
-                      >
-                        {type}
-                      </SelectItem>
-                    );
-                  })}
+                <SelectContent className="border-border bg-card text-foreground">
+                  {projectBitDepths.map((type) => (
+                    <SelectItem
+                      className="capitalize focus:bg-primary/10"
+                      key={type}
+                      value={type}
+                    >
+                      {type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -305,178 +267,149 @@ export default function AddProject() {
                 value={projectSampleRate}
                 onValueChange={(value) => setProjectSampleRate(value)}
               >
-                <SelectTrigger
-                  className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                  )}
-                >
-                  <SelectValue
-                    placeholder="Sample Rate"
-                    className="placeholder:text-gray-100"
-                  />
+                <SelectTrigger className="border-border bg-muted/50 text-foreground">
+                  <SelectValue placeholder="Sample Rate" />
                 </SelectTrigger>
-                <SelectContent className="text-16 border-none max-h-[80vh] bg-slate-700 font-bold text-white-1 focus:ring-orange-1">
-                  {projectSampleRates.map((type) => {
-                    return (
-                      <SelectItem
-                        className="capitalize focus:bg-orange-1"
-                        key={type}
-                        value={type}
-                      >
-                        {type}
-                      </SelectItem>
-                    );
-                  })}
+                <SelectContent className="border-border bg-card text-foreground max-h-[80vh]">
+                  {projectSampleRates.map((type) => (
+                    <SelectItem
+                      className="capitalize focus:bg-primary/10"
+                      key={type}
+                      value={type}
+                    >
+                      {type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
+
+          {/* Description */}
           <FormField
             control={form.control}
             name="projectDescription"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-2.5">
-                <FormLabel className="text-16 font-bold text-white-1">
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel className="text-sm font-semibold text-foreground">
                   Project Description:
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    className="input-class focus-visible:ring-offset-orange-1"
+                    className="border-border bg-muted/50 text-foreground focus-visible:ring-primary min-h-[100px]"
                     placeholder="Describe your inspiration for this song"
                     {...field}
                   />
                 </FormControl>
-
-                <FormMessage className="text-red-300" />
+                <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />
+
+          {/* Brief */}
           <FormField
             control={form.control}
             name="projectBrief"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-2.5  mb-4 pt-8">
-                <FormLabel className="text-16 font-bold text-white-1">
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel className="text-sm font-semibold text-foreground">
                   Project Brief:
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    className="input-class-b focus-visible:ring-offset-orange-1"
+                    className="border-border bg-muted/50 text-foreground focus-visible:ring-primary min-h-[120px]"
                     placeholder="Describe your requirements, expectations, or provide direction for potential collaborators"
                     {...field}
                   />
                 </FormControl>
-
-                <FormMessage className="text-red-300" />
+                <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />
 
-          <div className="flex flex-col gap-2.5">
-            <Label className="text-16 font-bold text-white-1">
+          {/* Audition Privacy */}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-foreground">
               Audition Privacy:
             </Label>
             <Select
               value={projectAuditionPrivacy}
               onValueChange={(value) => setProjectAuditionPrivacy(value)}
-              onOpenChange={setIsDropdownOpen} // Track when dropdown is open
+              onOpenChange={setIsDropdownOpen}
             >
-              <SelectTrigger
-                className={cn(
-                  "text-16 w-full border-none bg-black-1 text-gray-100 focus-visible:ring-offset-orange-1"
-                )}
-              >
-                <SelectValue
-                  placeholder="Select"
-                  className="placeholder:text-gray-100"
-                />
+              <SelectTrigger className="border-border bg-muted/50 text-foreground">
+                <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent className="text-16 border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1 max-h-[40vh] overflow-y-auto">
+              <SelectContent className="border-border bg-card text-foreground max-h-[40vh] overflow-y-auto">
                 <div className="h-full overflow-y-auto">
-                  {projectAuditionPrivacies.map((type) => {
-                    return (
-                      <SelectItem
-                        className="capitalize focus:bg-orange-1"
-                        key={type}
-                        value={type}
-                      >
-                        {type}
-                      </SelectItem>
-                    );
-                  })}
+                  {projectAuditionPrivacies.map((type) => (
+                    <SelectItem
+                      className="capitalize focus:bg-primary/10"
+                      key={type}
+                      value={type}
+                    >
+                      {type}
+                    </SelectItem>
+                  ))}
                 </div>
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col pt-10">
-            <h3 className="font-bold text-base mb-3">Collaborator Uploads</h3>
-            <p className="mb-2">
+
+          {/* Collaborator Uploads */}
+          <div className="flex flex-col pt-4">
+            <h3 className="font-bold text-base mb-3 text-foreground">Collaborator Uploads</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
               How will members collaborate in this project? Select at least one:
             </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4 items-center bg-zinc-300 p-4">
-                <Image
-                  src={"/assets/icons/headphone.svg"}
-                  width={24}
-                  height={24}
-                  alt="rewind"
-                />{" "}
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-4 items-center surface-elevated p-4">
+                <Headphones className="w-6 h-6 text-primary flex-shrink-0" />
                 <Label htmlFor="Joint Work">
-                  <Checkbox id="Joint Work" />{" "}
+                  <Checkbox id="Joint Work" />
                 </Label>
-                <div className="flex flex-col gap-2">
-                  <h5 className="font-bold text-xs">Joint Work</h5>
-                  <h6 className="text-xs font-bold">
-                    Allow members to audition and contribute as joint
-                    collaborators
+                <div className="flex flex-col gap-1">
+                  <h5 className="font-bold text-sm text-foreground">Joint Work</h5>
+                  <h6 className="text-xs font-semibold text-muted-foreground">
+                    Allow members to audition and contribute as joint collaborators
                   </h6>
-                  <p className="text-sm">
-                    select this option if you will share ownership in the
+                  <p className="text-xs text-muted-foreground">
+                    Select this option if you will share ownership in the
                     song&apos;s composition (music/lyrics) and/or sound
                     recording copyrights
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4 items-center bg-zinc-300 p-4">
-                <Image
-                  src={"/assets/icons/discover.svg"}
-                  width={24}
-                  height={24}
-                  alt="rewind"
-                />
+              <div className="flex gap-4 items-center surface-elevated p-4">
+                <Disc3 className="w-6 h-6 text-accent flex-shrink-0" />
                 <Label htmlFor="Work for Hire">
                   <Checkbox id="Work for Hire" />
                 </Label>
-                <div className="flex flex-col gap-2">
-                  <h5 className="font-bold text-xs">Work for Hire</h5>
-                  <h6 className="text-xs font-bold">
+                <div className="flex flex-col gap-1">
+                  <h5 className="font-bold text-sm text-foreground">Work for Hire</h5>
+                  <h6 className="text-xs font-semibold text-muted-foreground">
                     Allow members to contribute work under contract and in
                     exchange for an agreed fee.
                   </h6>
-                  <p className="text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Select this option if you prefer to retain ownership in the
                     song&apos;s copyrights. All rights to the contributed work
                     will be transferred to the project owner.
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4 items-center bg-zinc-300 p-4 ">
-                <Image
-                  src={"/assets/icons/home.svg"}
-                  width={24}
-                  height={24}
-                  alt="rewind"
-                />{" "}
+              <div className="flex gap-4 items-center surface-elevated p-4">
+                <Home className="w-6 h-6 text-[hsl(var(--warning))] flex-shrink-0" />
                 <Label htmlFor="Creative Commons">
-                  <Checkbox id="Creative Commons" />{" "}
+                  <Checkbox id="Creative Commons" />
                 </Label>
-                <div className="flex flex-col gap-2">
-                  <h5 className="font-bold text-xs">Creative Commons</h5>
-                  <h6 className="text-xs font-bold">
+                <div className="flex flex-col gap-1">
+                  <h5 className="font-bold text-sm text-foreground">Creative Commons</h5>
+                  <h6 className="text-xs font-semibold text-muted-foreground">
                     Allow members to audition and contribute work under a
                     predefined Creative Commons license.
                   </h6>
-                  <p className="text-xs">
+                  <p className="text-xs text-muted-foreground">
                     The contributor offers their work for use under the terms of
                     the specified license. Ideal for sound effects and other
                     abstract contributions.
@@ -486,10 +419,11 @@ export default function AddProject() {
             </div>
           </div>
 
-          <div className="space-y-2 mt-4 ">
+          {/* Collaboration Agreement */}
+          <div className="space-y-2 mt-4">
             <Label
               htmlFor="collaboration-agreement"
-              className="mb-4 text-base font-bold"
+              className="mb-4 text-sm font-bold text-foreground"
             >
               Select a joint-work collaboration agreement for this project:
             </Label>
@@ -498,14 +432,15 @@ export default function AddProject() {
             />
           </div>
 
-          <div className="mt-10 w-full">
+          {/* Submit buttons */}
+          <div className="mt-8 w-full space-y-3">
             <Button
               type="submit"
-              className="text-16 h-15 w-full bg-orange-1 py-4 mb-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+              className="w-full py-6 font-bold text-base"
             >
               {isSubmitting ? (
                 <>
-                  <Loader size={20} className="animate-spin ml-2"></Loader>
+                  <Loader size={20} className="animate-spin mr-2"></Loader>
                   Submitting
                 </>
               ) : (
@@ -515,7 +450,8 @@ export default function AddProject() {
             <Button
               onClick={handleSaveAsDraft}
               type="button"
-              className="text-16 h-15 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+              variant="outline"
+              className="w-full py-6 font-bold text-base"
             >
               Save as Draft
             </Button>

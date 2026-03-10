@@ -1,101 +1,89 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
-import styles from "../styles/navbar.module.css";
+import React, { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
-  const [toggleNavbar, setToggleNavbar] = useState<boolean>(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const toggleMenu = () => {
-    return setToggleNavbar(!toggleNavbar);
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className={styles.header}>
-      <div className={`${styles.logo} ${styles.link}`}>
-        <Link href="/">
-          <h3 className={styles.h3}>
-            <span className={styles.span}>Collab</span>
-            <span className="text-red-600 font-bold bg-slate-200">@</span>
-            <span className="text-yellow-300">RT</span>
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled
+          ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-lg"
+          : "bg-transparent"
+      )}
+    >
+      <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
+        {/* Logo */}
+        <Link href="/" className="flex items-center">
+          <h3 className="text-xl font-bold tracking-tight">
+            <span className="text-foreground">Collab</span>
+            <span className="text-primary font-black">@</span>
+            <span className="text-accent">RT</span>
           </h3>
         </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Home
+          </Link>
+          <Link href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            About
+          </Link>
+          <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Features
+          </Link>
+          <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Sign in
+          </Link>
+          <Link href="/sign-up">
+            <Button size="sm" className="font-semibold">
+              Get Started
+            </Button>
+          </Link>
+        </nav>
+
+        {/* Mobile Toggle */}
+        <button
+          className="md:hidden text-foreground p-2"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
 
-      <nav className={styles.right__nav}>
-        <div className={styles.nav__icons}>
-          {toggleNavbar ? (
-            <svg
-              fill="#ddd"
-              className={styles.svg}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 384 512"
-              onClick={toggleMenu}
-            >
-              <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-            </svg>
-          ) : (
-            <div onClick={toggleMenu} className={styles.menu_bar}>
-              <svg
-                fill="#ddd"
-                className={styles.svg}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-              >
-                <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-              </svg>
-            </div>
-          )}
-        </div>
-
-        <ul className={styles.navlist}>
-          <li>
-            <Link className={styles.li} href="/">
+      {/* Mobile Nav */}
+      {mobileOpen && (
+        <nav className="md:hidden bg-card/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 animate-fade-in">
+          <div className="flex flex-col gap-3">
+            <Link href="/" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               Home
             </Link>
-          </li>
-          <li>
-            <Link className={styles.li} href="/sign-in">
+            <Link href="#about" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               About
             </Link>
-          </li>
-          <li>
-            <Link className={styles.li} href="/sign-in">
+            <Link href="#features" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
+              Features
+            </Link>
+            <Link href="/sign-in" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               Sign in
             </Link>
-          </li>
-          <li>
-            <Link className={styles.li} href="/sign-up">
-              <button type="button">Get Started</button>
+            <Link href="/sign-up" onClick={() => setMobileOpen(false)}>
+              <Button className="w-full font-semibold">Get Started</Button>
             </Link>
-          </li>
-        </ul>
-      </nav>
-      {/*  Mobile Nav */}
-      {toggleNavbar && (
-        <nav className={styles.mobile__nav}>
-          <ul className={styles.mobile_navlist}>
-            <li>
-              <Link className={styles.li} href="/">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link className={styles.li} href="/sign-in">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link className={styles.li} href="/sign-in">
-                Sign in
-              </Link>
-            </li>
-            <li>
-              <Link className={styles.li} href="/sign-up">
-                <button type="button">Get Started</button>
-              </Link>
-            </li>
-          </ul>
+          </div>
         </nav>
       )}
     </header>

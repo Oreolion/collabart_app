@@ -1,11 +1,9 @@
 import MyBalance from "@/components/MyBalance";
 import React from "react";
-import styles from "@/styles/funds.module.css";
-
 
 const FundsPage = () => {
   return (
-    <div className={styles.funds__feeds}>
+    <div className="p-4 md:p-6">
       <MyBalance />
     </div>
   );

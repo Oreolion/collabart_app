@@ -72,10 +72,10 @@ export const DotButton: React.FC<DotButtonProps> = ({ selected, onClick }) => {
       type="button"
       onClick={onClick}
       className={cn(
-        "size-1 bg-slate-500 cursor-pointer transition-full duration-500 rounded-full",
-        {
-          "bg-green-100": selected,
-        }
+        "cursor-pointer transition-all duration-300 rounded-full",
+        selected
+          ? "w-6 h-2 bg-primary"
+          : "w-2 h-2 bg-muted-foreground/40 hover:bg-muted-foreground/60"
       )}
     />
   );

@@ -20,7 +20,7 @@ import LoaderSpinner from "@/components/LoaderSpinner";
 import { api } from "@/convex/_generated/api";
 import { useAction, useMutation, useQuery } from "convex/react"; // <-- IMPORTED useMutation
 import { useUser } from "@clerk/nextjs";
-import styles from "@/styles/project.module.css";
+// CSS module removed — using Tailwind
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatTime";
 import Link from "next/link";
@@ -284,12 +284,12 @@ const ProjectPage = ({
   }
 
   return (
-    <div className={styles.projects__feeds}>
-      <div className="container mx-auto p-4">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <div>
         <div className="flex flex-col lg:flex-row justify-between mb-2 gap-4">
           <CardHeader className="flex-1 p-0">
             {/* Removed padding to match original */} 
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font-bold text-gradient-primary">
               {project?.projectTitle} 
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-2">
@@ -300,7 +300,7 @@ const ProjectPage = ({
               <span className="text-sm">0 tracks</span> 
             </div>
           </CardHeader>
-          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="text-lg">Project Status</CardTitle>  
             </CardHeader>
@@ -310,23 +310,23 @@ const ProjectPage = ({
                 are busy now!
               </p>
               <Progress value={projectStatus} className="mb-4" /> 
-              <Badge className="bg-green-500">Open</Badge>  
+              <Badge className="bg-[hsl(var(--success))]">Open</Badge>  
             </CardContent>
           </Card>
         </div>
         <CardHeader className="mb-6 p-0">
           {/* Removed padding */}  
-          <CardTitle className="text-center text-2xl bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg text-white">
+          <CardTitle className="text-center text-2xl bg-primary py-3 rounded-lg text-primary-foreground">
             Your Collaboration Project
           </CardTitle>
         </CardHeader>
         <div className="flex flex-col lg:flex-row gap-2">
           {/* Left Column */}  
           <div className="lg:w-1/4">
-            <Card className="pt-8 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700 sticky top-20">
+            <Card className="pt-8 bg-card border-border sticky top-20">
               <CardContent className="space-y-3">
                 <Link href={`/project/${projectId}/upload`} className="w-full">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm">
+                  <Button className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white text-sm">
                     <Upload className="w-4 h-4 mr-2" />
                      Upload Track
                   </Button>
@@ -337,8 +337,8 @@ const ProjectPage = ({
                 >
                   Rough Mixer
                 </Button>
-                <div className="bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-900 dark:to-purple-900 rounded-full w-40 h-40 mx-auto mb-4 flex items-center justify-center">
-                  <div className="bg-white dark:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-xs font-semibold">
+                <div className="bg-primary/10 rounded-full w-40 h-40 mx-auto mb-4 flex items-center justify-center">
+                  <div className="bg-card rounded-full w-10 h-10 flex items-center justify-center text-xs font-semibold">
                     +1 
                   </div>
                 </div>
@@ -357,10 +357,10 @@ const ProjectPage = ({
                         <Share2 className="h-5 w-5" /> 
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-500">
+                    <DialogContent className="bg-card border-border">
                       <DialogHeader>
                         <DialogTitle>Share Project</DialogTitle> 
-                        <DialogDescription className="text-gray-700">
+                        <DialogDescription className="text-muted-foreground">
                           Share this project on social media or copy the link.
                         </DialogDescription>
                       </DialogHeader>
@@ -387,7 +387,7 @@ const ProjectPage = ({
                           Share on LinkedIn
                         </Button>
                         <Button
-                          className="w-full text-sm bg-slate-600 hover:bg-slate-700"
+                          className="w-full text-sm bg-muted hover:bg-muted/80"
                           onClick={() => handleShare("copy")}
                         >
                           Copy Link 
@@ -397,7 +397,7 @@ const ProjectPage = ({
                         <Button
                           variant="outline"
                           onClick={() => toggleModal("share")}
-                          className="text-sm text-gray-500"
+                          className="text-sm text-muted-foreground"
                         >
                           Close
                         </Button>
@@ -414,9 +414,9 @@ const ProjectPage = ({
                       variant="secondary"
                       title="Buy Project"
                     >
-                      <ShoppingCart className="h-5 w-5 text-green-500" />
+                      <ShoppingCart className="h-5 w-5 text-[hsl(var(--success))]" />
                       {project.isListed && (
-                        <span className="text-sm font-bold text-green-500">
+                        <span className="text-sm font-bold text-[hsl(var(--success))]">
                           ${project.price}
                         </span>
                       )}
@@ -432,7 +432,7 @@ const ProjectPage = ({
                       size="icon"
                       title="Buy Project"
                     >
-                      <ShoppingCart className="h-5 w-5 text-green-500" />
+                      <ShoppingCart className="h-5 w-5 text-[hsl(var(--success))]" />
                     </Button>
                   )}
                   <Button
@@ -444,7 +444,7 @@ const ProjectPage = ({
                     <Copyright className="h-5 w-5" /> 
                   </Button>
                 </div>
-                <div className="space-y-2 text-sm bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div className="space-y-2 text-sm bg-muted/30 p-3 rounded-lg border border-border">
                   <p>
                     <strong>Project Type:</strong> {project?.projectType} 
                   </p>
@@ -471,7 +471,7 @@ const ProjectPage = ({
           </div>
           {/* Middle Column */}  
           <div className="lg:w-1/2 ">
-            <Card className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="bg-card border-border">
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-2">
                   New Project Checklist
@@ -550,12 +550,12 @@ const ProjectPage = ({
                   For a detailed explanation of all the project features, take a
                   look at our project tutorials.
                 </p>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   OK, I got it!
                 </Button>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Project Summary</CardTitle>  
               </CardHeader>
@@ -573,7 +573,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
             {/* --- LYRICS CARD & DIALOG --- */}
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
                 <Dialog
@@ -583,7 +583,7 @@ const ProjectPage = ({
                   <DialogTrigger asChild>
                     <Button
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-sm"
+                      className="bg-primary hover:bg-primary/90 text-sm"
                     >
                       {getLyricsButtonText()}
                     </Button>
@@ -613,7 +613,7 @@ const ProjectPage = ({
                     </div>
                     <DialogFooter>
                       <Button
-                        className="text-gray-500"
+                        className="text-muted-foreground"
                         variant="outline"
                         onClick={() => toggleModal("lyrics")}
                         disabled={busy}
@@ -621,7 +621,7 @@ const ProjectPage = ({
                         Cancel
                       </Button>
                       <Button
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-primary hover:bg-primary/90"
                         onClick={handleSaveLyrics}
                         disabled={busy}
                       >
@@ -645,9 +645,9 @@ const ProjectPage = ({
 
             {/* --- SUBMISSIONS CARD (OWNER ONLY) --- */}
             {isOwner && pendingSubmissions && pendingSubmissions.length > 0 && (
-              <Card className="mt-6 border-blue-600">
+              <Card className="mt-6 border-primary">
                 <CardHeader>
-                  <CardTitle className="text-blue-600">
+                  <CardTitle className="text-primary">
                     Pending Lyric Submissions
                   </CardTitle>
                 </CardHeader>
@@ -658,7 +658,7 @@ const ProjectPage = ({
                 </CardContent>
               </Card>
             )}
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Project Files</CardTitle> 
               </CardHeader>
@@ -669,7 +669,7 @@ const ProjectPage = ({
           </div>
           {/* Right Column */}  
           <div className="lg:w-1/4">
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Collaborators</CardTitle> 
               </CardHeader>
@@ -679,7 +679,7 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Project Timeline</CardTitle>  
               </CardHeader>
@@ -706,7 +706,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
             {/* --- UPDATED KUDOS (COMMENTS) CARD --- */} 
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Project Kudos</CardTitle> 
               </CardHeader>
@@ -731,7 +731,7 @@ const ProjectPage = ({
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-xs"
+                        className="bg-primary hover:bg-primary/90 text-xs"
                         onClick={handleAddComment}
                         disabled={busy}
                       >
@@ -740,7 +740,7 @@ const ProjectPage = ({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-xs bg-transparent text-gray-500"
+                        className="text-xs bg-transparent text-muted-foreground"
                         onClick={() => {
                           setShowCommentForm(false);
                           setCommentText("");
@@ -769,7 +769,7 @@ const ProjectPage = ({
                             {formatDate(comment._creationTime)} 
                           </span>
                         </div>
-                        <p className="text-xs text-slate-700 dark:text-slate-300 pl-7">
+                        <p className="text-xs text-muted-foreground pl-7">
                           {comment.content}  
                         </p>
                       </div>
@@ -783,7 +783,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
             {/* --- END UPDATED KUDOS CARD --- */} 
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Credits</CardTitle> 
               </CardHeader>
@@ -793,7 +793,7 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Copyright</CardTitle> 
               </CardHeader>
@@ -803,7 +803,7 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200 dark:border-slate-700">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
                 <CardTitle>Derivative Works</CardTitle>  
               </CardHeader>

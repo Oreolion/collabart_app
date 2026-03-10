@@ -71,7 +71,6 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
   );
   const [customContent, setCustomContent] = useState<string>("");
 
-  // Effect to update projectContent based on selected agreement
   useEffect(() => {
     if (selectedAgreement) {
       const agreement = agreements.find(
@@ -79,15 +78,12 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
       );
       if (agreement) {
         if (agreement.value === "custom") {
-          // For custom, set projectContent to current customContent
           onContentChange(customContent);
         } else {
-          // For predefined agreements, set projectContent to agreement content
           onContentChange(agreement.subtitle);
         }
       }
     } else {
-      // If no agreement is selected, clear projectContent
       onContentChange("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,7 +91,6 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
 
   const handleSelectChange = (value: string) => {
     setSelectedAgreement(value);
-    // If not custom, reset customContent
     if (value !== "custom") {
       setCustomContent("");
     }
@@ -113,13 +108,13 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
         value={selectedAgreement || undefined}
         onValueChange={handleSelectChange}
       >
-        <SelectTrigger id="collaboration-agreement">
+        <SelectTrigger id="collaboration-agreement" className="border-border bg-muted/50 text-foreground">
           <SelectValue placeholder="Select Collaboration Agreement" />
         </SelectTrigger>
-        <SelectContent className="text-16 max-w-[50rem] border-none bg-slate-700 font-bold text-white-1 focus:ring-orange-1 max-h-[30vh] overflow-y-auto">
+        <SelectContent className="max-w-[50rem] border-border bg-card text-foreground max-h-[30vh] overflow-y-auto">
           <ScrollArea className="h-full overflow-y-auto">
             {agreements.map((agreement) => (
-              <SelectItem key={agreement.value} value={agreement.value}>
+              <SelectItem key={agreement.value} value={agreement.value} className="focus:bg-primary/10">
                 {agreement.title}
               </SelectItem>
             ))}
@@ -128,9 +123,9 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
       </Select>
 
       {selectedAgreement && (
-        <Card className="bg-gray-50">
+        <Card className="bg-muted/30 border-border">
           <CardContent className="p-4 text-sm">
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 text-foreground">
               {
                 agreements.find((a) => a.value === selectedAgreement)
                   ?.title
@@ -138,14 +133,14 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
             </h3>
             {agreements.find((a) => a.value === selectedAgreement)
               ?.subtitle && (
-              <p className="mb-2">
+              <p className="mb-2 text-muted-foreground">
                 {
                   agreements.find((a) => a.value === selectedAgreement)
                     ?.subtitle
                 }
               </p>
             )}
-            <p>
+            <p className="text-muted-foreground">
               {agreements.find((a) => a.value === selectedAgreement)
                 ?.content}
             </p>
@@ -153,12 +148,11 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
         </Card>
       )}
 
-      {/* Render custom content textarea if 'custom' is selected */}
       {selectedAgreement === "custom" && (
         <div className="flex flex-col gap-2.5">
           <Label
             htmlFor="custom-agreement"
-            className="text-16 font-bold text-white-1"
+            className="text-sm font-bold text-foreground"
           >
             Custom Collaboration Agreement:
           </Label>
@@ -167,7 +161,7 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
             value={customContent}
             onChange={handleCustomContentChange}
             placeholder="Enter your custom collaboration agreement details here..."
-            className="input-class focus-visible:ring-offset-orange-1"
+            className="border-border bg-muted/50 text-foreground focus-visible:ring-primary"
             required
           />
         </div>

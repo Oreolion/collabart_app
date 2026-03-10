@@ -81,9 +81,9 @@ export default function ProjectList() {
   return (
     <div className="space-y-4">
       {projects.map((project) => (
-        <Card key={project.id} className="bg-neutral-900">
+        <Card key={project.id} className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               {project.title}
             </CardTitle>
             <div className="flex space-x-2">
@@ -114,15 +114,15 @@ export default function ProjectList() {
                       src={project.creatorAvatar}
                       alt={project.creator}
                     />
-                    <AvatarFallback className="text-gray-500">
+                    <AvatarFallback className="text-muted-foreground">
                       {project.creator[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {project.creator}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Project Type: Public • Started: {project.startDate} • No.
                   Files: {project.filesCount}
                 </p>
@@ -133,7 +133,7 @@ export default function ProjectList() {
                     </Badge>
                   ))}
                 </div>
-                <div className="flex flex-wrap gap-1 text-gray-500">
+                <div className="flex flex-wrap gap-1 text-muted-foreground">
                   {project.genres.map((genre, index) => (
                     <Badge key={index} variant="default" className="text-xs">
                       {genre}

@@ -42,13 +42,6 @@ import { AudioProps } from "@/types";
 import LoaderSpinner from "./LoaderSpinner";
 import { Textarea } from "@/components/ui/textarea";
 
-/**
- * ProjectCard (styled) — integrated Convex comments persistence + improved share dialog
- * - preserves existing behavior (buy flow, list for sale, owner-only controls)
- * - replaced previous share dialog with the provided share UI and handleShare()
- * - nothing else changed
- */
-
 export default function ProjectCard({ project }: { project: any }) {
   const { setAudio } = useAudio();
   const { user, isLoaded } = useUser();
@@ -60,14 +53,11 @@ export default function ProjectCard({ project }: { project: any }) {
   const [listingPrice, setListingPrice] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // dialogs
   const [shareOpen, setShareOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
 
-  // ephemeral success message
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // comment form state
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState("");
 
@@ -91,11 +81,10 @@ export default function ProjectCard({ project }: { project: any }) {
     }
   }, [commentsQuery]);
 
-  // Convex: queries + mutations
   const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
 
   const addComment = useMutation(api.projects.addProjectComment);
-const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction as unknown as any);
+  const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction as unknown as any);
   const listProjectForSale = useMutation(api.projects.listProjectForSale);
 
   const isOwner =
@@ -104,12 +93,8 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
     project?.authorId &&
     String(user.id) === String(project.authorId);
 
-  // loader guard (keeps behavior)
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  // Pull comments into local state so we can prepend optimistically
-
-  // Play handler (unchanged behavior, but robust picking of file)
   const handlePlay = (projectFile: AudioProps | undefined) => {
     const file =
       projectFile ??
@@ -145,7 +130,6 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
     }
   };
 
-  // BUY
   const createPaymentAndRedirect = async ({ amount }: { amount?: string }) => {
     try {
       setBusy(true);
@@ -155,7 +139,7 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
       const redirectUrl = `${window.location.origin}/project/${project._id}?paid=1`;
       const payload = await createPublicLink({
         projectId: project._id,
-        amount, // optional: if undefined, server uses project.price
+        amount,
         slug,
         redirectUrl,
         name: project.projectTitle,
@@ -194,7 +178,6 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
     }
   };
 
-  // LIST FOR SALE
   const handleListForSale = async () => {
     if (
       !listingPrice ||
@@ -227,7 +210,6 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
     }
   };
 
-  // COMMENTS persistence
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
 
@@ -269,14 +251,12 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
     }
   };
 
-  // SHARE: implement the exact handleShare you provided
   const toggleShare = (open?: boolean) => {
     if (typeof open === "boolean") setShareOpen(open);
     else setShareOpen((s) => !s);
   };
 
   const handleShare = (platform: string) => {
-    // projectId variable -> project._id
     const url = `${typeof window !== "undefined" ? window.location.origin : ""}/project/${project._id}`;
     const message = `Check out this project: ${project?.projectTitle}`;
 
@@ -319,11 +299,11 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
   return (
     <Card
       key={project._id}
-      className="bg-neutral-900 mb-4 border border-neutral-800 hover:shadow-lg transition-shadow"
+      className="relative bg-card mb-4 border border-border hover:border-primary/30 transition-all duration-200"
     >
       <CardHeader className="flex items-start justify-between gap-4 px-4 py-3">
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-20 h-20 rounded-md overflow-hidden bg-neutral-800 flex-shrink-0">
+          <div className="w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
             {project.authorImageUrl ? (
               <Image
                 src={project.authorImageUrl}
@@ -333,7 +313,7 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-sm text-neutral-400">
+              <div className="w-full h-full flex items-center justify-center text-sm text-muted-foreground">
                 No image
               </div>
             )}
@@ -341,25 +321,25 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
 
           <div className="min-w-0">
             <Link href={`/project/${project._id}`} className="block">
-              <CardTitle className="text-lg font-semibold text-gray-300 truncate hover:underline">
+              <CardTitle className="text-lg font-semibold text-foreground truncate hover:text-primary transition-colors">
                 {project.projectTitle}
               </CardTitle>
             </Link>
 
-            <div className="mt-1 flex items-center gap-2 text-xs text-neutral-400">
+            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
               <span>by {project.author || "Unknown"}</span>
               <span>•</span>
               <span>Started {formatDate(project._creationTime)}</span>
               {project.price && (
                 <span className="ml-2">
-                  <Badge className="bg-emerald-600 text-white text-xs">
+                  <Badge className="bg-[hsl(var(--success))] text-white text-xs">
                     {project.currency ?? "USD"} {project.price}
                   </Badge>
                 </span>
               )}
               {!project.price && project.isListed && (
                 <span className="ml-2">
-                  <Badge className="bg-yellow-500 text-white text-xs">
+                  <Badge className="bg-[hsl(var(--warning))] text-white text-xs">
                     Listed (price not set)
                   </Badge>
                 </span>
@@ -374,7 +354,7 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                   </Badge>
                 ))
               ) : (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs text-muted-foreground">
                   None set
                 </Badge>
               )}
@@ -388,28 +368,28 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
             <Button
               variant="ghost"
               size="icon"
-              className="p-2"
+              className="h-8 w-8 text-muted-foreground hover:text-primary"
               onClick={() => handlePlay(project.projectFiles?.[0])}
               title="Play"
             >
               <Play className="h-5 w-5" />
             </Button>
 
-            {/* BUY - opens dialog for consistent UX */}
+            {/* BUY */}
             <Dialog open={buyModalOpen} onOpenChange={setBuyModalOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="p-2"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   title="Buy / Support"
                 >
                   <ShoppingCart className="h-5 w-5" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-sm">
+              <DialogContent className="max-w-sm bg-card border-border">
                 <DialogHeader>
-                  <DialogTitle>
+                  <DialogTitle className="text-foreground">
                     {project.price ? "Buy Project" : "Support / Buy Project"}
                   </DialogTitle>
                   <DialogDescription>
@@ -422,12 +402,13 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                 <div className="py-3 space-y-3">
                   {!project.price && (
                     <>
-                      <Label htmlFor="buy-amount">Amount (USD)</Label>
+                      <Label htmlFor="buy-amount" className="text-foreground">Amount (USD)</Label>
                       <Input
                         id="buy-amount"
                         value={buyAmount}
                         onChange={(e) => setBuyAmount(e.target.value)}
                         placeholder="e.g. 5.00"
+                        className="border-border bg-muted/50 text-foreground"
                       />
                     </>
                   )}
@@ -458,49 +439,49 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
               </DialogContent>
             </Dialog>
 
-            {/* SHARE - replaced with your provided share component */}
+            {/* SHARE */}
             <Dialog open={shareOpen} onOpenChange={() => toggleShare()}>
               <DialogTrigger asChild>
                 <Button
-                  className="p-2 bg-transparent"
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   title="Share"
                 >
                   <Share2 className="h-5 w-5" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-500">
+              <DialogContent className="bg-card border-border">
                 <DialogHeader>
-                  <DialogTitle>Share Project</DialogTitle>
-                  <DialogDescription className="text-gray-700">
+                  <DialogTitle className="text-foreground">Share Project</DialogTitle>
+                  <DialogDescription>
                     Share this project on social media or copy the link.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-3">
                   <Button
-                    className="w-full text-sm bg-transparent"
+                    className="w-full text-sm"
                     variant="outline"
                     onClick={() => handleShare("twitter")}
                   >
                     Share on Twitter
                   </Button>
                   <Button
-                    className="w-full text-sm bg-transparent"
+                    className="w-full text-sm"
                     variant="outline"
                     onClick={() => handleShare("facebook")}
                   >
                     Share on Facebook
                   </Button>
                   <Button
-                    className="w-full text-sm bg-transparent"
+                    className="w-full text-sm"
                     variant="outline"
                     onClick={() => handleShare("linkedin")}
                   >
                     Share on LinkedIn
                   </Button>
                   <Button
-                    className="w-full text-sm bg-slate-600 hover:bg-slate-700"
+                    className="w-full text-sm"
                     onClick={() => handleShare("copy")}
                   >
                     Copy Link
@@ -510,7 +491,6 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                   <Button
                     variant="outline"
                     onClick={() => toggleShare(false)}
-                    className="text-sm text-gray-500"
                   >
                     Close
                   </Button>
@@ -529,27 +509,28 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="px-2 py-1 text-sm flex items-center gap-2 text-gray-500 bg-green-500"
+                    className="px-2 py-1 text-sm flex items-center gap-2 border-[hsl(var(--success))]/50 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/10"
                     title="List for Sell"
                   >
                     <DollarSign className="h-4 w-4" />
                     <span>List</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-sm">
+                <DialogContent className="max-w-sm bg-card border-border">
                   <DialogHeader>
-                    <DialogTitle>List Project for Sale</DialogTitle>
+                    <DialogTitle className="text-foreground">List Project for Sale</DialogTitle>
                     <DialogDescription>
                       Set a price to make this project purchasable.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="py-3 space-y-3">
-                    <Label htmlFor="price">Price (USD)</Label>
+                    <Label htmlFor="price" className="text-foreground">Price (USD)</Label>
                     <Input
                       id="price"
                       value={listingPrice}
                       onChange={(e) => setListingPrice(e.target.value)}
                       placeholder="e.g. 10.00"
+                      className="border-border bg-muted/50 text-foreground"
                     />
                   </div>
                   <DialogFooter>
@@ -573,56 +554,59 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
       <CardContent className="px-4 pt-0 pb-3">
         <div className="flex items-start gap-4">
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-neutral-300 mb-2 line-clamp-3">
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-3">
               {project.projectDescription || "No description provided."}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
               {project.projectSampleRate && (
-                <Badge className="text-xs">
+                <Badge variant="secondary" className="text-xs">
                   {project.projectSampleRate} bpm
                 </Badge>
               )}
               {project.projectBitDepth && (
-                <Badge className="text-xs">{project.projectBitDepth}</Badge>
+                <Badge variant="secondary" className="text-xs">{project.projectBitDepth}</Badge>
               )}
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="outline" className="text-xs">
                 {project.projectType ?? "Public"}
               </Badge>
             </div>
           </div>
 
           <div className="hidden sm:flex flex-col items-center gap-2">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 rounded-full overflow-hidden">
               <AvatarImage
                 src={
                   project.authorImageUrl || "/assets/images/default-avatar.png"
                 }
                 alt={project.author}
+                className="h-full w-full object-cover"
               />
-              <AvatarFallback>{project.author?.[0] ?? "U"}</AvatarFallback>
+              <AvatarFallback className="flex h-full w-full items-center justify-center bg-primary/10 text-primary text-sm">
+                {project.author?.[0] ?? "U"}
+              </AvatarFallback>
             </Avatar>
-            <div className="text-xs text-neutral-400">
+            <div className="text-xs text-muted-foreground">
               {project.author || "Unknown"}
             </div>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between px-4 py-3">
+      <CardFooter className="flex items-center justify-between px-4 py-3 border-t border-border">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="px-2 py-1">
+          <Button variant="ghost" size="sm" className="px-2 py-1 text-muted-foreground hover:text-primary">
             <Heart className="h-4 w-4 mr-1" />
             <span className="text-sm">{project.likes ?? 0}</span>
           </Button>
 
-          {/* COMMENTS: open comment dialog on click */}
+          {/* COMMENTS */}
           <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="px-2 py-1"
+                className="px-2 py-1 text-muted-foreground hover:text-primary"
                 onClick={() => setCommentsOpen(true)}
               >
                 <MessageCircle className="h-4 w-4 mr-1" />
@@ -630,19 +614,19 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-md bg-slate-400">
+            <DialogContent className="max-w-md bg-card border-border">
               <DialogHeader>
-                <DialogTitle>Project Kudos</DialogTitle>
+                <DialogTitle className="text-foreground">Project Kudos</DialogTitle>
                 <DialogDescription>
                   Leave feedback or a kudos for this project.
                 </DialogDescription>
               </DialogHeader>
 
-              <CardContent className="space-y-4 p-0 ">
+              <CardContent className="space-y-4 p-0">
                 {!showCommentForm ? (
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent text-sm"
+                    className="w-full text-sm"
                     onClick={() => setShowCommentForm(true)}
                   >
                     <Send className="mr-2 h-4 w-4" />
@@ -654,12 +638,12 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                       placeholder="Add your comment here..."
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
-                      className="min-h-20"
+                      className="min-h-20 border-border bg-muted/50 text-foreground"
                     />
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-xs"
+                        className="text-xs"
                         onClick={handleAddComment}
                       >
                         Post
@@ -667,7 +651,7 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-xs bg-transparent text-gray-500"
+                        className="text-xs"
                         onClick={() => {
                           setShowCommentForm(false);
                           setCommentText("");
@@ -680,18 +664,18 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
                 )}
 
                 {comments.length > 0 && (
-                  <div className="mt-4 space-y-3 border-t pt-4">
+                  <div className="mt-4 space-y-3 border-t border-border pt-4">
                     {comments.map((comment, idx) => (
                       <div key={comment._id ?? idx} className="text-sm">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-xs">
+                          <span className="font-semibold text-xs text-foreground">
                             {comment.user}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {comment.date}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <p className="text-xs text-muted-foreground">
                           {comment.text}
                         </p>
                       </div>
@@ -709,15 +693,15 @@ const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction
           </Dialog>
         </div>
 
-        <div className="text-xs text-neutral-400">
+        <div className="text-xs text-muted-foreground">
           {project.isListed ? "Listed" : "Not listed"} •{" "}
           {project._creationTime ? formatDate(project._creationTime) : ""}
         </div>
       </CardFooter>
 
-      {/* small ephemeral success message */}
+      {/* ephemeral success message */}
       {successMessage && (
-        <div className="absolute right-4 top-2 bg-green-600 text-white px-3 py-1 rounded text-sm z-50">
+        <div className="absolute right-4 top-2 bg-[hsl(var(--success))] text-white px-3 py-1 rounded text-sm z-50">
           {successMessage}
         </div>
       )}

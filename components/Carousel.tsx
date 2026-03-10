@@ -5,21 +5,21 @@ import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { HeroCarouselProps } from "@/types";
-import styles from "../styles/hero.module.css";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 const Carousel = ({ slides }: HeroCarouselProps) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 5000 }),
+  ]);
 
   const onNavButtonClick = useCallback((emblaApi: EmblaCarouselType) => {
     const autoplay = emblaApi?.plugins()?.autoplay;
     if (!autoplay || !("stopOnInteraction" in autoplay.options)) return;
-
     const resetOrStop =
       autoplay.options.stopOnInteraction === false
         ? (autoplay.reset as () => void)
         : (autoplay.stop as () => void);
-
     resetOrStop();
   }, []);
 
@@ -29,36 +29,51 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
   );
 
   return (
-    <section
-      className="flex w-[79rem] ml-[-6rem] flex-col overflow-hidden"
-      ref={emblaRef}
-    >
-      <div className="flex">
+    <div className="relative w-full h-full overflow-hidden" ref={emblaRef}>
+      <div className="flex h-full">
         {slides.map((item) => (
-          <figure
+          <div
             key={item.id}
-            style={{
-              backgroundImage: `url(${item.imageUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              opacity: '.85',
-            }}
-            className="relative h-[28rem] cursor-pointer flex items-center justify-center text-center"
+            className="relative flex-[0_0_100%] min-w-0 h-screen min-h-[600px]"
           >
-            <div className="relative z-10 mt-[6rem] flex flex-col rounded-b-xl p-4 w-[56rem] h-[32rem]">
-              <h1 className={styles.h1}>{item.h1}</h1>
-              <h3 className={styles.h3}>{item.h3}</h3>
-              <p className={styles.p}>{item.p}</p>
-              <div className="flex gap-[1rem] items-center justify-center max-md:ml-[-10rem] max-md:flex-col">
-                <Button className="p-[1.5rem] font-bold">SIGN UP FOR FREE</Button>
-                <Button className="p-[1.5rem] font-bold">LEARN MORE</Button>
+            {/* Background image */}
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${item.imageUrl})` }}
+            />
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 max-w-3xl mx-auto">
+              <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">
+                {item.h1}
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-4">
+                {item.h3}
+              </h2>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
+                {item.p}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/sign-up">
+                  <Button size="lg" className="font-semibold px-8">
+                    Sign Up For Free
+                  </Button>
+                </Link>
+                <Link href="#about">
+                  <Button size="lg" variant="outline" className="font-semibold px-8 border-border text-foreground hover:bg-muted">
+                    Learn More
+                  </Button>
+                </Link>
               </div>
             </div>
-          </figure>
+          </div>
         ))}
       </div>
 
-      <div className="flex justify-center gap-2 absolute top-[7rem] right-4">
+      {/* Dot indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {scrollSnaps.map((_, index) => (
           <DotButton
             key={index}
@@ -67,7 +82,7 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
           />
         ))}
       </div>
-    </section>
+    </div>
   );
 };
 

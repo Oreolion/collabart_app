@@ -36,7 +36,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
   };
 
   return (
-    <Card className="mb-4 bg-slate-100 dark:bg-slate-800">
+    <Card className="mb-4 bg-muted/30 border-border">
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-2">
         <Avatar className="h-8 w-8">
           <AvatarImage src={submission.authorImageUrl} />
@@ -48,7 +48,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
         </div>
       </CardHeader>
       <CardContent>
-        <pre className="w-full whitespace-pre-wrap rounded-md bg-white dark:bg-slate-700 p-4 text-sm font-mono max-h-40 overflow-y-auto">
+        <pre className="w-full whitespace-pre-wrap rounded-md bg-card p-4 text-sm font-mono max-h-40 overflow-y-auto">
           {submission.lyrics}
         </pre>
       </CardContent>
@@ -64,7 +64,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
         <Button 
           variant="secondary" 
           size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white"
+          className="bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white"
           onClick={handleApprove}
           disabled={isBusy}
         >

@@ -180,7 +180,7 @@ export default function ProjectActionsAndMeta({
       <DialogTrigger asChild>
         <Badge
           variant="outline"
-          className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1 w-fit"
+          className="cursor-pointer hover:bg-muted flex items-center gap-1 w-fit"
         >
           {children} <ArrowRight className="w-3 h-3" />
         </Badge>
@@ -250,7 +250,7 @@ export default function ProjectActionsAndMeta({
         </Tabs>
 
         {/* --- Dialog Content for Details --- */}
-        <DialogContent className="max-w-4xl bg-white dark:bg-slate-900">
+        <DialogContent className="max-w-4xl bg-card border-border">
           <DialogHeader>
             <DialogTitle>Update Project Details</DialogTitle>
             <DialogDescription>
@@ -301,7 +301,7 @@ export default function ProjectActionsAndMeta({
                 <AlertTriangle className="w-4 h-4 mr-1" /> Close Project
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-gray-400">
+            <DialogContent className="bg-card border-border">
               <DialogHeader>
                 <DialogTitle>Close Project</DialogTitle>
                 <DialogDescription>
@@ -319,7 +319,7 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("closeProject")}
                 >
@@ -342,7 +342,7 @@ export default function ProjectActionsAndMeta({
                 <Settings className="w-4 h-4 mr-1" /> Settings
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-slate-400">
+            <DialogContent className="max-w-md bg-card border-border">
               <DialogHeader>
                 <DialogTitle>Project Settings</DialogTitle>
                 <DialogDescription>
@@ -393,13 +393,13 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("projectSettings")}
                 >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   Save Settings
                 </Button>
               </DialogFooter>
@@ -418,7 +418,7 @@ export default function ProjectActionsAndMeta({
                 <FileText className="w-4 h-4 mr-1" /> Project Files
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-slate-400">
+            <DialogContent className="max-w-2xl bg-card border-border">
               <DialogHeader>
                 <DialogTitle>File Management</DialogTitle>
                 <DialogDescription>
@@ -451,13 +451,13 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("fileManagement")}
                 >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   Upload Files
                 </Button>
               </DialogFooter>
@@ -471,7 +471,7 @@ export default function ProjectActionsAndMeta({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full text-purple-600 bg-transparent text-xs mb-6"
+                className="w-full text-primary bg-transparent text-xs mb-6"
               >
                 <Mic className="w-4 h-4 mr-1" />
                 {project.isAuditioning
@@ -479,7 +479,7 @@ export default function ProjectActionsAndMeta({
                   : "List for Audition"}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-slate-400">
+            <DialogContent className="max-w-md bg-card border-border">
               <DialogHeader>
                 <DialogTitle>Open for Audition</DialogTitle>
                 <DialogDescription>
@@ -513,7 +513,7 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("audition")}
                   disabled={busy}
@@ -521,7 +521,7 @@ export default function ProjectActionsAndMeta({
                   Cancel
                 </Button>
                 <Button
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-primary hover:bg-primary/90"
                   onClick={handleListForAudition}
                   disabled={busy}
                 >
@@ -538,13 +538,13 @@ export default function ProjectActionsAndMeta({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full text-blue-600 bg-transparent text-xs"
+                className="w-full text-accent bg-transparent text-xs"
               >
                 <Users className="w-4 h-4 mr-1" />
                 Send Invite
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-slate-400">
+            <DialogContent className="max-w-md bg-card border-border">
               <DialogHeader>
                 <DialogTitle>Send Collaboration Invite</DialogTitle>
                 <DialogDescription>
@@ -586,7 +586,7 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("collaboration")}
                   disabled={busy}
@@ -594,7 +594,7 @@ export default function ProjectActionsAndMeta({
                   Cancel
                 </Button>
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-primary hover:bg-primary/90"
                   onClick={handleSendInvite}
                   disabled={busy}
                 >
@@ -611,13 +611,13 @@ export default function ProjectActionsAndMeta({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full text-green-600 bg-transparent text-xs"
+                className="w-full text-[hsl(var(--success))] bg-transparent text-xs"
               >
                 <DollarSign className="w-4 h-4 mr-1" />
                 {project?.isListed ? "Update Listing" : "List for Sell"} 
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-slate-400">
+            <DialogContent className="max-w-md bg-card border-border">
               <DialogHeader>
                 <DialogTitle>List Project for Sale</DialogTitle> 
                 <DialogDescription>
@@ -639,7 +639,7 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("selling")}
                   disabled={busy}
@@ -647,7 +647,7 @@ export default function ProjectActionsAndMeta({
                   Cancel
                 </Button>
                 <Button
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90"
                   onClick={handleListForSale}
                   disabled={busy}
                 >
@@ -669,7 +669,7 @@ export default function ProjectActionsAndMeta({
                 <CheckCircle2 className="w-4 h-4 mr-1" /> Collab Agreement
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-slate-400">
+            <DialogContent className="max-w-2xl bg-card border-border">
               <DialogHeader>
                 <DialogTitle>Collaboration Agreement</DialogTitle>s
                 <DialogDescription>
@@ -715,14 +715,14 @@ export default function ProjectActionsAndMeta({
               </div>
               <DialogFooter>
                 <Button
-                  className="text-gray-500"
+                  className="text-muted-foreground"
                   variant="outline"
                   onClick={() => toggleModal("collaborationAgreement")}
                 >
                   Cancel
                 </Button>
                 s
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   Save Agreement
                 </Button>
               </DialogFooter>

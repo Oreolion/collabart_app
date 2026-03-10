@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Search,
-  //   Share2,
-  //   Play,
-  //   Music,
-  //   Heart,
-  //   MessageCircle,
-} from "lucide-react";
-
-import styles from "@/styles/projects.module.css";
+import { Search } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import ProjectCard from "@/components/ProjectCard";
@@ -18,6 +9,9 @@ import LoaderSpinner from "@/components/LoaderSpinner";
 import { useUser } from "@clerk/nextjs";
 import { useDebounce } from "@/lib/useDebounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Pagination = ({
   currentPage,
@@ -32,12 +26,14 @@ const Pagination = ({
   );
 
   return (
-    <div className={styles.pagination}>
+    <div className="flex justify-center gap-1 my-6 flex-wrap">
       {pages.map((page) => (
         <button
           key={page}
-          className={`${styles.pagination__button} ${
-            page === currentPage ? styles.pagination__button__active : ""
+          className={`w-8 h-8 flex items-center justify-center rounded text-sm transition-all ${
+            page === currentPage
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted/50 text-muted-foreground border border-border hover:bg-muted"
           }`}
         >
           {page}
@@ -45,9 +41,9 @@ const Pagination = ({
       ))}
       {totalPages > 6 && (
         <>
-          <span style={{ padding: "0.5rem", color: "aliceblue" }}>...</span>
+          <span className="px-2 text-muted-foreground">...</span>
           {Array.from({ length: 10 }, (_, i) => i + 21).map((page) => (
-            <button key={page} className={styles.pagination__button}>
+            <button key={page} className="w-8 h-8 flex items-center justify-center rounded text-sm bg-muted/50 text-muted-foreground border border-border hover:bg-muted">
               {page}
             </button>
           ))}
@@ -58,11 +54,9 @@ const Pagination = ({
 };
 
 export default function ProjectsClient() {
-  // fetch projects with files (keeps the existing behavior that expects projectFiles)
   const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
   const { isLoaded } = useUser();
 
-  // search + filters state
   const [searchFilters, setSearchFilters] = useState({
     title: "",
     talent: "",
@@ -78,7 +72,6 @@ export default function ProjectsClient() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const debouncedValue = useDebounce(search, 300);
 
-  // Keep previous URL sync behaviour you had — update query param when debouncedValue changes
   useEffect(() => {
     if (debouncedValue) {
       const params = new URLSearchParams(searchParams as any);
@@ -95,8 +88,6 @@ export default function ProjectsClient() {
   };
 
   const handleSearch = () => {
-    // client-side filtering is applied in filteredProjects below, so this button can be used
-    // to trigger additional behaviour if you want (analytics, explicit fetch, etc.)
     console.log("Searching with filters:", searchFilters, "search:", search);
   };
 
@@ -104,20 +95,16 @@ export default function ProjectsClient() {
     setSearchFilters({ title: "", talent: "", genre: "", mood: "" });
     setListMostActive(false);
     setSearch("");
-    // clear search param from url
     const params = new URLSearchParams(searchParams as any);
     params.delete("search");
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // show loader while Convex data or Clerk loading
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  // apply search + filters client-side on the projectsWithFiles array
   const normalizedSearch = (search || "").toLowerCase().trim();
 
   const filteredProjects = projectsWithFiles.filter((project: any) => {
-    // search string checks title + author + description
     const matchesSearch = normalizedSearch
       ? [
           project.projectTitle || "",
@@ -153,11 +140,6 @@ export default function ProjectsClient() {
         )
       : true;
 
-    // optional: listMostActive toggles sorting/filtering by views
-    if (listMostActive) {
-      // keep the project here; sorting is handled below
-    }
-
     return (
       matchesSearch &&
       matchesTitle &&
@@ -167,7 +149,6 @@ export default function ProjectsClient() {
     );
   });
 
-  // if listMostActive is set, sort by views desc
   const finalProjects = listMostActive
     ? [...filteredProjects].sort(
         (a: any, b: any) => (b.views || 0) - (a.views || 0)
@@ -175,31 +156,29 @@ export default function ProjectsClient() {
     : filteredProjects;
 
   return (
-    <div className={styles.project__feeds}>
-      <div className={styles.content__box}>
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
+      <div className="space-y-6">
         {/* Search Section */}
-        <div className={styles.search__section}>
-          <div className={styles.search__title}>
-            <Search size={24} />
+        <div className="surface-elevated p-5 space-y-4">
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+            <Search className="w-5 h-5 text-primary" />
             Find Active Projects
           </div>
 
-          <div className={styles.search__grid}>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Title</label>
-              {/* NOTE: keep behaviour close to your original: "search" state still updates URL + debounced */}
-              <input
-                className={styles.search__input}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-muted-foreground">By Title</Label>
+              <Input
                 type="search"
-                placeholder="search Project..."
+                placeholder="Search project..."
                 value={search}
                 onChange={handleChange}
+                className="border-border bg-muted/50 text-foreground"
               />
             </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Talent</label>
-              <input
-                className={styles.search__input}
+            <div className="space-y-1.5">
+              <Label className="text-sm text-muted-foreground">By Talent</Label>
+              <Input
                 placeholder="Search by talent..."
                 value={searchFilters.talent}
                 onChange={(e) =>
@@ -208,12 +187,12 @@ export default function ProjectsClient() {
                     talent: e.target.value,
                   }))
                 }
+                className="border-border bg-muted/50 text-foreground"
               />
             </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Genre</label>
-              <input
-                className={styles.search__input}
+            <div className="space-y-1.5">
+              <Label className="text-sm text-muted-foreground">By Genre</Label>
+              <Input
                 placeholder="Search by genre..."
                 value={searchFilters.genre}
                 onChange={(e) =>
@@ -222,12 +201,12 @@ export default function ProjectsClient() {
                     genre: e.target.value,
                   }))
                 }
+                className="border-border bg-muted/50 text-foreground"
               />
             </div>
-            <div className={styles.search__field}>
-              <label className={styles.search__label}>By Mood</label>
-              <input
-                className={styles.search__input}
+            <div className="space-y-1.5">
+              <Label className="text-sm text-muted-foreground">By Mood</Label>
+              <Input
                 placeholder="Search by mood..."
                 value={searchFilters.mood}
                 onChange={(e) =>
@@ -236,34 +215,36 @@ export default function ProjectsClient() {
                     mood: e.target.value,
                   }))
                 }
+                className="border-border bg-muted/50 text-foreground"
               />
             </div>
           </div>
 
-          <div className={styles.search__controls}>
-            <div className={styles.checkbox__container}>
+          <div className="flex justify-between items-center flex-wrap gap-3">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
-                id="most-active"
                 checked={listMostActive}
                 onChange={(e) => setListMostActive(e.target.checked)}
+                className="rounded border-border"
               />
-              <label htmlFor="most-active">List most active</label>
-            </div>
+              List most active
+            </label>
 
-            <div className={styles.button__group}>
-              <button
+            <div className="flex gap-2">
+              <Button
                 onClick={handleSearch}
-                className={`${styles.search__button} ${styles.search__button__primary}`}
+                size="sm"
               >
                 Search
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleClear}
-                className={`${styles.search__button} ${styles.search__button__secondary}`}
+                variant="outline"
+                size="sm"
               >
                 Clear
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -272,13 +253,13 @@ export default function ProjectsClient() {
         <Pagination currentPage={currentPage} totalPages={5} />
 
         {/* Projects List */}
-        <div>
+        <div className="space-y-4">
           {finalProjects?.length ? (
             finalProjects.map((project: any) => (
               <ProjectCard key={project._id} project={project} />
             ))
           ) : (
-            <div className="text-gray-300 p-4">No projects found</div>
+            <div className="text-center py-12 text-muted-foreground">No projects found</div>
           )}
         </div>
 
