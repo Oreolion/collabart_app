@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CollabArt",
+  title: "eCollabs",
   description: "The Digital Playground For Creators and Artists",
 };
 

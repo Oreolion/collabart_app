@@ -118,7 +118,7 @@ export default function Dashboard() {
                             <p>Check out the <Link href="/projects" className="text-primary hover:underline">active projects</Link> section for members looking for your unique musical talents.</p>
                             <p>Get involved in the community by posting to the member&lsquo;s forum and giving kudos and feedback.</p>
                             <p>Get started by letting everyone know that you&lsquo;ve arrived by posting to the introductions forum.</p>
-                            <p>Thanks for being here. CollabArts Team</p>
+                            <p>Thanks for being here. eCollabs Team</p>
                           </CardContent>
                         </Card>
 
@@ -294,7 +294,7 @@ export default function Dashboard() {
 
       <footer className="border-t border-border p-4 mt-4">
         <div className="text-center text-xs text-muted-foreground">
-          &copy; 2025 Collabart. Some Rights Reserved.
+          &copy; 2025 eCollabs. Some Rights Reserved.
         </div>
       </footer>
     </>

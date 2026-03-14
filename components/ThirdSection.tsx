@@ -22,9 +22,9 @@ const ThirdSection = () => {
   }, [hasAnimated]);
 
   return (
-    <section id="features" ref={ref} className="py-20 px-6 bg-background">
+    <section id="features" ref={ref} className="relative py-20 px-6 bg-background/80">
       <motion.div
-        className="max-w-6xl mx-auto"
+        className="max-w-6xl mx-auto relative z-10"
         initial={{ opacity: 0, y: 30 }}
         animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -37,10 +37,13 @@ const ThirdSection = () => {
           We&lsquo;ve listed some of the main ones below.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {fourthSection.map((item) => (
-            <div
+          {fourthSection.map((item, index) => (
+            <motion.div
               key={item.id}
-              className="surface-elevated p-5 flex gap-4 hover:border-primary/30 transition-all duration-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="surface-elevated p-5 flex gap-4 glass-hover"
             >
               <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Image src={item.svgUrl} alt={item.h4} height={22} width={22} />
@@ -49,7 +52,7 @@ const ThirdSection = () => {
                 <h4 className="text-sm font-semibold text-foreground mb-1">{item.h4}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">{item.p}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>

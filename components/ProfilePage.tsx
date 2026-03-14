@@ -148,7 +148,7 @@ export default function ProfilePage() {
             <CardContent>
               <p className="mb-4">
                 An &apos;annual membership plan&apos; is required for
-                participation on ProCollabs. You can customize your plan by
+                participation on eCollabs. You can customize your plan by
                 adding additional service/product features at any time. Add-on
                 features are included into your annual plan and pricing is
                 calculated based on your remaining membership subscription
@@ -235,7 +235,7 @@ export default function ProfilePage() {
 
           <Card className="mb-6 bg-card">
             <CardHeader>
-              <CardTitle>Purpose on ProCollabs</CardTitle>
+              <CardTitle>Purpose on eCollabs</CardTitle>
             </CardHeader>
             <CardContent>
               <Slider defaultValue={[50]} max={100} step={1} className="mb-4" />
@@ -245,7 +245,7 @@ export default function ProfilePage() {
               </div>
               <div className="mt-4">
                 <p className="mb-2">
-                  Why are you on ProCollabs? Select all that apply. I am:
+                  Why are you on eCollabs? Select all that apply. I am:
                 </p>
                 <div className="space-y-2">
                   {[

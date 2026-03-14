@@ -38,18 +38,19 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
           >
             {/* Background image */}
             <div
-              className="absolute inset-0 bg-cover bg-center"
+              className="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-[8000ms]"
               style={{ backgroundImage: `url(${item.imageUrl})` }}
             />
-            {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+            {/* Multi-layer gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 max-w-3xl mx-auto">
-              <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">
+              <span className="text-primary font-bold text-sm uppercase tracking-[0.25em] mb-4 drop-shadow-[0_0_12px_hsl(262,83%,58%,0.3)]">
                 {item.h1}
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-4 drop-shadow-lg">
                 {item.h3}
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
@@ -57,12 +58,12 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/sign-up">
-                  <Button size="lg" className="font-semibold px-8">
+                  <Button size="lg" className="font-semibold px-8 glow-primary">
                     Sign Up For Free
                   </Button>
                 </Link>
                 <Link href="#about">
-                  <Button size="lg" variant="outline" className="font-semibold px-8 border-border text-foreground hover:bg-muted">
+                  <Button size="lg" variant="outline" className="font-semibold px-8 border-border/40 text-foreground hover:bg-muted/50 backdrop-blur-sm">
                     Learn More
                   </Button>
                 </Link>

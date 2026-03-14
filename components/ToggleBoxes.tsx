@@ -91,7 +91,7 @@ function PanelStartProject() {
         <p className="text-sm text-muted-foreground leading-relaxed">
           Whether it&apos;s a guitar riff, drum loop, a vocal a cappella or lyrics - just start your own music collaboration project and upload your idea. Then, wait for others to join in, or send invites to other members.
         </p>
-        <h4 className="text-sm font-semibold text-foreground">Here&apos;s what you can expect as a CollabArts member</h4>
+        <h4 className="text-sm font-semibold text-foreground">Here&apos;s what you can expect as an eCollabs member</h4>
         <ul className="space-y-2">
           <ListItem icon="/assets/icons/music-svgrepo-com.svg" text="Opportunities to co-write and produce music in all genres and styles" />
           <ListItem icon="/assets/icons/group-svgrepo-com.svg" text="A like-minded community bubbling with experience and talent" />
@@ -139,14 +139,14 @@ function PanelMixProduce() {
         <h3 className="text-xl font-bold text-foreground">Mix and produce your song</h3>
         <h4 className="text-sm font-semibold text-muted-foreground">Mix, master, and polish your songs to perfection!</h4>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Once a song has taken shape and all collaborators have uploaded and fine tuned their contributions, it&apos;s time to mix! And if that ain&apos;t your specialty, no worries, you&apos;ll find many talented audio engineers on CollabArts who&apos;ll be more than happy to participate.
+          Once a song has taken shape and all collaborators have uploaded and fine tuned their contributions, it&apos;s time to mix! And if that ain&apos;t your specialty, no worries, you&apos;ll find many talented audio engineers on eCollabs who&apos;ll be more than happy to participate.
         </p>
         <h4 className="text-sm font-semibold text-foreground">Completing your collaboration project</h4>
         <ul className="space-y-2">
           <ListItem icon="/assets/icons/like-shapes-svgrepo-com.svg" text="Collaborator agreement and final sign off" />
           <ListItem icon="/assets/icons/chart-pie-svgrepo-com.svg" text="Song datasheets for track information and collaborator splits" />
           <ListItem icon="/assets/icons/padlock-outlined-svgrepo-com.svg" text="Option to protect your songs with audio watermarking" />
-          <ListItem icon="/assets/icons/dollar-svgrepo-com.svg" text="Publish to the CollabArts Music Library and pursue commercial interest" />
+          <ListItem icon="/assets/icons/dollar-svgrepo-com.svg" text="Publish to the eCollabs Music Library and pursue commercial interest" />
           <ListItem icon="/assets/icons/file-check-svgrepo-com.svg" text="Or, allow pre-approved uses with a Creative Commons license" />
         </ul>
       </div>

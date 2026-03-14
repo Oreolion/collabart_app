@@ -7,13 +7,13 @@ import ThirdSection from "@/components/ThirdSection";
 
 export default function Home() {
   return (
-    <div className="">
-      <Navbar></Navbar>
-      <Hero></Hero>
-      <About></About>
-      <ThirdSection></ThirdSection>
-      <ForthSection></ForthSection>
-      <Footer></Footer>
+    <div className="ambient-bg noise-overlay">
+      <Navbar />
+      <Hero />
+      <About />
+      <ThirdSection />
+      <ForthSection />
+      <Footer />
     </div>
   );
 }

@@ -45,7 +45,7 @@ export default function UserProfile() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Earn your ProCollabs Awards and Achievements by entering our Challenges and by generally being an awesome collaborator!
+                Earn your eCollabs Awards and Achievements by entering our Challenges and by generally being an awesome collaborator!
               </p>
             </CardContent>
           </Card>

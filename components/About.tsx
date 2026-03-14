@@ -24,10 +24,10 @@ const About = () => {
     <section
       id="about"
       ref={ref}
-      className="py-20 px-6 bg-card"
+      className="relative py-20 px-6 bg-card/50 backdrop-blur-sm"
     >
       <motion.div
-        className="max-w-5xl mx-auto"
+        className="max-w-5xl mx-auto relative z-10"
         initial={{ opacity: 0, y: 30 }}
         animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -36,8 +36,8 @@ const About = () => {
           For <span className="text-gradient-primary">Music Creators</span>
         </h2>
         <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-4 leading-relaxed">
-          CollabArts is an online music collaboration service that gives you
-          access to experienced and talented songwriters, musicians, audio
+          eCollabs is an online music collaboration platform that connects you
+          with experienced and talented songwriters, musicians, audio
           engineers, and music producers from all around the world. It&apos;s a
           place to unite, socialize, and collaborate in the writing and
           production of original music, all from the comfort of your own home

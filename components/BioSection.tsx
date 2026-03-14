@@ -29,7 +29,7 @@ const BioSection = () => {
           <h3 className="text-lg font-semibold text-foreground bg-muted/50 p-2 rounded-md">Recent Activity</h3>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">{user?.username} just joined CollabArts - WELCOME!</p>
+          <p className="text-sm text-muted-foreground">{user?.username} just joined eCollabs - WELCOME!</p>
         </CardContent>
       </Card>
     </div>

@@ -3,16 +3,15 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <footer className="relative border-t border-border/10 bg-card/40 backdrop-blur-md">
+      <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Logo */}
           <div>
             <Link href="/">
               <h3 className="text-lg font-bold tracking-tight mb-3">
-                <span className="text-foreground">Collab</span>
-                <span className="text-primary font-black">@</span>
-                <span className="text-accent">RT</span>
+                <span className="text-primary font-black">e</span>
+                <span className="text-foreground">Collabs</span>
               </h3>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -50,9 +49,9 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="border-t border-border py-4">
+      <div className="border-t border-border/10 py-4 relative z-10">
         <p className="text-xs text-muted-foreground text-center">
-          Terms of Service | Security | the CollabART APP 2024
+          Terms of Service | Security | eCollabs 2025
         </p>
       </div>
     </footer>

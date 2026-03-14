@@ -22,9 +22,12 @@ const ForthSection = () => {
   }, [hasAnimated]);
 
   return (
-    <section ref={ref} className="py-16 px-6 bg-gradient-to-r from-primary/10 via-card to-accent/10 border-y border-border">
+    <section ref={ref} className="relative py-16 px-6 border-y border-border/10 overflow-hidden">
+      {/* Glass gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-card/50 to-accent/8 backdrop-blur-sm" />
+
       <motion.div
-        className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6"
+        className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6"
         initial={{ opacity: 0, y: 20 }}
         animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.5 }}
@@ -33,7 +36,7 @@ const ForthSection = () => {
           Like what you hear? Then show us whatcha got...
         </h4>
         <Link href="/sign-up">
-          <Button size="lg" className="font-semibold px-10 whitespace-nowrap">
+          <Button size="lg" className="font-semibold px-10 whitespace-nowrap glow-primary">
             SIGN UP NOW FOR FREE
           </Button>
         </Link>

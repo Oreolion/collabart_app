@@ -130,7 +130,7 @@ const ProfilePage = ({
 
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-foreground">Purpose on ProCollabs</CardTitle>
+                <CardTitle className="text-foreground">Purpose on eCollabs</CardTitle>
               </CardHeader>
               <CardContent>
                 <Slider defaultValue={[50]} max={100} step={1} className="mb-4" />
@@ -140,7 +140,7 @@ const ProfilePage = ({
                 </div>
                 <div className="mt-4">
                   <p className="mb-2 text-sm text-muted-foreground">
-                    Why are you on ProCollabs? Select all that apply. I am:
+                    Why are you on eCollabs? Select all that apply. I am:
                   </p>
                   <div className="space-y-2">
                     {[
@@ -413,7 +413,7 @@ const ProfilePage = ({
             <CardContent>
               <p className="mb-4 text-sm text-muted-foreground">
                 An &apos;annual membership plan&apos; is required for
-                participation on ProCollabs. You can customize your plan by
+                participation on eCollabs. You can customize your plan by
                 adding additional service/product features at any time.
               </p>
               <Table>

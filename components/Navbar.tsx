@@ -18,19 +18,18 @@ const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         scrolled
-          ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-lg"
+          ? "glassmorphism-black shadow-lg"
           : "bg-transparent"
       )}
     >
       <div className="mx-auto max-w-7xl flex items-center justify-between px-6 h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-0.5 group">
           <h3 className="text-xl font-bold tracking-tight">
-            <span className="text-foreground">Collab</span>
-            <span className="text-primary font-black">@</span>
-            <span className="text-accent">RT</span>
+            <span className="text-primary font-black text-2xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)]">e</span>
+            <span className="text-foreground">Collabs</span>
           </h3>
         </Link>
 
@@ -49,7 +48,7 @@ const Navbar = () => {
             Sign in
           </Link>
           <Link href="/sign-up">
-            <Button size="sm" className="font-semibold">
+            <Button size="sm" className="font-semibold glow-primary">
               Get Started
             </Button>
           </Link>
@@ -66,7 +65,7 @@ const Navbar = () => {
 
       {/* Mobile Nav */}
       {mobileOpen && (
-        <nav className="md:hidden bg-card/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 animate-fade-in">
+        <nav className="md:hidden glassmorphism-black border-b border-border/10 px-6 pb-6 pt-2 animate-fade-in">
           <div className="flex flex-col gap-3">
             <Link href="/" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               Home
