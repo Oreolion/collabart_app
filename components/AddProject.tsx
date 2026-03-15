@@ -204,7 +204,7 @@ export default function AddProject() {
                 Select Project Type:
               </Label>
               <Select
-                value={projectType}
+                value={projectType ?? undefined}
                 onValueChange={(value) => setProjectType(value)}
               >
                 <SelectTrigger className="border-border bg-muted/50 text-foreground">
@@ -264,7 +264,7 @@ export default function AddProject() {
               </Select>
 
               <Select
-                value={projectSampleRate}
+                value={projectSampleRate ?? undefined}
                 onValueChange={(value) => setProjectSampleRate(value)}
               >
                 <SelectTrigger className="border-border bg-muted/50 text-foreground">
@@ -333,7 +333,7 @@ export default function AddProject() {
               Audition Privacy:
             </Label>
             <Select
-              value={projectAuditionPrivacy}
+              value={projectAuditionPrivacy ?? undefined}
               onValueChange={(value) => setProjectAuditionPrivacy(value)}
               onOpenChange={setIsDropdownOpen}
             >

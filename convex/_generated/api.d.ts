@@ -16,13 +16,16 @@ import type {
 import type * as actions from "../actions.js";
 import type * as activityLog from "../activityLog.js";
 import type * as collaborations from "../collaborations.js";
+import type * as credits from "../credits.js";
 import type * as file from "../file.js";
 import type * as http from "../http.js";
 import type * as likes from "../likes.js";
 import type * as lyrics from "../lyrics.js";
+import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as projects from "../projects.js";
 import type * as users from "../users.js";
+import type * as visuals from "../visuals.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -36,13 +39,16 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   activityLog: typeof activityLog;
   collaborations: typeof collaborations;
+  credits: typeof credits;
   file: typeof file;
   http: typeof http;
   likes: typeof likes;
   lyrics: typeof lyrics;
+  messages: typeof messages;
   notifications: typeof notifications;
   projects: typeof projects;
   users: typeof users;
+  visuals: typeof visuals;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

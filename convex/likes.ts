@@ -33,6 +33,39 @@ export const toggleLike = mutation({
       await ctx.db.patch(args.projectId, {
         likes: (project.likes ?? 0) + 1,
       });
+
+      const liker = await ctx.db
+        .query("users")
+        .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+        .unique();
+
+      // Notify project owner (don't notify on self-like)
+      if (project.authorId !== identity.subject) {
+        await ctx.db.insert("notifications", {
+          userId: project.authorId,
+          type: "like",
+          title: "New Like",
+          message: `${liker?.name ?? "Someone"} liked "${project.projectTitle}"`,
+          projectId: args.projectId,
+          fromUserId: identity.subject,
+          fromUserName: liker?.name,
+          fromUserImage: liker?.imageUrl,
+          isRead: false,
+          createdAt: Date.now(),
+          link: `/project/${args.projectId}`,
+        });
+      }
+
+      // Log activity
+      await ctx.db.insert("activityLog", {
+        projectId: args.projectId,
+        userId: identity.subject,
+        userName: liker?.name,
+        userImage: liker?.imageUrl,
+        action: "like",
+        createdAt: Date.now(),
+      });
+
       return { liked: true };
     }
   },

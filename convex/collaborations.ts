@@ -90,6 +90,32 @@ export const sendProjectInvite = mutation({
       status: "pending",
     });
 
+    // Notify the invitee
+    await ctx.db.insert("notifications", {
+      userId: invitee.clerkId,
+      type: "invite",
+      title: "Collaboration Invite",
+      message: `${project.author} invited you to collaborate on "${project.projectTitle}"`,
+      projectId: args.projectId,
+      fromUserId: identity.subject,
+      fromUserName: project.author,
+      fromUserImage: project.authorImageUrl,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${args.projectId}`,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      userId: identity.subject,
+      userName: project.author,
+      userImage: project.authorImageUrl,
+      action: "invite",
+      metadata: JSON.stringify({ inviteeEmail: args.inviteeEmail, role: args.role }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -157,7 +183,42 @@ export const removeCollaborator = mutation({
       throw new ConvexError("Only the owner can remove collaborators.");
     }
 
+    // Find the removed user to notify them
+    const removedUser = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), invite.inviteeEmail))
+      .first();
+
     await ctx.db.delete(args.inviteId);
+
+    // Notify removed collaborator
+    if (removedUser) {
+      await ctx.db.insert("notifications", {
+        userId: removedUser.clerkId,
+        type: "collaborator_removed",
+        title: "Removed from Project",
+        message: `You were removed from "${project.projectTitle}"`,
+        projectId: invite.projectId,
+        fromUserId: identity.subject,
+        fromUserName: project.author,
+        fromUserImage: project.authorImageUrl,
+        isRead: false,
+        createdAt: Date.now(),
+        link: `/project/${invite.projectId}`,
+      });
+    }
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: invite.projectId,
+      userId: identity.subject,
+      userName: project.author,
+      userImage: project.authorImageUrl,
+      action: "collaborator_removed",
+      metadata: JSON.stringify({ removedEmail: invite.inviteeEmail }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -186,6 +247,42 @@ export const respondToInvite = mutation({
     }
 
     await ctx.db.patch(args.inviteId, { status: args.response });
+
+    // Get project and responder info for notification
+    const project = await ctx.db.get(invite.projectId);
+    const responder = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email))
+      .first();
+
+    if (project) {
+      // Notify the project owner
+      await ctx.db.insert("notifications", {
+        userId: project.authorId,
+        type: "invite_response",
+        title: args.response === "accepted" ? "Invite Accepted" : "Invite Declined",
+        message: `${responder?.name ?? identity.email} ${args.response} your invite to "${project.projectTitle}"`,
+        projectId: invite.projectId,
+        fromUserId: identity.subject,
+        fromUserName: responder?.name,
+        fromUserImage: responder?.imageUrl,
+        isRead: false,
+        createdAt: Date.now(),
+        link: `/project/${invite.projectId}`,
+      });
+
+      // Log activity
+      await ctx.db.insert("activityLog", {
+        projectId: invite.projectId,
+        userId: identity.subject,
+        userName: responder?.name,
+        userImage: responder?.imageUrl,
+        action: args.response === "accepted" ? "collaborator_joined" : "invite_declined",
+        metadata: JSON.stringify({ role: invite.role }),
+        createdAt: Date.now(),
+      });
+    }
+
     return { ok: true };
   },
 });

@@ -214,11 +214,11 @@ const ProfilePage = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="first-name" className="text-muted-foreground">First Name</Label>
-                  <Input id="first-name" placeholder={user?.firstName} className="border-border bg-muted/50 text-foreground" />
+                  <Input id="first-name" placeholder={user?.firstName ?? undefined} className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
                   <Label htmlFor="last-name" className="text-muted-foreground">Last Name</Label>
-                  <Input id="last-name" placeholder={user?.lastName} className="border-border bg-muted/50 text-foreground" />
+                  <Input id="last-name" placeholder={user?.lastName ?? undefined} className="border-border bg-muted/50 text-foreground" />
                 </div>
                 <div>
                   <Label htmlFor="state" className="text-muted-foreground">State</Label>

@@ -1,0 +1,30 @@
+# Cross-Agent Synchronization (MANDATORY)
+
+BEFORE starting any work, read `.ai-sync/HANDOFF.md` for current project state and next steps.
+BEFORE stopping, update `.ai-sync/HANDOFF.md` with your progress and exact next steps.
+Follow the plan in `.ai-sync/PLAN.md`. Do not deviate. Do not add features not in the plan.
+Check `.ai-sync/PROGRESS.md` to avoid redoing completed work.
+
+# Project: eCollabs
+
+Collaborative music platform. Next.js 14 + Convex + Clerk + Tailwind/shadcn.
+
+## Commands
+- `npm run dev` + `npx convex dev` — dev servers (run simultaneously)
+- `npm run build` — production build
+- `npx tsc --noEmit` — type-check (always run, build ignores type errors)
+
+## Conventions
+- Glassmorphism design system: `glassmorphism`, `surface-elevated`, `glass-hover`
+- All dialogs: `className="glassmorphism border-0"`
+- Convex pattern: queries with `useQuery()`, mutations with `useMutation()`
+- File uploads: Convex storage (`generateUploadUrl` → POST → storageId)
+- Path alias: `@/*` = project root
+- `convex/_generated/` is auto-generated — never edit
+
+## Architecture
+- `app/(root)/` — authenticated pages in DashboardLayout
+- `app/(auth)/` — Clerk sign-in/sign-up
+- `convex/` — all backend logic (no Next.js API routes)
+- `components/` — React components
+- `components/ui/` — shadcn primitives

@@ -6,25 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import ProjectActionsAndMeta from "@/components/OwnerOnlyControls"; // <-- RENAMED COMPONENT
+import ProjectActionsAndMeta from "@/components/OwnerOnlyControls";
 import {
   Share2,
-  ShoppingCart, // <-- IMPORTED
+  ShoppingCart,
   Copyright,
   Music,
   Upload,
   Send,
+  Trash2,
 } from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { api } from "@/convex/_generated/api";
-import { useAction, useMutation, useQuery } from "convex/react"; // <-- IMPORTED useMutation
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
-// CSS module removed — using Tailwind
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatTime";
 import Link from "next/link";
 import ActivityFeed from "@/components/ActivityFeed";
+import { ProjectChat } from "@/components/ProjectChat";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { LyricSubmissionCard } from "@/components/LyricsSubmissionCard";
+import { MultiTrackPlayer } from "@/components/MultiTrackPlayer";
+import { CreditsList } from "@/components/CreditsList";
+import CreditsManager from "@/components/CreditsManager";
+import { VisualAssetGallery } from "@/components/VisualAssetGallery";
+import { VisualSubmissionCard } from "@/components/VisualSubmissionCard";
+import { VisualUploadDialog } from "@/components/VisualUploadDialog";
+import { CoverArtSelector } from "@/components/CoverArtSelector";
 
 const ProjectPage = ({
   params: { projectId },
@@ -51,7 +59,7 @@ const ProjectPage = ({
   });
   const comments = useQuery(api.projects.getCommentsByProject, { projectId });
   const addComment = useMutation(api.projects.addProjectComment);
-  // --- LYRIC HOOKS ---
+  // Lyric hooks
   const pendingSubmissions = useQuery(api.lyrics.getPendingSubmissions, {
     projectId,
   });
@@ -61,6 +69,11 @@ const ProjectPage = ({
   const setProjectLyrics = useMutation(api.lyrics.setProjectLyrics);
   const submitLyrics = useMutation(api.lyrics.submitLyrics);
   const updateLyricSubmission = useMutation(api.lyrics.updateLyricSubmission);
+  // File management
+  const projectFiles = useQuery(api.projects.getProjectFile, { projectId });
+  const deleteFile = useMutation(api.projects.deleteProjectFile);
+  // Visual submissions (owner only)
+  const pendingVisuals = useQuery(api.visuals.getPendingVisualSubmissions, { projectId });
 
   const [openModals, setOpenModals] = useState({
     selling: false,
@@ -81,8 +94,8 @@ const ProjectPage = ({
   const [buyModalOpen, setBuyModalOpen] = useState(false);
   const [buyAmount, setBuyAmount] = useState("");
   const [lyricsText, setLyricsText] = useState("");
-  // ephemeral success message
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   useEffect(() => {
     console.log("Project ID:", projectId);
     console.log("Project data:", project);
@@ -99,7 +112,6 @@ const ProjectPage = ({
     }));
   };
 
-  // --- Comment handler ---
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
     setBusy(true);
@@ -145,25 +157,25 @@ const ProjectPage = ({
         .slice(0, 250);
       const redirectUrl = `${window.location.origin}/project/${project?._id}?paid=1`;
       const payload = await createPublicLink({
-        projectId: project?._id,
-        amount, // optional: if undefined, server uses project.price
+        projectId: project?._id as Id<"projects">,
+        amount,
         slug,
         redirectUrl,
-        name: project?.projectTitle,
+        name: project?.projectTitle ?? "",
         description:
           project?.projectDescription ?? `Purchase ${project?.projectTitle}`,
         metadata: {
-          projectTitle: project?.projectTitle,
-          projectId: project?._id,
-          authorId: project?.authorId,
+          projectTitle: project?.projectTitle ?? "",
+          projectId: String(project?._id ?? ""),
+          authorId: project?.authorId ?? "",
         },
       });
 
       const url =
-        payload?.payload?.data?.url ??
-        payload?.payload?.data?.data?.url ??
-        payload?.payload?.url ??
-        payload?.url ??
+        (payload as any)?.payload?.data?.url ??
+        (payload as any)?.payload?.data?.data?.url ??
+        (payload as any)?.payload?.url ??
+        (payload as any)?.url ??
         null;
 
       if (!url) {
@@ -185,31 +197,27 @@ const ProjectPage = ({
     }
   };
 
-  // --- Check if user is the owner ---
   const isOwner =
     isUserLoaded && user?.id && String(user.id) === String(project?.authorId);
 
-  // This effect loads the correct lyrics into the dialog
   useEffect(() => {
     if (isOwner) {
-      setLyricsText(project?.lyrics ?? ""); // Owner always sees official lyrics
+      setLyricsText(project?.lyrics ?? "");
     } else if (myPendingSubmission) {
-      setLyricsText(myPendingSubmission.lyrics); // Non-owner with submission sees their draft
+      setLyricsText(myPendingSubmission.lyrics);
     } else {
-      setLyricsText(""); // New submitter sees a blank slate
+      setLyricsText("");
     }
   }, [project?.lyrics, myPendingSubmission, isOwner, openModals.lyrics]);
 
-  // 4. Load project lyrics into the dialog state when it changes
   useEffect(() => {
     if (project?.lyrics) {
       setLyricsText(project.lyrics);
     } else {
-      setLyricsText(""); // Clear for non-owners or if no lyrics
+      setLyricsText("");
     }
   }, [project?.lyrics, isOwner]);
 
-  // --- UPDATED LYRIC SAVE/SUBMIT HANDLER ---
   const handleSaveLyrics = async () => {
     if (!lyricsText.trim()) {
       alert("Lyrics cannot be empty.");
@@ -219,28 +227,25 @@ const ProjectPage = ({
 
     try {
       if (isOwner) {
-        // --- Owner Path: Edit official lyrics ---
         await setProjectLyrics({
           projectId: projectId,
           lyrics: lyricsText.trim(),
         });
         alert("Lyrics updated!");
       } else if (myPendingSubmission) {
-        // --- Non-Owner Path 1: Edit existing submission ---
         await updateLyricSubmission({
           submissionId: myPendingSubmission._id,
           lyrics: lyricsText.trim(),
         });
         alert("Your submission has been updated!");
       } else {
-        // --- Non-Owner Path 2: Create new submission ---
         await submitLyrics({
           projectId: projectId,
           lyrics: lyricsText.trim(),
         });
         alert("Lyrics submitted for review!");
       }
-      toggleModal("lyrics"); // Close dialog
+      toggleModal("lyrics");
     } catch (err: any) {
       console.error("Failed to save/submit lyrics:", err);
       alert("Error: " + err.message);
@@ -249,7 +254,6 @@ const ProjectPage = ({
     }
   };
 
-  // --- Helper variables for dialog text ---
   const getLyricsButtonText = () => {
     if (isOwner) return "Edit Lyrics";
     if (myPendingSubmission) return "Edit My Submission";
@@ -276,7 +280,6 @@ const ProjectPage = ({
   };
 
   if (!isUserLoaded || !project) {
-    // Wait for both user and project
     return <LoaderSpinner />;
   }
   if (!projectId) {
@@ -289,47 +292,45 @@ const ProjectPage = ({
       <div>
         <div className="flex flex-col lg:flex-row justify-between mb-2 gap-4">
           <CardHeader className="flex-1 p-0">
-            {/* Removed padding to match original */} 
             <CardTitle className="text-3xl font-bold text-gradient-primary">
-              {project?.projectTitle} 
+              {project?.projectTitle}
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-2">
-              Managed by {project?.author} 
+              Managed by {project?.author}
             </p>
             <div className="flex items-center mt-2">
-              <Music className="w-4 h-4 mr-1" /> 
-              <span className="text-sm">0 tracks</span> 
+              <Music className="w-4 h-4 mr-1" />
+              <span className="text-sm">{projectFiles?.length ?? 0} tracks</span>
             </div>
           </CardHeader>
           <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
-              <CardTitle className="text-lg">Project Status</CardTitle>  
+              <CardTitle className="text-lg">Project Status</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm mb-3">
                 Collaboration Phase: This is a work in progress. Collaborators
                 are busy now!
               </p>
-              <Progress value={projectStatus} className="mb-4" /> 
-              <Badge className="bg-[hsl(var(--success))]">Open</Badge>  
+              <Progress value={projectStatus} className="mb-4" />
+              <Badge className="bg-[hsl(var(--success))]">Open</Badge>
             </CardContent>
           </Card>
         </div>
         <CardHeader className="mb-6 p-0">
-          {/* Removed padding */}  
           <CardTitle className="text-center text-2xl bg-primary py-3 rounded-lg text-primary-foreground">
             Your Collaboration Project
           </CardTitle>
         </CardHeader>
         <div className="flex flex-col lg:flex-row gap-2">
-          {/* Left Column */}  
+          {/* Left Column */}
           <div className="lg:w-1/4">
             <Card className="pt-8 glassmorphism rounded-xl border-0 sticky top-20">
               <CardContent className="space-y-3">
                 <Link href={`/project/${projectId}/upload`} className="w-full">
                   <Button className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white text-sm">
                     <Upload className="w-4 h-4 mr-2" />
-                     Upload Track
+                    Upload Track
                   </Button>
                 </Link>
                 <Button
@@ -340,7 +341,7 @@ const ProjectPage = ({
                 </Button>
                 <div className="bg-primary/10 rounded-full w-40 h-40 mx-auto mb-4 flex items-center justify-center">
                   <div className="bg-card rounded-full w-10 h-10 flex items-center justify-center text-xs font-semibold">
-                    +1 
+                    +1
                   </div>
                 </div>
                 <div className="flex justify-between mb-4 gap-2">
@@ -355,12 +356,12 @@ const ProjectPage = ({
                         size="icon"
                         title="Share"
                       >
-                        <Share2 className="h-5 w-5" /> 
+                        <Share2 className="h-5 w-5" />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="glassmorphism-subtle rounded-xl border-0">
                       <DialogHeader>
-                        <DialogTitle>Share Project</DialogTitle> 
+                        <DialogTitle>Share Project</DialogTitle>
                         <DialogDescription className="text-muted-foreground">
                           Share this project on social media or copy the link.
                         </DialogDescription>
@@ -371,7 +372,7 @@ const ProjectPage = ({
                           variant="outline"
                           onClick={() => handleShare("twitter")}
                         >
-                          SShare on Twitter
+                          Share on Twitter
                         </Button>
                         <Button
                           className="w-full text-sm bg-transparent"
@@ -391,7 +392,7 @@ const ProjectPage = ({
                           className="w-full text-sm bg-muted hover:bg-muted/80"
                           onClick={() => handleShare("copy")}
                         >
-                          Copy Link 
+                          Copy Link
                         </Button>
                       </div>
                       <DialogFooter>
@@ -405,11 +406,9 @@ const ProjectPage = ({
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                  {/* --- UPDATED BUY BUTTON --- */}
-                  {/* Only show if NOT owner and project IS listed */}
                   {!isOwner && project.isListed && project.price && (
                     <Button
-                      onClick={createPaymentAndRedirect}
+                      onClick={() => createPaymentAndRedirect({})}
                       disabled={busy}
                       className="p-2 flex-grow"
                       variant="secondary"
@@ -423,10 +422,9 @@ const ProjectPage = ({
                       )}
                     </Button>
                   )}
-                  {/* Show simple support button if NOT listed or owner */}
                   {(!project.isListed || isOwner) && (
                     <Button
-                      onClick={createPaymentAndRedirect}
+                      onClick={() => createPaymentAndRedirect({})}
                       disabled={busy}
                       className="p-2"
                       variant="secondary"
@@ -442,36 +440,32 @@ const ProjectPage = ({
                     size="icon"
                     title="Copyright"
                   >
-                    <Copyright className="h-5 w-5" /> 
+                    <Copyright className="h-5 w-5" />
                   </Button>
                 </div>
                 <div className="space-y-2 text-sm bg-muted/30 p-3 rounded-lg border border-border">
                   <p>
-                    <strong>Project Type:</strong> {project?.projectType} 
+                    <strong>Project Type:</strong> {project?.projectType}
                   </p>
                   <p>
-                    <strong>Auditions:</strong>
-                    {project?.projectAuditionPrivacy} 
+                    <strong>Auditions:</strong> {project?.projectAuditionPrivacy}
                   </p>
                   <p>
                     <strong>Status:</strong> Open
                   </p>
                   <p>
-                    <strong>Agreement:</strong>
-                    {project?.collaborationAgreement} 
+                    <strong>Agreement:</strong> {project?.collaborationAgreement}
                   </p>
                   <p>
-                    <strong>Started:</strong>
-                    {formatDate(project?._creationTime)} 
+                    <strong>Started:</strong> {formatDate(project?._creationTime)}
                   </p>
                 </div>
-                {/* --- This is your OwnerOnlyControls component --- */}
-                <ProjectActionsAndMeta project={project} /> 
+                <ProjectActionsAndMeta project={project as any} />
               </CardContent>
             </Card>
           </div>
-          {/* Middle Column */}  
-          <div className="lg:w-1/2 ">
+          {/* Middle Column */}
+          <div className="lg:w-1/2">
             <Card className="glassmorphism-subtle rounded-xl border-0">
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-2">
@@ -480,12 +474,12 @@ const ProjectPage = ({
                 <p className="mb-4 text-sm">
                   Whenever starting a new project, there are a couple of things
                   you&apos;ll want to remember to do. By completing your
-                  project  setup with all the necessary information, audio, and
+                  project setup with all the necessary information, audio, and
                   content, you&apos;ll not only help your project standout and
-                  gain  support, but it will help you as a professional or an
-                  artist  to build a reputation as being a reliable,
-                  trustworthy, and an  effective project manager and
-                  collaborator. 
+                  gain support, but it will help you as a professional or an
+                  artist to build a reputation as being a reliable,
+                  trustworthy, and an effective project manager and
+                  collaborator.
                 </p>
                 <p className="mb-4 text-sm">
                   Nothing says &quot;don&apos;t bother to collaborate with
@@ -502,32 +496,31 @@ const ProjectPage = ({
                     Upload your audio tracks. This could be a simple recorded
                     idea of your lyrics, a mix of your song so far, or each of
                     the separate tracks (e.g. bass, guitar, drums, vocals,
-                    etc.)if you will need an audio engineer to mix your
-                    project. 
+                    etc.) if you will need an audio engineer to mix your project.
                   </li>
                   <li>
                     Select the &apos;featured&apos; track. This will be the
                     audio that represents your project&apos;s current state of
-                    the mix. 
+                    the mix.
                   </li>
                   <li>
                     Upload coverart. Even if you didn&apos;t finalize the
                     coverart yet, upload an image that will represent your song
-                    and have it stand out from the crowd. 
+                    and have it stand out from the crowd.
                   </li>
                   <li>
                     Complete your project summary. Tell others what this project
-                    is all about or describe your song. 
+                    is all about or describe your song.
                   </li>
                   <li>
                     Complete your project brief. Tell others what you want to
                     do, and by when.
                   </li>
-                  <li>Got lyrics? Paste them into the lyric box.</li> 
-                  <li>Got music? Set key, chord, and tempo information.</li> 
+                  <li>Got lyrics? Paste them into the lyric box.</li>
+                  <li>Got music? Set key, chord, and tempo information.</li>
                   <li>
-                    Set the genre and mood. Members searching for a 
-                    collaboration will be looking for this information. 
+                    Set the genre and mood. Members searching for a
+                    collaboration will be looking for this information.
                   </li>
                 </ul>
                 <p className="mb-4 text-sm font-semibold">
@@ -536,11 +529,11 @@ const ProjectPage = ({
                 <ul className="list-disc list-inside space-y-2 text-sm mb-4">
                   <li>
                     Set the talents needed. Let everyone know that you&apos;re
-                    looking for collaborators. 
+                    looking for collaborators.
                   </li>
                   <li>
-                    If this is a &apos;work-for-hire&apos; project then set a s
-                    budget for each of the talents you need. 
+                    If this is a &apos;work-for-hire&apos; project then set a
+                    budget for each of the talents you need.
                   </li>
                   <li>
                     Invite collaborators. Once your project is up and running,
@@ -558,22 +551,22 @@ const ProjectPage = ({
             </Card>
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Project Summary</CardTitle>  
+                <CardTitle>Project Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="mb-4">
-                  <strong>Description:</strong> {project?.projectDescription} 
+                  <strong>Description:</strong> {project?.projectDescription}
                 </p>
                 <p className="mb-4">
-                  <strong>Project brief:</strong> {project?.projectBrief}e
+                  <strong>Project brief:</strong> {project?.projectBrief}
                 </p>
                 <p className="text-sm">
                   For audio file uploads, please use: {project?.projectBitDepth}
-                  , {project?.projectSampleRate} 
+                  , {project?.projectSampleRate}
                 </p>
               </CardContent>
             </Card>
-            {/* --- LYRICS CARD & DIALOG --- */}
+            {/* Lyrics Card & Dialog */}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
@@ -604,7 +597,6 @@ const ProjectPage = ({
                         className="mt-2 min-h-96 font-mono"
                         value={lyricsText}
                         onChange={(e) => setLyricsText(e.target.value)}
-                        // Prevent editing if they are not owner AND have a submission that is *not* pending
                         disabled={
                           !isOwner &&
                           !!myPendingSubmission &&
@@ -629,7 +621,6 @@ const ProjectPage = ({
                         {getLyricsSubmitButtonText()}
                       </Button>
                     </DialogFooter>
-                    D{" "}
                   </DialogContent>
                 </Dialog>
               </CardHeader>
@@ -644,7 +635,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
 
-            {/* --- SUBMISSIONS CARD (OWNER ONLY) --- */}
+            {/* Submissions Card (Owner Only) */}
             {isOwner && pendingSubmissions && pendingSubmissions.length > 0 && (
               <Card className="mt-6 border-primary">
                 <CardHeader>
@@ -659,20 +650,115 @@ const ProjectPage = ({
                 </CardContent>
               </Card>
             )}
+
+            {/* Multi-Track Player */}
+            {projectFiles && projectFiles.filter(f => f.audioUrl).length > 0 && (
+              <div className="mt-6">
+                <MultiTrackPlayer
+                  tracks={projectFiles
+                    .filter((f) => f.audioUrl)
+                    .map((f) => ({
+                      id: f._id,
+                      audioUrl: f.audioUrl!,
+                      title: f.projectFileTitle || f.projectFileLabel,
+                      contributor: f.username || "Unknown",
+                      version: f.version,
+                    }))}
+                />
+              </div>
+            )}
+
+            {/* Visual Assets */}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
-              <CardHeader>
-                <CardTitle>Project Files</CardTitle> 
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Visual Assets</CardTitle>
+                <div className="flex gap-2">
+                  <VisualUploadDialog projectId={projectId} />
+                  {isOwner && (
+                    <CoverArtSelector
+                      projectId={projectId}
+                      currentCoverUrl={project.coverArtUrl}
+                    />
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
-                <p>No tracks posted to this project...yet!</p> 
+                <VisualAssetGallery projectId={projectId} />
+              </CardContent>
+            </Card>
+
+            {/* Pending Visual Submissions (Owner Only) */}
+            {isOwner && pendingVisuals && pendingVisuals.length > 0 && (
+              <Card className="mt-6 border-primary">
+                <CardHeader>
+                  <CardTitle className="text-primary">
+                    Pending Visual Submissions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {pendingVisuals.map((sub) => (
+                    <VisualSubmissionCard key={sub._id} submission={sub} />
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Project Files with version badges and delete */}
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
+              <CardHeader>
+                <CardTitle>Project Files</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!projectFiles || projectFiles.length === 0 ? (
+                  <p>No tracks posted to this project...yet!</p>
+                ) : (
+                  <div className="space-y-3">
+                    {projectFiles.map((file) => (
+                      <div
+                        key={file._id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-border/30"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium truncate">
+                              {file.projectFileTitle || file.projectFileLabel}
+                            </p>
+                            {file.version && (
+                              <Badge variant="outline" className="text-xs shrink-0">
+                                v{file.version}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {file.username} &middot; {file.projectFileLabel}
+                          </p>
+                        </div>
+                        {isOwner && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-400 hover:text-red-300 shrink-0"
+                            onClick={async () => {
+                              if (confirm("Archive this file?")) {
+                                await deleteFile({ fileId: file._id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
-          {/* Right Column */}  
+          {/* Right Column */}
           <div className="lg:w-1/4">
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Collaborators</CardTitle> 
+                <CardTitle>Collaborators</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -680,6 +766,17 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
+
+            {/* Project Chat */}
+            {user?.id && (
+              <div className="mt-6">
+                <ProjectChat
+                  projectId={projectId}
+                  currentUserId={user.id}
+                />
+              </div>
+            )}
+
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Activity</CardTitle>
@@ -688,10 +785,10 @@ const ProjectPage = ({
                 <ActivityFeed projectId={project?._id as Id<"projects">} />
               </CardContent>
             </Card>
-            {/* --- UPDATED KUDOS (COMMENTS) CARD --- */} 
+            {/* Comments / Kudos */}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Project Kudos</CardTitle> 
+                <CardTitle>Project Kudos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {!showCommentForm ? (
@@ -701,7 +798,7 @@ const ProjectPage = ({
                     onClick={() => setShowCommentForm(true)}
                   >
                     <Send className="mr-2 h-4 w-4" />
-                     Leave a comment
+                    Leave a comment
                   </Button>
                 ) : (
                   <div className="space-y-3">
@@ -718,7 +815,7 @@ const ProjectPage = ({
                         onClick={handleAddComment}
                         disabled={busy}
                       >
-                        {busy ? "Posting..." : "Post"} 
+                        {busy ? "Posting..." : "Post"}
                       </Button>
                       <Button
                         size="sm"
@@ -746,14 +843,14 @@ const ProjectPage = ({
                             </AvatarFallback>
                           </Avatar>
                           <span className="font-semibold text-xs">
-                            {comment.username} 
+                            {comment.username}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {formatDate(comment._creationTime)} 
+                            {formatDate(comment._creationTime)}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground pl-7">
-                          {comment.content}  
+                          {comment.content}
                         </p>
                       </div>
                     ))}
@@ -765,20 +862,24 @@ const ProjectPage = ({
                 )}
               </CardContent>
             </Card>
-            {/* --- END UPDATED KUDOS CARD --- */} 
+            {/* Credits - show manager for owner, list for everyone */}
+            {isOwner ? (
+              <div className="mt-6">
+                <CreditsManager projectId={projectId} />
+              </div>
+            ) : (
+              <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
+                <CardHeader>
+                  <CardTitle>Credits</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CreditsList projectId={projectId} />
+                </CardContent>
+              </Card>
+            )}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Credits</CardTitle> 
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  No credits assigned yet
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
-              <CardHeader>
-                <CardTitle>Copyright</CardTitle> 
+                <CardTitle>Copyright</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -788,11 +889,11 @@ const ProjectPage = ({
             </Card>
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Derivative Works</CardTitle>  
+                <CardTitle>Derivative Works</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  No derivative works yet 
+                  No derivative works yet
                 </p>
               </CardContent>
             </Card>

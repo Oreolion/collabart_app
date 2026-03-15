@@ -94,7 +94,7 @@ export default function ProjectActionsAndMeta({
   const handleListForSale = async () => {
     if (
       !listingPrice ||
-      !/^\d+(\.\d+)?$/.test(listingPrice) ||
+      !/^\d+(\.\d+)?$/.test(String(listingPrice)) ||
       Number(listingPrice) <= 0
     ) {
       alert("Enter a valid price (number > 0).");
@@ -267,21 +267,21 @@ export default function ProjectActionsAndMeta({
             <TabsContent value="genre">
               <FavoriteGenres
                 projectId={project._id}
-                initialValues={project.genres}
+                initialValues={project.genres ?? undefined}
                 onSave={() => setDetailsModalOpen(false)}
               />
             </TabsContent>
             <TabsContent value="mood">
               <FavoriteMoods
                 projectId={project._id}
-                initialValues={project.moods}
+                initialValues={project.moods ?? undefined}
                 onSave={() => setDetailsModalOpen(false)}
               />
             </TabsContent>
             <TabsContent value="talent">
               <SkillsAndTalents
                 projectId={project._id}
-                initialValues={project.talents}
+                initialValues={project.talents ?? undefined}
                 onSave={() => setDetailsModalOpen(false)}
               />
             </TabsContent>

@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 
 import { action, mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 
 // create project mutation
 export const createProject = mutation({
@@ -46,9 +47,9 @@ export const createProject = mutation({
       projectTitle: args.projectTitle,
       projectDescription: args.projectDescription,
       projectBrief: args.projectBrief,
-      collaborationAgreement: args.collaborationAgreement,
+      collaborationAgreement: args.collaborationAgreement ?? "",
       author: user[0].name,
-      authorId: user[0].clerkId,
+      authorId: user[0].clerkId ?? "",
       projectType: args.projectType,
       projectBitDepth: args.projectBitDepth,
       projectSampleRate: args.projectSampleRate,
@@ -96,7 +97,14 @@ export const addProjectFile = mutation({
       throw new Error("User not found");
     }
 
-    return await ctx.db.insert("projectFile", {
+    // Auto-assign version number
+    const existingFiles = await ctx.db
+      .query("projectFile")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    const maxVersion = existingFiles.reduce((max, f) => Math.max(max, f.version ?? 0), 0);
+
+    const fileId = await ctx.db.insert("projectFile", {
       projectId: args.projectId,
       userId: user._id,
       username: user.name,
@@ -105,24 +113,61 @@ export const addProjectFile = mutation({
       audioUrl: args.audioUrl,
       audioDuration: args.audioDuration,
       projectFileTitle: args.projectFileTitle,
-      //   projectFile: args.projectFile,
       isProjectOwner: args.isProjectOwner,
       hasExplicitLyrics: args.hasExplicitLyrics,
       containsLoops: args.containsLoops,
       confirmCopyright: args.confirmCopyright,
       createdAt: Date.now(),
+      version: maxVersion + 1,
+      fileType: "audio",
     });
+
+    // Notify project owner if uploader is a collaborator (not the owner)
+    const project = await ctx.db.get(args.projectId);
+    if (project && project.authorId !== user.clerkId) {
+      await ctx.db.insert("notifications", {
+        userId: project.authorId,
+        type: "file_upload",
+        title: "New File Upload",
+        message: `${user.name} uploaded "${args.projectFileTitle}" to "${project.projectTitle}"`,
+        projectId: args.projectId,
+        fromUserId: user.clerkId,
+        fromUserName: user.name,
+        fromUserImage: user.imageUrl,
+        isRead: false,
+        createdAt: Date.now(),
+        link: `/project/${args.projectId}`,
+      });
+    }
+
+    // Log activity
+    if (project) {
+      await ctx.db.insert("activityLog", {
+        projectId: args.projectId,
+        userId: user.clerkId,
+        userName: user.name,
+        userImage: user.imageUrl,
+        action: "upload",
+        metadata: JSON.stringify({ fileTitle: args.projectFileTitle, label: args.projectFileLabel }),
+        createdAt: Date.now(),
+      });
+    }
+
+    return fileId;
   },
 });
 
 export const getProjectFile = query({
   args: { projectId: v.optional(v.id("projects")) },
   handler: async (ctx, args) => {
-    return await ctx.db
+    if (!args.projectId) return [];
+    const projectId = args.projectId;
+    const files = await ctx.db
       .query("projectFile")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
       .order("desc")
       .collect();
+    return files.filter((f) => !f.isArchived);
   },
 });
 
@@ -311,6 +356,17 @@ export const listProjectForSale = mutation({
       listedAt: Date.now(), // You may need to add 'listedAt: v.optional(v.number())' to your schema
     });
 
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      userId: user.clerkId,
+      userName: user.name,
+      userImage: user.imageUrl,
+      action: "listed_for_sale",
+      metadata: JSON.stringify({ price: args.price, currency: args.currency ?? "USD" }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true, projectId: args.projectId, price: args.price };
   },
 });
@@ -362,14 +418,48 @@ export const transferOwnership = mutation({
       
     if (!newOwner) throw new ConvexError("New owner not found in users table");
 
+    const previousOwnerId = project.authorId;
+
     // Transfer ownership
     await ctx.db.patch(args.projectId, {
       authorId: newOwner.clerkId,
-      author: newOwner.name, // Update author name/image
+      author: newOwner.name,
       authorImageUrl: newOwner.imageUrl,
-      isListed: false, // No longer listed for sale
+      isListed: false,
       price: undefined,
       currency: undefined,
+    });
+
+    // Notify the new owner
+    await ctx.db.insert("notifications", {
+      userId: newOwner.clerkId,
+      type: "ownership_transfer",
+      title: "Project Acquired",
+      message: `You are now the owner of "${project.projectTitle}"`,
+      projectId: args.projectId,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${args.projectId}`,
+    });
+
+    // Notify the previous owner
+    await ctx.db.insert("notifications", {
+      userId: previousOwnerId,
+      type: "ownership_transfer",
+      title: "Project Sold",
+      message: `"${project.projectTitle}" has been transferred to ${newOwner.name}`,
+      projectId: args.projectId,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${args.projectId}`,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      action: "ownership_transferred",
+      metadata: JSON.stringify({ previousOwner: previousOwnerId, newOwner: newOwner.clerkId }),
+      createdAt: Date.now(),
     });
 
     return { ok: true, newOwnerId: newOwner.clerkId };
@@ -383,10 +473,11 @@ export const addProjectComment = mutation({
     text: v.string(),
   },
   handler: async (ctx, args) => {
-    // optional: require auth and attach user info
     const identity = await ctx.auth.getUserIdentity();
     let username = "Anonymous";
-    let userId = null;
+    let userId: Id<"users"> | undefined = undefined;
+    let userImage: string | undefined;
+
     if (identity) {
       const user = await ctx.db
         .query("users")
@@ -395,7 +486,12 @@ export const addProjectComment = mutation({
       if (user) {
         username = user.name ?? identity.email ?? "Anonymous";
         userId = user._id;
+        userImage = user.imageUrl;
       }
+    }
+
+    if (!userId) {
+      throw new ConvexError("User not found. You must be logged in to comment.");
     }
 
     const inserted = await ctx.db.insert("comments", {
@@ -405,6 +501,38 @@ export const addProjectComment = mutation({
       content: args.text,
       createdAt: Date.now(),
     });
+
+    const project = await ctx.db.get(args.projectId);
+
+    // Notify project owner (if commenter is not the owner)
+    if (project && identity && project.authorId !== identity.subject) {
+      await ctx.db.insert("notifications", {
+        userId: project.authorId,
+        type: "comment",
+        title: "New Comment",
+        message: `${username} commented on "${project.projectTitle}"`,
+        projectId: args.projectId,
+        fromUserId: identity.subject,
+        fromUserName: username,
+        fromUserImage: userImage,
+        isRead: false,
+        createdAt: Date.now(),
+        link: `/project/${args.projectId}`,
+      });
+    }
+
+    // Log activity
+    if (project) {
+      await ctx.db.insert("activityLog", {
+        projectId: args.projectId,
+        userId: identity?.subject,
+        userName: username,
+        userImage: userImage,
+        action: "comment",
+        metadata: JSON.stringify({ preview: args.text.slice(0, 100) }),
+        createdAt: Date.now(),
+      });
+    }
 
     return inserted;
   },
@@ -442,6 +570,23 @@ export const updateProjectStatus = mutation({
     }
 
     await ctx.db.patch(args.projectId, { status: args.status });
+
+    // Log activity
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      userId: identity.subject,
+      userName: user?.name ?? project.author,
+      userImage: user?.imageUrl ?? project.authorImageUrl,
+      action: "status_changed",
+      metadata: JSON.stringify({ newStatus: args.status }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -486,6 +631,75 @@ export const getProjectsByFilters = query({
     }
 
     return projects;
+  },
+});
+
+// Phase 2: Soft-delete a project file (owner or uploader only)
+export const deleteProjectFile = mutation({
+  args: { fileId: v.id("projectFile") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Not authenticated");
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file) throw new ConvexError("File not found");
+
+    const project = await ctx.db.get(file.projectId);
+    if (!project) throw new ConvexError("Project not found");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    // Only the project owner or the file uploader can delete
+    const isOwner = project.authorId === identity.subject;
+    const isUploader = user && file.userId === user._id;
+    if (!isOwner && !isUploader) {
+      throw new ConvexError("Only the project owner or file uploader can delete files");
+    }
+
+    await ctx.db.patch(args.fileId, { isArchived: true });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: file.projectId,
+      userId: identity.subject,
+      userName: user?.name,
+      userImage: user?.imageUrl,
+      action: "file_deleted",
+      metadata: JSON.stringify({ fileTitle: file.projectFileTitle }),
+      createdAt: Date.now(),
+    });
+
+    return { ok: true };
+  },
+});
+
+// Phase 2: Get version history for a file (follow parentFileId chain)
+export const getFileVersionHistory = query({
+  args: { fileId: v.id("projectFile") },
+  handler: async (ctx, args) => {
+    const file = await ctx.db.get(args.fileId);
+    if (!file) return [];
+
+    // Get all files in the same project with the same label (versions of same track)
+    const allFiles = await ctx.db
+      .query("projectFile")
+      .withIndex("by_project", (q) => q.eq("projectId", file.projectId))
+      .collect();
+
+    // Find related versions: same label or connected via parentFileId
+    const versions = allFiles
+      .filter(
+        (f) =>
+          f.projectFileLabel === file.projectFileLabel ||
+          f.parentFileId === args.fileId ||
+          f._id === file.parentFileId
+      )
+      .sort((a, b) => (a.version ?? 0) - (b.version ?? 0));
+
+    return versions;
   },
 });
 

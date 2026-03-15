@@ -1,0 +1,17 @@
+# Cross-Agent Synchronization (MANDATORY)
+
+BEFORE starting any work, read `.ai-sync/HANDOFF.md` for current project state and next steps.
+BEFORE stopping, update `.ai-sync/HANDOFF.md` with your progress and exact next steps.
+Follow the plan in `.ai-sync/PLAN.md`. Do not deviate. Do not add features not in the plan.
+Check `.ai-sync/PROGRESS.md` to avoid redoing completed work.
+
+# Project: eCollabs
+
+Collaborative music platform. Next.js 14 + Convex + Clerk + Tailwind/shadcn.
+Full project docs in `CLAUDE.md`. Full plan in `.claude/plans/lucky-zooming-canyon.md`.
+
+## Key Rules
+- Always run `npx tsc --noEmit` + `npm run build` before marking work complete
+- Use glassmorphism design system classes
+- Follow Convex patterns (useQuery/useMutation, not API routes)
+- `convex/_generated/` is auto-generated — never edit

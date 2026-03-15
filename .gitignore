@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ai-sync session logs (local agent history)
+.ai-sync/sessions/

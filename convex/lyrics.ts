@@ -29,7 +29,22 @@ export const setProjectLyrics = mutation({
     await ctx.db.patch(args.projectId, {
       lyrics: args.lyrics,
     });
-    
+
+    // Log activity
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      userId: identity.subject,
+      userName: user?.name ?? project.author,
+      userImage: user?.imageUrl ?? project.authorImageUrl,
+      action: "lyrics_set",
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -66,6 +81,7 @@ export const getPendingSubmissions = query({
 export const approveSubmission = mutation({
   args: {
     submissionId: v.id("lyricSubmissions"),
+    feedback: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -84,9 +100,10 @@ export const approveSubmission = mutation({
       lyrics: submission.lyrics,
     });
 
-    // 2. Mark the submission as "approved"
+    // 2. Mark the submission as "approved" with optional feedback
     await ctx.db.patch(submission._id, {
       status: "approved",
+      ...(args.feedback ? { feedback: args.feedback } : {}),
     });
     
     // 3. (Optional) Reject all other pending submissions for this project
@@ -102,6 +119,32 @@ export const approveSubmission = mutation({
       await ctx.db.patch(sub._id, { status: "rejected" });
     }
 
+    // Notify the submission author
+    await ctx.db.insert("notifications", {
+      userId: submission.authorId,
+      type: "lyric_approved",
+      title: "Lyrics Approved",
+      message: `Your lyrics for "${project.projectTitle}" were approved!`,
+      projectId: project._id,
+      fromUserId: identity.subject,
+      fromUserName: project.author,
+      fromUserImage: project.authorImageUrl,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${project._id}`,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: project._id,
+      userId: identity.subject,
+      userName: project.author,
+      userImage: project.authorImageUrl,
+      action: "lyric_approved",
+      metadata: JSON.stringify({ authorName: submission.authorName }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -112,6 +155,7 @@ export const approveSubmission = mutation({
 export const rejectSubmission = mutation({
   args: {
     submissionId: v.id("lyricSubmissions"),
+    feedback: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -127,8 +171,35 @@ export const rejectSubmission = mutation({
 
     await ctx.db.patch(submission._id, {
       status: "rejected",
+      ...(args.feedback ? { feedback: args.feedback } : {}),
     });
-    
+
+    // Notify the submission author
+    await ctx.db.insert("notifications", {
+      userId: submission.authorId,
+      type: "lyric_rejected",
+      title: "Lyrics Rejected",
+      message: `Your lyrics for "${project.projectTitle}" were not accepted`,
+      projectId: project._id,
+      fromUserId: identity.subject,
+      fromUserName: project.author,
+      fromUserImage: project.authorImageUrl,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${project._id}`,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: project._id,
+      userId: identity.subject,
+      userName: project.author,
+      userImage: project.authorImageUrl,
+      action: "lyric_rejected",
+      metadata: JSON.stringify({ authorName: submission.authorName }),
+      createdAt: Date.now(),
+    });
+
     return { ok: true };
   },
 });
@@ -200,6 +271,31 @@ export const submitLyrics = mutation({
       authorImageUrl: user.imageUrl,
       lyrics: args.lyrics,
       status: "pending",
+    });
+
+    // Notify project owner
+    await ctx.db.insert("notifications", {
+      userId: project.authorId,
+      type: "lyric_submission",
+      title: "New Lyric Submission",
+      message: `${user.name} submitted lyrics for "${project.projectTitle}"`,
+      projectId: args.projectId,
+      fromUserId: user.clerkId,
+      fromUserName: user.name,
+      fromUserImage: user.imageUrl,
+      isRead: false,
+      createdAt: Date.now(),
+      link: `/project/${args.projectId}`,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLog", {
+      projectId: args.projectId,
+      userId: user.clerkId,
+      userName: user.name,
+      userImage: user.imageUrl,
+      action: "lyric_submission",
+      createdAt: Date.now(),
     });
 
     return { ok: true };

@@ -12,6 +12,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchFilters } from "@/components/SearchFilters";
 
 const Pagination = ({
   currentPage,
@@ -63,6 +64,13 @@ export default function ProjectsClient() {
     genre: "",
     mood: "",
   });
+  const [dropdownFilters, setDropdownFilters] = useState<{
+    genre?: string;
+    mood?: string;
+    talent?: string;
+    projectType?: string;
+    sortBy?: string;
+  }>({});
   const [currentPage] = useState(1);
   const [listMostActive, setListMostActive] = useState(false);
 
@@ -147,20 +155,48 @@ export default function ProjectsClient() {
         )
       : true;
 
+    // Dropdown filter checks
+    const matchesDropdownGenre = dropdownFilters.genre
+      ? (project.genres || []).includes(dropdownFilters.genre)
+      : true;
+
+    const matchesDropdownMood = dropdownFilters.mood
+      ? (project.moods || []).includes(dropdownFilters.mood)
+      : true;
+
+    const matchesDropdownTalent = dropdownFilters.talent
+      ? (project.talents || []).includes(dropdownFilters.talent)
+      : true;
+
+    const matchesDropdownType = dropdownFilters.projectType
+      ? project.projectType === dropdownFilters.projectType
+      : true;
+
     return (
       matchesSearch &&
       matchesTitle &&
       matchesTalent &&
       matchesGenre &&
-      matchesMood
+      matchesMood &&
+      matchesDropdownGenre &&
+      matchesDropdownMood &&
+      matchesDropdownTalent &&
+      matchesDropdownType
     );
   });
 
-  const finalProjects = listMostActive
+  let finalProjects = listMostActive
     ? [...filteredProjects].sort(
         (a: any, b: any) => (b.views || 0) - (a.views || 0)
       )
     : filteredProjects;
+
+  // Apply dropdown sort
+  if (dropdownFilters.sortBy === "views") {
+    finalProjects = [...finalProjects].sort((a: any, b: any) => (b.views || 0) - (a.views || 0));
+  } else if (dropdownFilters.sortBy === "likes") {
+    finalProjects = [...finalProjects].sort((a: any, b: any) => (b.likes || 0) - (a.likes || 0));
+  }
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto relative z-10">
@@ -255,6 +291,15 @@ export default function ProjectsClient() {
             </div>
           </div>
         </div>
+
+        {/* Dropdown Filters */}
+        <SearchFilters
+          filters={dropdownFilters}
+          onFilterChange={(key, value) =>
+            setDropdownFilters((prev) => ({ ...prev, [key]: value }))
+          }
+          onClearFilters={() => setDropdownFilters({})}
+        />
 
         {/* Pagination */}
         <Pagination currentPage={currentPage} totalPages={5} />

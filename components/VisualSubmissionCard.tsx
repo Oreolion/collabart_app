@@ -1,20 +1,21 @@
-// components/LyricSubmissionCard.tsx
 "use client";
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
+import { Image as ImageIcon } from "lucide-react";
 
-export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubmissions"> }) {
+export function VisualSubmissionCard({ submission }: { submission: Doc<"visualSubmissions"> }) {
   const [isBusy, setIsBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
-  const approve = useMutation(api.lyrics.approveSubmission);
-  const reject = useMutation(api.lyrics.rejectSubmission);
+  const approve = useMutation(api.visuals.approveVisualSubmission);
+  const reject = useMutation(api.visuals.rejectVisualSubmission);
 
   const isPending = submission.status === "pending";
 
@@ -55,10 +56,9 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
         </Avatar>
         <div className="flex flex-col flex-1">
           <span className="text-sm font-medium">{submission.authorName}</span>
-          <span className="text-xs text-muted-foreground">
-            {isPending ? "Submitted new lyrics" : `Lyrics ${submission.status}`}
-          </span>
+          <span className="text-xs text-muted-foreground">{submission.title}</span>
         </div>
+        <Badge variant="outline" className="text-xs">{submission.category}</Badge>
         {!isPending && (
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
@@ -72,11 +72,25 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
         )}
       </CardHeader>
       <CardContent className="space-y-3">
-        <pre className="w-full whitespace-pre-wrap rounded-md bg-card/50 p-4 text-sm font-mono max-h-40 overflow-y-auto">
-          {submission.lyrics}
-        </pre>
+        {/* Image preview */}
+        <div className="rounded-lg overflow-hidden bg-card/30 border border-border/30">
+          {submission.imageUrl ? (
+            <img
+              src={submission.imageUrl}
+              alt={submission.title}
+              className="w-full h-48 object-cover"
+            />
+          ) : (
+            <div className="w-full h-48 flex items-center justify-center">
+              <ImageIcon className="h-12 w-12 text-muted-foreground/30" />
+            </div>
+          )}
+        </div>
+        {submission.description && (
+          <p className="text-sm text-muted-foreground">{submission.description}</p>
+        )}
 
-        {/* Show existing feedback on resolved submissions */}
+        {/* Feedback display */}
         {!isPending && submission.feedback && (
           <div className="rounded-md bg-muted/30 p-3 border border-border/50">
             <p className="text-xs text-muted-foreground mb-1 font-medium">Feedback</p>
@@ -84,7 +98,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
           </div>
         )}
 
-        {/* Feedback input for pending submissions */}
+        {/* Feedback input for pending */}
         {isPending && showFeedback && (
           <Textarea
             placeholder="Add feedback (optional)..."
@@ -105,12 +119,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
             {showFeedback ? "Hide Feedback" : "Add Feedback"}
           </Button>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReject}
-              disabled={isBusy}
-            >
+            <Button variant="outline" size="sm" onClick={handleReject} disabled={isBusy}>
               {isBusy ? "..." : "Reject"}
             </Button>
             <Button
@@ -120,7 +129,7 @@ export function LyricSubmissionCard({ submission }: { submission: Doc<"lyricSubm
               onClick={handleApprove}
               disabled={isBusy}
             >
-              {isBusy ? "..." : "Approve & Use"}
+              {isBusy ? "..." : "Approve"}
             </Button>
           </div>
         </CardFooter>

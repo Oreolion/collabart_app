@@ -87,16 +87,16 @@ export default function ProjectUploadForm({
       }
 
       const blob = new Blob([projectFile], { type: "audio/mpeg" });
-      const fileName = fileRef.current?.files[0]?.name;
+      const fileName = fileRef.current?.files?.[0]?.name ?? "upload.mp3";
 
       const file = new File([blob], fileName, { type: "audio/mpeg" });
 
       const uploaded = await startUpload([file]);
-      const storageId = uploaded[0].response.storageId;
+      const storageId = (uploaded[0].response as { storageId: Id<"_storage"> }).storageId;
       setAudioStorageId(storageId);
 
       const result = await getFileUrl({ storageId });
-      setAudioUrl(result);
+      setAudioUrl(result ?? "");
 
       const projectFileData = {
         projectFileTitle: data.projectFileTitle,

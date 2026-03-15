@@ -86,10 +86,10 @@ export default function FavoriteGenres({
   initialValues,
   onSave,
 }: {
-  projectId: Id<"projects">;
-  initialValues: string[] | undefined;
-  onSave: () => void;
-}) {
+  projectId?: Id<"projects">;
+  initialValues?: string[] | undefined;
+  onSave?: () => void;
+} = {}) {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(
     initialValues ?? []
   );
@@ -116,13 +116,14 @@ export default function FavoriteGenres({
   };
 
   const handleSaveSelection = async () => {
+    if (!projectId) return;
     setIsSaving(true);
     try {
       await updateDetails({
         projectId: projectId,
         genres: [...selectedGenres], // Combines predefined and custom
       });
-      onSave(); // Close modal
+      onSave?.(); // Close modal
     } catch (error) {
       console.error("Failed to save genres:", error);
       alert("Failed to save genres.");

@@ -36,6 +36,9 @@ export default defineSchema({
     auditionTalents: v.optional(v.array(v.string())),
     auditionBrief: v.optional(v.string()),
     status: v.optional(v.string()),
+    // Phase 5: Visual Artists & Designers Ecosystem
+    coverArtUrl: v.optional(v.string()),
+    coverArtStorageId: v.optional(v.union(v.id("_storage"), v.null())),
   })
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
@@ -52,6 +55,12 @@ export default defineSchema({
     talents: v.optional(v.array(v.string())),
     moods: v.optional(v.array(v.string())),
     onboardingComplete: v.optional(v.boolean()),
+    // Phase 5: Visual portfolio for designers
+    visualPortfolio: v.optional(v.array(v.object({
+      imageUrl: v.string(),
+      title: v.string(),
+      description: v.optional(v.string()),
+    }))),
   }).index("by_clerk_id", ["clerkId"]),
 
   // project file tables
@@ -69,7 +78,19 @@ export default defineSchema({
     hasExplicitLyrics: v.boolean(),
     containsLoops: v.boolean(),
     confirmCopyright: v.boolean(),
-  }).index("by_project", ["projectId"]),
+    // Phase 2: versioning + soft-delete + file type
+    version: v.optional(v.number()),
+    parentFileId: v.optional(v.id("projectFile")),
+    isArchived: v.optional(v.boolean()),
+    fileType: v.optional(v.string()),
+    // Phase 5: Visual file support
+    imageUrl: v.optional(v.string()),
+    imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    dimensions: v.optional(v.object({ width: v.number(), height: v.number() })),
+    format: v.optional(v.string()), // png/jpg/svg/psd/pdf
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_and_version", ["projectId", "version"]),
 
   // comment tables
   comments: defineTable({
@@ -122,6 +143,7 @@ export default defineSchema({
     authorImageUrl: v.optional(v.string()),
     lyrics: v.string(),
     status: v.string(),
+    feedback: v.optional(v.string()),
   })
     .index("by_projectId", ["projectId"])
     .index("by_status", ["status"])
@@ -175,4 +197,56 @@ export default defineSchema({
   })
     .index("by_project", ["projectId"])
     .index("by_user_and_project", ["userId", "projectId"]),
+
+  // Phase 7: credits / attribution
+  credits: defineTable({
+    projectId: v.id("projects"),
+    userId: v.string(),
+    userName: v.string(),
+    userImage: v.optional(v.string()),
+    role: v.string(),
+    contributionType: v.string(), // "composition"|"performance"|"production"|"visual"|"engineering"|"lyrics"
+    splitPercentage: v.optional(v.number()), // 0-100
+    notes: v.optional(v.string()),
+    confirmedByUser: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"]),
+
+  // Phase 3: project messages / chat
+  messages: defineTable({
+    projectId: v.id("projects"),
+    senderId: v.string(),
+    senderName: v.string(),
+    senderImage: v.optional(v.string()),
+    content: v.string(),
+    messageType: v.string(), // "text" | "system" | "file_reference"
+    referencedFileId: v.optional(v.id("projectFile")),
+    createdAt: v.number(),
+    isEdited: v.optional(v.boolean()),
+    editedAt: v.optional(v.number()),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_and_time", ["projectId", "createdAt"]),
+
+  // Phase 5: Visual submissions for cover art & design assets
+  visualSubmissions: defineTable({
+    projectId: v.id("projects"),
+    authorId: v.string(),
+    authorName: v.optional(v.string()),
+    authorImageUrl: v.optional(v.string()),
+    title: v.string(),
+    description: v.optional(v.string()),
+    imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    imageUrl: v.optional(v.string()),
+    thumbnailUrl: v.optional(v.string()),
+    category: v.string(), // "cover_art"|"promotional"|"social_media"|"branding"|"other"
+    status: v.string(), // "pending"|"approved"|"rejected"
+    feedback: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_and_status", ["projectId", "status"])
+    .index("by_author", ["authorId"]),
 });

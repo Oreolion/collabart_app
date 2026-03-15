@@ -1,199 +1,223 @@
+# eCollabs
 
-# CollabArt — Collaborative Music & Art Projects
+A collaborative music and creative arts platform where musicians, producers, vocalists, graphic designers, and visual artists work together remotely on projects.
 
-[![License: MIT](https://img.shields.io/github/license/Oreolion/collabart_app?style=flat-square)](./LICENSE) [![Next.js](https://img.shields.io/badge/Next-14.x-000?style=flat-square&logo=next.js)](https://nextjs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-007acc?style=flat-square&logo=typescript)](https://www.typescriptlang.org/) [![Node](https://img.shields.io/badge/Node-18.x-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
-
-CollabArt is a modern Next.js application for musicians and visual artists to collaborate on creative projects. It provides project creation, media upload/playback, user profiles, a dashboard for managing collaborations, and integrations with authentication and a serverless database.
-
-This repository contains the frontend and backend functions (Convex) used by the app.
-
-## Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Demo / Screenshots](#demo--screenshots)
-- [Getting Started](#getting-started)
-
-  - [Prerequisites](#prerequisites)
-  - [Install](#install)
-  - [Environment variables](#environment-variables)
-  - [Run locally](#run-locally)
-- [Project Structure](#project-structure)
-- [Key Components & Pages](#key-components--pages)
-- [Convex (backend) notes](#convex-backend-notes)
-- [Testing & Linting](#testing--linting)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Features
-
-- Create and manage creative projects (audio/video/image uploads)
-- Dashboard with project management and collaborations
-- User profiles and Clerk-based authentication
-- Audio playback and project preview UI
-- Responsive design using Tailwind CSS
+[![Next.js](https://img.shields.io/badge/Next-14.x-000?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-007acc?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Convex](https://img.shields.io/badge/Convex-Serverless-ff6b35?style=flat-square)](https://convex.dev)
+[![License: MIT](https://img.shields.io/github/license/Oreolion/collabart_app?style=flat-square)](./LICENSE)
 
 ## Tech Stack
 
-- Next.js 14 (app directory)
-- React 18
-- Convex (serverless DB + functions)
-- Clerk for authentication (`@clerk/nextjs`)
-- Tailwind CSS for styling
-- Embla Carousel, Framer Motion for UI interactions
-- TypeScript throughout
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 14 (App Router) |
+| **Backend** | Convex (serverless functions, real-time database, file storage) |
+| **Auth** | Clerk (webhooks sync to Convex via Svix) |
+| **Styling** | Tailwind CSS + shadcn/ui + custom glassmorphism design system |
+| **Animations** | Framer Motion + animate.css |
+| **Audio** | wavesurfer.js (multi-track waveform rendering) |
+| **Payments** | BlockRadar (crypto payment links + webhook-driven ownership transfer) |
 
-## Demo / Screenshots
+## Features
 
-See the `public/assets` folder for any screenshots and demo media used in the repo. If you want to add a demo GIF or hosted preview, place it in `public/` and reference it here.
+### Core Collaboration
+- **Project Management** — Create, edit, publish projects with metadata (genre, mood, talents, BPM, key, sample rate, bit depth)
+- **Collaboration Invites** — Send invites, accept/reject, manage collaborators with audition privacy
+- **Real-time Chat** — Per-project messaging with edit/delete and access control
+- **Lyric Workflow** — Submit lyrics for review, owner approves/rejects with written feedback
+- **File Management** — Upload audio files with auto-versioning, soft-delete, version history
+- **Comments** — Project-level discussion threads
+
+### Audio
+- **Multi-Track Player** — Synchronized waveform playback with global transport controls
+- **Per-Track Controls** — Solo, mute, volume slider per track
+- **Waveform Visualization** — wavesurfer.js rendering with individual play/pause
+
+### Visual Arts Ecosystem
+- **Visual Asset Uploads** — Submit cover art, promotional images, social media assets, branding materials
+- **Submission Review** — Owner approves/rejects visual submissions with feedback
+- **Cover Art Selection** — Choose from approved visuals as project cover
+- **Visual Portfolio** — User profile portfolio grid with lightbox
+
+### Credits & Attribution
+- **Credits Manager** — Track contributions with role, type, and split percentage
+- **Pie Chart** — Visual split breakdown using CSS conic gradients
+- **Credit Confirmation** — Collaborators confirm their credits
+- **Contribution Types** — Composition, performance, production, visual, engineering, lyrics
+
+### Notifications & Activity
+- **Real-time Notifications** — Every collaborative action fires a notification
+- **Activity Feed** — Timeline with action-typed icons for project history
+- **Unread Badges** — Glowing indicator with mark-as-read
+
+### Search & Discovery
+- **Full-text Search** — Search by title, author, description
+- **Dropdown Filters** — Genre, mood, talent, project type, sort by views/likes
+- **Text Filters** — Inline search by title, talent, genre, mood
+
+### Marketplace
+- **List for Sale** — Set price and list projects
+- **Crypto Payments** — BlockRadar payment links with webhook-driven ownership transfer
+- **Saved Projects** — Bookmark projects for later
+
+### User Experience
+- **Glassmorphism UI** — Dark music-platform theme with frosted glass effects
+- **Responsive Design** — Mobile-first with collapsible sidebar navigation
+- **Onboarding Checklist** — 5-step guided setup
+- **Skeleton Loading** — Shimmer placeholders during data fetching
+- **Page Transitions** — CSS fade+slide animations on route changes
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ (LTS recommended)
-- npm or yarn
-- (Optional) Convex CLI if you want to run Convex locally
+- Node.js 18+
+- npm
+- [Convex](https://convex.dev) account
+- [Clerk](https://clerk.com) account
 
-### Install
-
-Clone the repo and install dependencies:
+### Installation
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Oreolion/collabart_app.git
 cd collabart_app
 npm install
 ```
 
-Or with yarn/pnpm:
+### Environment Variables
 
-```bash
-yarn install
-# or
-pnpm install
-```
-
-### Environment variables
-
-The app uses a few external services (Convex, Clerk, third-party uploads). Create a `.env.local` in the project root and add the variables you need. Example placeholders:
+Create `.env.local` in the project root:
 
 ```env
-# Clerk
-NEXT_PUBLIC_CLERK_FRONTEND_API=your-clerk-frontend-api
-CLERK_API_KEY=your-clerk-api-key
-
-# Convex (if using hosted Convex)
-NEXT_PUBLIC_CONVEX_URL=https://your-convex-app.convex.cloud
-
-# Upload / 3rd-party services
-NEXT_PUBLIC_UPLOAD_URL=...
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 ```
 
-Note: The project may contain provider components in `providers/` which expect certain env vars. Search the `convex/` and `providers/` folders if you need to confirm exact names.
+Set in Convex dashboard (Settings > Environment Variables):
 
-### Run locally
+```
+CLERK_WEBHOOK_SECRET=whsec_...
+BLOCKRADAR_API_KEY=your_key
+```
 
-Start the development server:
+### Development
+
+Run both servers simultaneously:
 
 ```bash
+# Terminal 1: Next.js dev server
 npm run dev
+
+# Terminal 2: Convex dev server
+npx convex dev
 ```
 
-Build for production:
+Open [http://localhost:3000](http://localhost:3000).
+
+### Production Build
 
 ```bash
 npm run build
-npm run start
-```
-
-Lint the project:
-
-```bash
-npm run lint
+npm start
 ```
 
 ## Project Structure
 
-Top-level folders you will work with frequently:
+```
+app/
+├── (auth)/                    # Clerk sign-in/sign-up
+├── (root)/                    # Authenticated app (DashboardLayout + ProjectPlayer)
+│   ├── dashboard/             # Main dashboard with tabs
+│   ├── project/[projectId]/   # Project detail hub
+│   ├── my-profile/            # User profile management
+│   └── add-project/           # Create new project
+├── providers/                 # ConvexClerkProvider, AudioProvider
+├── page.tsx                   # Public landing page
+└── layout.tsx                 # Root layout
 
-- `app/` — Next.js app routes and layouts (app-wide styles in `globals.css`). The project uses the app router with nested routes.
-- `components/` — React components used across pages (Navbar, ProjectCard, Dashboard, Player, etc.).
-- `components/ui/` — Shared UI primitives and design-system components (button, input, dialog, toast, etc.).
-- `convex/` — Convex functions, schema, and HTTP helpers (serverless backend code).
-- `providers/` — React context/providers like `ConvexClerkProvider.tsx` and `AudioProvider.tsx`.
-- `styles/` — CSS Modules for page/component-specific styling.
-- `hooks/` — Custom hooks (e.g., `useDebounce`, `use-toast`).
-- `lib/` — Utility functions (time formatting, helpers).
-- `public/` — Static assets.
-- `types/` — Shared TypeScript types.
+convex/
+├── schema.ts          # Database schema (13 tables)
+├── projects.ts        # Project CRUD, comments, files, search
+├── users.ts           # User lifecycle (Clerk webhook sync)
+├── collaborations.ts  # Invites, audition settings
+├── lyrics.ts          # Lyric submission workflow
+├── messages.ts        # Real-time project chat
+├── visuals.ts         # Visual asset submission/review
+├── credits.ts         # Credits & attribution
+├── likes.ts           # Like/unlike with notifications
+├── file.ts            # Upload URL generation
+├── actions.ts         # BlockRadar payment links (node action)
+└── http.ts            # Webhook endpoints (/clerk, /blockradar)
 
-Example important files:
+components/
+├── ui/                        # shadcn/ui primitives
+├── MultiTrackPlayer.tsx       # Multi-track audio player
+├── WaveformTrack.tsx          # Single track waveform
+├── ProjectChat.tsx            # Chat panel
+├── CreditsManager.tsx         # Credits management
+├── VisualAssetGallery.tsx     # Visual gallery with lightbox
+├── SearchFilters.tsx          # Dropdown filter bar
+├── NotificationsPanel.tsx     # Notification popover
+├── ActivityFeed.tsx           # Activity timeline
+└── ...                        # 30+ components
+```
 
-- `app/page.tsx` — main landing page
-- `app/(root)/create-project/` — project creation UI
-- `components/Dashboard.tsx` and `components/DashboardLayout.tsx` — user dashboard and layout
-- `convex/projects.ts`, `convex/users.ts` — Convex functions dealing with persistent data
+## Database Schema
 
-## Key Components & Pages
+| Table | Purpose |
+|-------|---------|
+| `projects` | Project metadata, settings, cover art |
+| `users` | User profiles synced from Clerk |
+| `projectFile` | Audio/image files with versioning |
+| `comments` | Project comments |
+| `savedProjects` | Bookmarked projects |
+| `lyricSubmissions` | Lyric submissions with approval + feedback |
+| `projectInvites` | Collaboration invites |
+| `notifications` | User notifications |
+| `activityLog` | Project activity timeline |
+| `likes` | Project likes |
+| `messages` | Real-time project chat |
+| `visualSubmissions` | Visual asset submissions with review |
+| `credits` | Contribution credits with splits |
 
-- Navbar (`components/Navbar.tsx`) — top navigation and auth buttons
-- ProjectCard (`components/ProjectCard.tsx`) — card preview used in lists
-- ProjectPlayer / PlayerWrapper — audio playback components
-- Dashboard (`components/Dashboard.tsx`) — user-specific project management
-- AddProject / Create Project pages — forms and upload flows
+## Design System
 
-Explore the `components/` folder to find small, reusable UI pieces (avatar, badge, form controls) under `components/ui/`.
+Custom glassmorphism system built on Tailwind:
 
-## Convex (backend) notes
-
-This project uses Convex for backend functions and storage. The `convex/` folder contains:
-
-- `schema.ts` — Convex schema definitions
-- `projects.ts`, `users.ts` — server-side functions invoked by the client
-
-To run Convex locally, install the Convex CLI and follow Convex documentation (e.g., `convex dev`). If you're using hosted Convex, set `NEXT_PUBLIC_CONVEX_URL` accordingly.
-
-## Testing & Linting
-
-This repository includes linting via ESLint (see `npm run lint`). There are no automated test scripts included by default; consider adding unit tests with Jest/Testing Library or Playwright/E2E if needed.
+| Class | Effect |
+|-------|--------|
+| `glassmorphism` | Frosted glass panel with backdrop blur |
+| `glassmorphism-black` | Dark variant for nav/player |
+| `surface-elevated` | Elevated card surface |
+| `glass-hover` | Hover effect with border glow |
+| `ambient-bg` | Animated gradient background |
 
 ## Deployment
 
-Recommended hosting is Vercel since the app is a Next.js application. Basic steps:
+| Service | Purpose |
+|---------|---------|
+| [Vercel](https://vercel.com) | Frontend hosting (automatic Next.js deployment) |
+| [Convex](https://convex.dev) | Backend (automatic via `npx convex deploy`) |
+| [Clerk](https://clerk.com) | Auth (webhook to `<convex-url>.convex.site/clerk`) |
 
-1. Push your repository to GitHub.
-2. Connect your repo in Vercel and set environment variables in the Vercel dashboard.
-3. Use the default build command (`npm run build`) and the output will be a Next.js serverless app.
+## Roadmap
 
-If you use another host, ensure you provide the environment variables and host any Convex-related endpoints as required.
+- [ ] AI Creative Brief Builder (OpenAI)
+- [ ] AI Lyric Workshop (rhyme suggestions, verse generation)
+- [ ] AI Audio Analysis (BPM/key detection, auto-tagging)
+- [ ] Collaborator Recommendations (embedding-based matching)
+- [ ] Stem Separation (Demucs/Replicate)
+- [ ] AI Cover Art Generation (DALL-E/Stability AI)
+- [ ] Social Media Mockup Generator
 
 ## Contributing
 
-Contributions are welcome. A suggested workflow:
-
-1. Fork the repository and create a branch: `feature/your-feature` or `fix/issue`
-2. Install dependencies and run the dev server locally.
-3. Add focused commits and a clear PR description.
-4. Keep changes small and add tests where applicable.
-
-Please open issues for feature requests or bugs. If you'd like to contribute larger features, open an issue first so we can coordinate design and scope.
+1. Fork and create a branch: `feature/your-feature`
+2. Install deps and run dev server locally
+3. Add focused commits with clear PR descriptions
+4. Open issues first for larger features
 
 ## License
 
-This project is released under the MIT License. See the `LICENSE` file for details.
-
----
-
-I added the following helper files to this repository to get contributors started:
-
-- `.env.example` — Example environment variables to copy to `.env.local` and fill in before running the app.
-- `CONTRIBUTING.md` — Contribution guidelines and a PR checklist.
-- `CODE_OF_CONDUCT.md` — Short code of conduct (Contributor Covenant reference).
-
-You can open those files directly in the repo to view examples and next steps. Next I can:
-
-- Add real CI / deployment badges (Vercel, GitHub Actions) if you tell me which services you use.
-- Add a small architecture diagram or a `docs/` folder with screenshots and usage examples.
-- Run a quick markdown lint and a TypeScript check across the repo.
-
+MIT
