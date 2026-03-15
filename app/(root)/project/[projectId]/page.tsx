@@ -45,6 +45,7 @@ import { VisualAssetGallery } from "@/components/VisualAssetGallery";
 import { VisualSubmissionCard } from "@/components/VisualSubmissionCard";
 import { VisualUploadDialog } from "@/components/VisualUploadDialog";
 import { CoverArtSelector } from "@/components/CoverArtSelector";
+import { AILyricAssistant } from "@/components/AILyricAssistant";
 
 const ProjectPage = ({
   params: { projectId },
@@ -589,19 +590,33 @@ const ProjectPage = ({
                         {getLyricsDialogDescription()}
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="py-4">
-                      <Label htmlFor="lyrics">Lyrics</Label>
-                      <Textarea
-                        id="lyrics"
-                        placeholder="Paste your lyrics here..."
-                        className="mt-2 min-h-96 font-mono"
-                        value={lyricsText}
-                        onChange={(e) => setLyricsText(e.target.value)}
-                        disabled={
-                          !isOwner &&
-                          !!myPendingSubmission &&
-                          myPendingSubmission.status !== "pending"
-                        }
+                    <div className="py-4 space-y-4">
+                      <div>
+                        <Label htmlFor="lyrics">Lyrics</Label>
+                        <Textarea
+                          id="lyrics"
+                          placeholder="Paste your lyrics here..."
+                          className="mt-2 min-h-96 font-mono"
+                          value={lyricsText}
+                          onChange={(e) => setLyricsText(e.target.value)}
+                          disabled={
+                            !isOwner &&
+                            !!myPendingSubmission &&
+                            myPendingSubmission.status !== "pending"
+                          }
+                        />
+                      </div>
+                      <AILyricAssistant
+                        currentLyrics={lyricsText}
+                        context={[
+                          ...(project.genres ?? []),
+                          ...(project.moods ?? []),
+                        ].join(", ") || undefined}
+                        onInsert={(text) => {
+                          setLyricsText((prev) =>
+                            prev ? prev + "\n\n" + text : text
+                          );
+                        }}
                       />
                     </div>
                     <DialogFooter>

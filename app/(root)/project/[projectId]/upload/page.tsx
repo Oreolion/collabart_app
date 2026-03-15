@@ -25,9 +25,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Id } from "@/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUploadFiles } from "@xixixao/uploadstuff/react";
+import { AITagSuggestions } from "@/components/AITagSuggestions";
 
 export default function ProjectUploadForm({
   params: { projectId },
@@ -45,6 +46,7 @@ export default function ProjectUploadForm({
 
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
+  const project = useQuery(api.projects.getProjectById, { projectId });
   const addProjectFile = useMutation(api.projects.addProjectFile);
   const generateUploadUrl = useMutation(api.file.generateUploadUrl);
   const { startUpload } = useUploadFiles(generateUploadUrl);
@@ -239,6 +241,15 @@ export default function ProjectUploadForm({
                   Avoid the use of odd characters in file names as they may
                   cause errors.
                 </p>
+                {projectFile && (
+                  <AITagSuggestions
+                    fileName={projectFile.name}
+                    projectTitle={project?.projectTitle}
+                    projectGenres={project?.genres ?? undefined}
+                    projectMoods={project?.moods ?? undefined}
+                    projectBrief={project?.projectBrief}
+                  />
+                )}
               </div>
 
               <div className="space-y-4">

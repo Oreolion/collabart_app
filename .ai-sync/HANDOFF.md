@@ -1,10 +1,10 @@
 ---
 last_agent: claude-code
-timestamp: 2026-03-15T14:30:00Z
+timestamp: 2026-03-15T17:00:00Z
 status: in-progress
-current_phase: "Phase 8: AI Tier 1 — Quick AI Wins"
-current_task: "Create convex/ai.ts with OpenAI-powered node actions"
-stop_reason: rate-limit
+current_phase: "Phase 9: AI Tier 2 — Collaboration Intelligence"
+current_task: "Schema + actions for embeddings, recommendations, mix feedback"
+stop_reason: session-active
 ---
 
 ## What Was Completed This Session
@@ -54,8 +54,17 @@ stop_reason: rate-limit
 - Integrated all new components from Phases 2-7
 - MultiTrackPlayer, Visual Assets, Chat, Credits, File management with versions/delete
 
+## Additional Work Completed (Second Session)
+- Full `README.md` rewrite (Phase 12) — comprehensive eCollabs docs
+- Ran `npx convex dev --once` — all new tables/indexes deployed and TypeScript types generated
+- Fixed type errors: `convex/http.ts`, `CoverArtSelector.tsx`, `project/[projectId]/page.tsx`, `convex/projects.ts`
+- Fixed type errors in `my-profile/[profileId]/page.tsx`, `AddProject.tsx`, `OwnerOnlyControls.tsx`, `ProfilePage.tsx`, `upload/page.tsx`
+- Set up `.ai-sync/` protocol for cross-agent handoff
+- `npx tsc --noEmit` — CLEAN (zero errors)
+- `npm run build` — CLEAN (all routes compile)
+
 ## Work In Progress
-- None — Phases 1-7 are fully complete with clean build
+- None — Phases 1-7 + Phase 12 (README) are complete with clean build
 
 ## Next Steps (for the next agent)
 
@@ -113,9 +122,9 @@ stop_reason: rate-limit
 - `components/CreditsList.tsx` — Public credits display
 
 ## Blockers / Warnings
-- `npx convex dev` must run to regenerate `convex/_generated/api.ts` — new modules (messages, visuals, credits) won't have TypeScript types until codegen runs
+- Convex codegen has been run — all types are current
 - `OPENAI_API_KEY` must be set in Convex dashboard before Phase 8 AI functions will work
-- Pre-existing type errors exist in `my-profile`, `OwnerOnlyControls`, `AddProject`, `upload/page.tsx`, `http.ts` — these are NOT from this session's work
+- All pre-existing type errors have been fixed
 - `next.config.mjs` has `ignoreBuildErrors: true` so build passes despite type errors — always run `npx tsc --noEmit` separately
 
 ## Key Decisions Made
@@ -128,6 +137,7 @@ stop_reason: rate-limit
 - SearchFilters uses shadcn Select components with dropdown-based filtering
 
 ## Build Status
-- TypeScript: pass (with pre-existing errors unrelated to this work)
-- Build: pass (clean build, all routes compile)
+- TypeScript: CLEAN (zero errors, `npx tsc --noEmit` passes)
+- Build: CLEAN (`npm run build` passes, all routes compile)
+- Convex: DEPLOYED (all tables, indexes, functions deployed)
 - Tests: not-run (no test suite configured)

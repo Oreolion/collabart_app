@@ -30,6 +30,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import CollaborationAgreement from "./CollaborationAgreement";
+import { AIBriefAssistant } from "./AIBriefAssistant";
 
 export default function AddProject() {
   const [projectType, setProjectType] = useState<string | null>(null);
@@ -312,9 +313,21 @@ export default function AddProject() {
             name="projectBrief"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel className="text-sm font-semibold text-foreground">
-                  Project Brief:
-                </FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm font-semibold text-foreground">
+                    Project Brief:
+                  </FormLabel>
+                  <AIBriefAssistant
+                    onApply={(data) => {
+                      if (data.projectDescription) {
+                        form.setValue("projectDescription", data.projectDescription);
+                      }
+                      if (data.projectBrief) {
+                        form.setValue("projectBrief", data.projectBrief);
+                      }
+                    }}
+                  />
+                </div>
                 <FormControl>
                   <Textarea
                     className="border-border bg-muted/50 text-foreground focus-visible:ring-primary min-h-[120px]"

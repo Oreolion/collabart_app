@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as actions from "../actions.js";
 import type * as activityLog from "../activityLog.js";
+import type * as ai from "../ai.js";
 import type * as collaborations from "../collaborations.js";
 import type * as credits from "../credits.js";
 import type * as file from "../file.js";
@@ -38,6 +39,7 @@ import type * as visuals from "../visuals.js";
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   activityLog: typeof activityLog;
+  ai: typeof ai;
   collaborations: typeof collaborations;
   credits: typeof credits;
   file: typeof file;

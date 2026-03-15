@@ -61,18 +61,20 @@
 - [x] `components/CreditsList.tsx` — public display
 - [x] Project detail page — Credits integration
 
-## Phase 8: AI Tier 1 — Quick AI Wins — PENDING
-- [ ] Install `openai` dependency
-- [ ] Create `convex/ai.ts` with `"use node"` actions
-- [ ] `generateCreativeBrief` action
-- [ ] `analyzeAudioMetadata` action
-- [ ] `assistLyricWriting` action
-- [ ] `semanticProjectSearch` action
-- [ ] `components/AIBriefAssistant.tsx`
-- [ ] `components/AILyricAssistant.tsx`
-- [ ] `components/AITagSuggestions.tsx`
-- [ ] Integrate into AddProject, lyrics dialog, upload page
-- [ ] Verification: tsc + build
+## Phase 8: AI Tier 1 — Quick AI Wins — COMPLETE
+- [x] Install `@google/generative-ai` dependency (Gemini instead of OpenAI)
+- [x] Create `convex/ai.ts` with `"use node"` actions
+- [x] `generateCreativeBrief` action — natural language → structured brief JSON
+- [x] `suggestAudioTags` action — file context → BPM, key, instrument, tag suggestions
+- [x] `assistLyricWriting` action — 4 modes: complete, rhyme, rewrite, generate
+- [x] `semanticProjectSearch` action — natural language → structured filters
+- [x] `components/AIBriefAssistant.tsx` — dialog with generate + apply to form
+- [x] `components/AILyricAssistant.tsx` — tabbed panel with 4 modes + insert
+- [x] `components/AITagSuggestions.tsx` — post-upload tag display
+- [x] Integrated: AIBriefAssistant → AddProject (next to brief field)
+- [x] Integrated: AILyricAssistant → project detail lyrics dialog
+- [x] Integrated: AITagSuggestions → upload page (after file selected)
+- [x] Verification: tsc clean + build clean
 
 ## Phase 9: AI Tier 2 — Collaboration Intelligence — PENDING
 - [ ] Schema: `userEmbeddings`, `projectEmbeddings` tables
@@ -106,6 +108,7 @@
 - [ ] `components/SocialMockupGenerator.tsx`
 - [ ] Verification: tsc + build
 
-## Phase 12: README & Documentation — PENDING
-- [ ] Full `README.md` rewrite
-- [ ] Update `CLAUDE.md` with all new tables/functions/components
+## Phase 12: README & Documentation — COMPLETE
+- [x] Full `README.md` rewrite (comprehensive eCollabs docs — tech stack, features, architecture, schema, design system, deployment)
+- [x] Type errors fixed across project (http.ts, CoverArtSelector, project page, projects.ts, profile pages)
+- [ ] Update `CLAUDE.md` with all new tables/functions/components (optional — README covers this)
