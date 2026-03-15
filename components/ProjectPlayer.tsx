@@ -82,7 +82,8 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
     if (el) {
       el.pause();
       el.currentTime = 0;
-      el.src = "";
+      el.removeAttribute("src");
+      el.load();
       setIsPlaying(false);
       setCurrentTime(0);
       setDuration(0);
@@ -121,7 +122,8 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
       el.addEventListener("loadedmetadata", handleLoaded);
     } else {
       el.pause();
-      el.src = "";
+      el.removeAttribute("src");
+      el.load();
       setIsPlaying(false);
       setDuration(0);
       setCurrentTime(0);
@@ -161,7 +163,7 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
       <section className="flex h-20 w-full items-center justify-between px-4 md:px-8 glassmorphism-black border-t border-border/10">
         <audio
           ref={audioRef}
-          src={src || ""}
+          src={src || undefined}
           className="hidden"
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
