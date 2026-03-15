@@ -69,11 +69,11 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="container mx-auto p-4 space-y-8 max-[480px]:max-w-[25rem] max-md:ml-[-1.9rem] max-[320px]:ml-[-.5rem]">
-      <h1 className="text-3xl font-bold">Account</h1>
+    <div className="container mx-auto p-4 md:p-6 space-y-8 max-w-5xl relative z-10">
+      <h1 className="text-3xl font-bold text-foreground">Account</h1>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-card">
-        <TabsList className="grid h-12 w-full gap-4 grid-cols-6 lg:grid-cols-6 max-md:gap-1">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid h-12 w-full gap-2 grid-cols-6 lg:grid-cols-6 max-md:gap-1 glassmorphism-subtle">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="talents">Talents</TabsTrigger>
@@ -81,8 +81,8 @@ export default function ProfilePage() {
           <TabsTrigger value="banner">Banner</TabsTrigger>
           <TabsTrigger value="picture">Picture</TabsTrigger>
         </TabsList>
-        <TabsContent value="account" className="bg-card">
-          <Card className="bg-card">
+        <TabsContent value="account" className="space-y-4 mt-4">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle>My Membership Plan</CardTitle>
             </CardHeader>
@@ -132,7 +132,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle>My Invoices</CardTitle>
             </CardHeader>
@@ -141,7 +141,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle>Purchase Membership Services</CardTitle>
             </CardHeader>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle>My Payment History</CardTitle>
             </CardHeader>
@@ -199,14 +199,14 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="profile" className="bg-card">
-          <h1 className="text-2xl font-bold mb-6">Member Profile</h1>
+        <TabsContent value="profile" className="space-y-4 mt-4">
+          <h1 className="text-2xl font-bold mb-6 text-foreground">Member Profile</h1>
 
-          <Card className="bg-card mb-6">
-            <CardHeader className="bg-card">
-              <CardTitle className="bg-card">About Me</CardTitle>
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
+            <CardHeader>
+              <CardTitle className="text-foreground">About Me</CardTitle>
             </CardHeader>
-            <CardContent className="bg-card">
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label
@@ -233,7 +233,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6 bg-card">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>Purpose on eCollabs</CardTitle>
             </CardHeader>
@@ -271,7 +271,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>Biography</CardTitle>
             </CardHeader>
@@ -286,7 +286,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>My Gear, Equipment, Setup...</CardTitle>
             </CardHeader>
@@ -301,7 +301,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>My Social Media</CardTitle>
             </CardHeader>
@@ -337,7 +337,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
             </CardHeader>
@@ -406,7 +406,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>
                 Performance Rights Organization (PRO) Affiliation
@@ -433,7 +433,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
+          <Card className="glassmorphism-subtle rounded-xl border-0 mb-4">
             <CardHeader>
               <CardTitle>Privacy and Security Settings</CardTitle>
             </CardHeader>
@@ -473,10 +473,10 @@ export default function ProfilePage() {
             <Button>Save Changes</Button>
           </div>
         </TabsContent>
-        <TabsContent value="talents" className="bg-card">
+        <TabsContent value="talents" className="mt-4">
           <SkillsAndTalents />
         </TabsContent>
-        <TabsContent value="genres" className="bg-card">
+        <TabsContent value="genres" className="mt-4">
           <FavoriteGenres />
         </TabsContent>
       </Tabs>

@@ -24,6 +24,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/formatTime";
 import Link from "next/link";
+import ActivityFeed from "@/components/ActivityFeed";
 import {
   Dialog,
   DialogContent,
@@ -300,7 +301,7 @@ const ProjectPage = ({
               <span className="text-sm">0 tracks</span> 
             </div>
           </CardHeader>
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-lg">Project Status</CardTitle>  
             </CardHeader>
@@ -323,7 +324,7 @@ const ProjectPage = ({
         <div className="flex flex-col lg:flex-row gap-2">
           {/* Left Column */}  
           <div className="lg:w-1/4">
-            <Card className="pt-8 bg-card border-border sticky top-20">
+            <Card className="pt-8 glassmorphism rounded-xl border-0 sticky top-20">
               <CardContent className="space-y-3">
                 <Link href={`/project/${projectId}/upload`} className="w-full">
                   <Button className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white text-sm">
@@ -357,7 +358,7 @@ const ProjectPage = ({
                         <Share2 className="h-5 w-5" /> 
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-card border-border">
+                    <DialogContent className="glassmorphism-subtle rounded-xl border-0">
                       <DialogHeader>
                         <DialogTitle>Share Project</DialogTitle> 
                         <DialogDescription className="text-muted-foreground">
@@ -471,7 +472,7 @@ const ProjectPage = ({
           </div>
           {/* Middle Column */}  
           <div className="lg:w-1/2 ">
-            <Card className="bg-card border-border">
+            <Card className="glassmorphism-subtle rounded-xl border-0">
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-2">
                   New Project Checklist
@@ -555,7 +556,7 @@ const ProjectPage = ({
                 </Button>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Project Summary</CardTitle>  
               </CardHeader>
@@ -573,7 +574,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
             {/* --- LYRICS CARD & DIALOG --- */}
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
                 <Dialog
@@ -658,7 +659,7 @@ const ProjectPage = ({
                 </CardContent>
               </Card>
             )}
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Project Files</CardTitle> 
               </CardHeader>
@@ -669,7 +670,7 @@ const ProjectPage = ({
           </div>
           {/* Right Column */}  
           <div className="lg:w-1/4">
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Collaborators</CardTitle> 
               </CardHeader>
@@ -679,34 +680,16 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
-                <CardTitle>Project Timeline</CardTitle>  
+                <CardTitle>Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center space-x-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={project?.authorImageUrl || "/placeholder.svg"}
-                    />
-                    <AvatarFallback>
-                      {project?.author?.slice(0, 1)}S
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">
-                      Started the project &quot;
-                      {project?.projectTitle}&quot; 
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {project?.author} - {formatDate(project?._creationTime)} 
-                    </p>
-                  </div>
-                </div>
+                <ActivityFeed projectId={project?._id as Id<"projects">} />
               </CardContent>
             </Card>
             {/* --- UPDATED KUDOS (COMMENTS) CARD --- */} 
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Project Kudos</CardTitle> 
               </CardHeader>
@@ -783,7 +766,7 @@ const ProjectPage = ({
               </CardContent>
             </Card>
             {/* --- END UPDATED KUDOS CARD --- */} 
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Credits</CardTitle> 
               </CardHeader>
@@ -793,7 +776,7 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Copyright</CardTitle> 
               </CardHeader>
@@ -803,7 +786,7 @@ const ProjectPage = ({
                 </p>
               </CardContent>
             </Card>
-            <Card className="mt-6 bg-card border-border">
+            <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle>Derivative Works</CardTitle>  
               </CardHeader>

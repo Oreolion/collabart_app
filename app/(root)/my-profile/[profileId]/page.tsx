@@ -88,7 +88,7 @@ const ProfilePage = ({
         onValueChange={setActiveTab}
         className="w-full"
       >
-        <TabsList className="grid h-12 w-full gap-1 grid-cols-6 lg:grid-cols-6 max-md:gap-1 bg-card border border-border">
+        <TabsList className="grid h-12 w-full gap-1 grid-cols-6 lg:grid-cols-6 max-md:gap-1 glassmorphism-subtle">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="talents">Talents</TabsTrigger>
@@ -128,7 +128,7 @@ const ProfilePage = ({
               </div>
             </section>
 
-            <Card className="bg-card border-border">
+            <Card className="glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle className="text-foreground">Purpose on eCollabs</CardTitle>
               </CardHeader>
@@ -349,7 +349,7 @@ const ProfilePage = ({
 
         {/* Account Tab */}
         <TabsContent value="account">
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">My Membership Plan</CardTitle>
             </CardHeader>
@@ -397,7 +397,7 @@ const ProfilePage = ({
             </CardContent>
           </Card>
 
-          <Card className="mt-4 bg-card border-border">
+          <Card className="mt-4 glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">My Invoices</CardTitle>
             </CardHeader>
@@ -406,7 +406,7 @@ const ProfilePage = ({
             </CardContent>
           </Card>
 
-          <Card className="mt-4 bg-card border-border">
+          <Card className="mt-4 glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">Purchase Membership Services</CardTitle>
             </CardHeader>
@@ -452,7 +452,7 @@ const ProfilePage = ({
             </CardContent>
           </Card>
 
-          <Card className="mt-4 bg-card border-border">
+          <Card className="mt-4 glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">My Payment History</CardTitle>
             </CardHeader>

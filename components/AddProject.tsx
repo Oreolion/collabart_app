@@ -153,17 +153,17 @@ export default function AddProject() {
   }
 
   return (
-    <section className="p-4 md:p-6 max-w-4xl mx-auto">
+    <section className="p-4 md:p-6 max-w-4xl mx-auto relative z-10">
       <h1 className="text-3xl font-bold text-foreground mb-8">
         Create New Project
       </h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full flex-col space-y-6"
+          className="glassmorphism rounded-xl p-5 md:p-8 flex w-full flex-col space-y-6"
         >
           {/* Title + Type row */}
-          <div className="flex gap-4 items-start border-b border-border pb-8 max-md:flex-col">
+          <div className="flex gap-4 items-start border-b border-border/15 pb-8 max-md:flex-col">
             <FormField
               control={form.control}
               name="projectTitle"
@@ -436,7 +436,7 @@ export default function AddProject() {
           <div className="mt-8 w-full space-y-3">
             <Button
               type="submit"
-              className="w-full py-6 font-bold text-base"
+              className="w-full py-6 font-bold text-base glow-primary hover-lift"
             >
               {isSubmitting ? (
                 <>

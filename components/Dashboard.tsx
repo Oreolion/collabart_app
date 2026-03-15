@@ -21,20 +21,24 @@ import {
 } from "@/components/ui/table";
 import BioSection from "./BioSection";
 import UserProfileCard from "./UserProfileCard";
+import OnboardingChecklist from "./OnboardingChecklist";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
+import { DashboardSkeleton } from "@/components/Skeleton";
 
 export default function Dashboard() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const projects = useQuery(api.projects.getAllProjects);
+
+  if (!isLoaded) return <DashboardSkeleton />;
 
   return (
     <>
-      <section className="p-4 md:p-6 max-w-5xl mx-auto">
+      <section className="p-4 md:p-6 max-w-5xl mx-auto relative z-10">
         {/* Profile header */}
-        <div className="mb-6 text-center surface-elevated py-6">
-          <Avatar className="w-20 h-20 mx-auto mb-3 ring-2 ring-primary/20">
+        <div className="mb-6 text-center glassmorphism rounded-xl py-6 px-4">
+          <Avatar className="w-20 h-20 mx-auto mb-3 ring-2 ring-primary/30 shadow-lg shadow-primary/10">
             <AvatarImage src={user?.imageUrl} alt={user?.username || "User"} />
             <AvatarFallback className="bg-primary/10 text-primary text-lg">
               {user?.username?.charAt(0)?.toUpperCase() || "U"}
@@ -46,8 +50,10 @@ export default function Dashboard() {
           </p>
         </div>
 
+        <OnboardingChecklist />
+
         <Tabs defaultValue="dashboard" className="mb-8">
-          <TabsList className="h-10 bg-card border border-border grid grid-cols-3 md:grid-cols-6 gap-1">
+          <TabsList className="h-10 glassmorphism-subtle grid grid-cols-3 md:grid-cols-6 gap-1">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -60,7 +66,7 @@ export default function Dashboard() {
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
-            <Card className="bg-card border-border">
+            <Card className="glassmorphism rounded-xl border-0">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-foreground">
                   Member Dashboard
@@ -96,7 +102,7 @@ export default function Dashboard() {
                     <AccordionTrigger className="text-foreground">Setting Up Your Profile</AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-4">
-                        <Card className="bg-muted/30 border-border">
+                        <Card className="surface-elevated border-0">
                           <CardContent className="p-4 space-y-3 text-sm text-muted-foreground">
                             <p>Just a couple of things to get done on your profile so that you can make the most of your time here.</p>
                             <p>
@@ -112,7 +118,7 @@ export default function Dashboard() {
                           </CardContent>
                         </Card>
 
-                        <Card className="bg-card border-border">
+                        <Card className="glassmorphism-subtle rounded-xl border-0">
                           <CardHeader><CardTitle className="text-foreground">What next..?</CardTitle></CardHeader>
                           <CardContent className="space-y-3 text-sm text-muted-foreground">
                             <p>Check out the <Link href="/projects" className="text-primary hover:underline">active projects</Link> section for members looking for your unique musical talents.</p>
@@ -122,12 +128,12 @@ export default function Dashboard() {
                           </CardContent>
                         </Card>
 
-                        <Card className="bg-card border-border">
+                        <Card className="glassmorphism-subtle rounded-xl border-0">
                           <CardHeader><CardTitle className="text-foreground">Activity Status</CardTitle></CardHeader>
                           <CardContent><p className="text-sm text-muted-foreground">Nothing to report.</p></CardContent>
                         </Card>
 
-                        <Card className="bg-card border-border">
+                        <Card className="glassmorphism-subtle rounded-xl border-0">
                           <CardHeader><CardTitle className="text-foreground">All Recent Notifications</CardTitle></CardHeader>
                           <CardContent>
                             <p className="text-sm text-muted-foreground">
@@ -153,7 +159,7 @@ export default function Dashboard() {
           {/* Projects Tab */}
           <TabsContent value="projects">
             <div className="space-y-4">
-              <Card className="bg-card border-border">
+              <Card className="glassmorphism-subtle rounded-xl border-0">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <FolderOpen className="w-5 h-5 text-primary" />
@@ -185,7 +191,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
+              <Card className="glassmorphism-subtle rounded-xl border-0">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <FolderOpen className="w-5 h-5 text-accent" />
@@ -200,7 +206,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
+              <Card className="glassmorphism-subtle rounded-xl border-0">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <FolderOpen className="w-5 h-5 text-[hsl(var(--warning))]" />
@@ -219,7 +225,7 @@ export default function Dashboard() {
 
           {/* Portfolio Tab */}
           <TabsContent value="portfolio">
-            <Card className="bg-card border-border">
+            <Card className="glassmorphism-subtle rounded-xl border-0">
               <CardHeader>
                 <CardTitle className="text-foreground">Portfolio of Published Works</CardTitle>
               </CardHeader>
@@ -232,7 +238,7 @@ export default function Dashboard() {
 
         {/* Tables */}
         <div className="flex flex-col gap-6 mb-6">
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">Work for Hire</CardTitle>
             </CardHeader>
@@ -260,7 +266,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">Royalty Statement</CardTitle>
             </CardHeader>
@@ -292,7 +298,7 @@ export default function Dashboard() {
         <BioSection />
       </section>
 
-      <footer className="border-t border-border p-4 mt-4">
+      <footer className="border-t border-border/10 p-4 mt-4">
         <div className="text-center text-xs text-muted-foreground">
           &copy; 2025 eCollabs. Some Rights Reserved.
         </div>

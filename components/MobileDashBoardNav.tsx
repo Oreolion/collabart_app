@@ -14,9 +14,9 @@ import {
   User,
   LogOut,
   Menu,
-  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import NotificationsPanel from "@/components/NotificationsPanel";
 
 const navItems = [
   { route: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -40,14 +40,13 @@ const MobileDashBoardNav = () => {
     <>
       {/* Mobile Sheet Sidebar */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-[16rem] bg-card border-r border-border p-0">
+        <SheetContent side="left" className="w-64 glassmorphism-black border-r border-border/10 p-0">
           {/* Logo */}
-          <div className="flex h-14 items-center px-4 border-b border-border">
-            <Link href="/" onClick={() => setOpen(false)}>
+          <div className="flex h-14 items-center px-4 border-b border-border/10">
+            <Link href="/" onClick={() => setOpen(false)} className="group">
               <h3 className="text-lg font-bold tracking-tight">
-                <span className="text-foreground">Collab</span>
-                <span className="text-primary font-black">@</span>
-                <span className="text-accent">RT</span>
+                <span className="text-primary font-black text-xl group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)] transition-all duration-300">e</span>
+                <span className="text-foreground">Collabs</span>
               </h3>
             </Link>
           </div>
@@ -64,10 +63,10 @@ const MobileDashBoardNav = () => {
                     href={item.route}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                       isActive(item.route)
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "bg-primary/10 text-primary shadow-[inset_0_0_12px_hsl(262,83%,58%,0.06)]"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                     )}
                   >
                     <item.icon className="h-5 w-5 shrink-0" />
@@ -86,10 +85,10 @@ const MobileDashBoardNav = () => {
                   href={`/my-profile/${user?.id}`}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     pathname.includes("/my-profile")
                       ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   )}
                 >
                   <User className="h-5 w-5 shrink-0" />
@@ -103,7 +102,7 @@ const MobileDashBoardNav = () => {
                       setOpen(false);
                       signOut(() => router.push("/sign-in"));
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                   >
                     <LogOut className="h-5 w-5 shrink-0" />
                     <span>Log Out</span>
@@ -116,24 +115,21 @@ const MobileDashBoardNav = () => {
       </Sheet>
 
       {/* Mobile Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-20 flex md:hidden h-14 items-center justify-between border-b border-border bg-card/95 backdrop-blur-xl px-4">
+      <header className="fixed top-0 left-0 right-0 z-20 flex md:hidden h-14 items-center justify-between glassmorphism-black border-b border-border/10 px-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="text-foreground">
             <Menu className="h-5 w-5" />
           </Button>
-          <Link href="/">
+          <Link href="/" className="group">
             <h3 className="text-base font-bold tracking-tight">
-              <span className="text-foreground">Collab</span>
-              <span className="text-primary font-black">@</span>
-              <span className="text-accent">RT</span>
+              <span className="text-primary font-black text-lg group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)] transition-all duration-300">e</span>
+              <span className="text-foreground">Collabs</span>
             </h3>
           </Link>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-            <Bell className="h-5 w-5" />
-          </Button>
+          <NotificationsPanel />
           <UserButton />
         </div>
       </header>

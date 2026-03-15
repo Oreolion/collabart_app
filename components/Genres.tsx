@@ -132,7 +132,7 @@ export default function FavoriteGenres({
   };
 
   return (
-    <Card className="w-full mx-auto border-none shadow-none">
+    <Card className="w-full mx-auto border-0 bg-transparent shadow-none">
       {" "}
       <CardHeader>
         {" "}
@@ -188,7 +188,7 @@ export default function FavoriteGenres({
               {customGenres.map((genre) => (
                 <div
                   key={genre}
-                  className="flex items-center space-x-2 p-2 bg-secondary rounded-md"
+                  className="flex items-center space-x-2 p-2 surface-elevated"
                 >
                   {" "}
                   <Checkbox

@@ -13,7 +13,7 @@ export default function UserProfile() {
       <div className="flex flex-col md:flex-row gap-4">
         {/* Sidebar */}
         <div className="w-full md:w-1/3 space-y-4">
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardContent className="p-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -36,7 +36,7 @@ export default function UserProfile() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="flex items-center text-foreground">
                 <Image src="/placeholder.svg?height=24&width=24" alt="Trophy" width={24} height={24} className="mr-2" />
@@ -61,7 +61,7 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">
                 You have nothing on display. To show off your best work,{' '}
@@ -73,7 +73,7 @@ export default function UserProfile() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
             <CardHeader>
               <CardTitle className="text-foreground">Collaborator Summary</CardTitle>
             </CardHeader>

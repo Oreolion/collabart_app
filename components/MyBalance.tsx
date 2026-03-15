@@ -9,40 +9,40 @@ import {
 
 export default function MyBalance() {
   return (
-    <div className="container mx-auto p-4 max-[480px]:pl-[1px]">
-      <Card className="bg-card border-border">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto relative z-10">
+      <Card className="glassmorphism rounded-xl border-0">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-foreground">Funds</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="text-center max-sm:max-w-[25rem]">
+            <div className="text-center surface-elevated p-4">
               <h3 className="text-lg font-semibold mb-2 text-muted-foreground">in Credit</h3>
               <p className="text-3xl font-bold text-foreground">$0.00</p>
             </div>
-            <div className="text-center bg-[hsl(var(--success))]/10 border border-[hsl(var(--success))]/20 p-4 rounded-lg max-[480px]:max-w-[25rem]">
+            <div className="text-center surface-elevated p-4 ring-1 ring-[hsl(var(--success))]/20 bg-[hsl(var(--success))]/5">
               <h3 className="text-lg font-semibold mb-2 text-[hsl(var(--success))]">My Balance</h3>
               <p className="text-4xl font-bold text-foreground">$0</p>
             </div>
-            <div className="text-center max-sm:max-w-[25rem]">
+            <div className="text-center surface-elevated p-4">
               <h3 className="text-lg font-semibold mb-2 text-muted-foreground">in Cash</h3>
               <p className="text-3xl font-bold text-foreground">$0.00</p>
             </div>
           </div>
-          <div className="space-y-4">
-            <Button className="w-full justify-start max-sm:max-w-[25rem] text-foreground" variant="outline">
+          <div className="space-y-3">
+            <Button className="w-full justify-start text-foreground hover-lift" variant="outline">
               <ArrowUpFromLine className="mr-2 h-4 w-4" />
               Withdraw Cash
             </Button>
-            <Button className="w-full justify-start max-sm:max-w-[25rem] text-foreground" variant="outline">
+            <Button className="w-full justify-start text-foreground hover-lift" variant="outline">
               <Ticket className="mr-2 h-4 w-4" />
               Redeem Voucher
             </Button>
-            <Button className="w-full justify-start max-sm:max-w-[25rem] text-foreground" variant="outline">
+            <Button className="w-full justify-start text-foreground hover-lift" variant="outline">
               <RefreshCw className="mr-2 h-4 w-4" />
               Convert Cash to Credit
             </Button>
-            <Button className="w-full justify-start max-sm:max-w-[25rem] text-foreground" variant="outline">
+            <Button className="w-full justify-start text-foreground hover-lift" variant="outline">
               <Users className="mr-2 h-4 w-4" />
               Transfer Credit to Another Member
             </Button>

@@ -123,7 +123,7 @@ const CollaborationAgreement: React.FC<CollaborationAgreementProps> = ({
       </Select>
 
       {selectedAgreement && (
-        <Card className="bg-muted/30 border-border">
+        <Card className="glassmorphism-subtle rounded-xl border-0">
           <CardContent className="p-4 text-sm">
             <h3 className="text-lg font-semibold mb-2 text-foreground">
               {

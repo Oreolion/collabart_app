@@ -64,7 +64,7 @@ export default function FavoriteMoods({
   };
 
   return (
-    <Card className="w-full mx-auto border-none shadow-none">
+    <Card className="w-full mx-auto border-0 bg-transparent shadow-none">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Project Moods</CardTitle>
       </CardHeader>
@@ -109,7 +109,7 @@ export default function FavoriteMoods({
           {customMoods.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {customMoods.map((mood) => (
-                <div key={mood} className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
+                <div key={mood} className="flex items-center space-x-2 p-2 surface-elevated">
                   <Checkbox
                     id={`custom-${mood}`}
                     checked={selectedMoods.includes(mood)}

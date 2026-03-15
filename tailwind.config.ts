@@ -98,6 +98,14 @@ const config: Config = {
   			'glow-pulse': {
   				'0%, 100%': { opacity: '0.4' },
   				'50%': { opacity: '0.8' }
+  			},
+  			'skeleton': {
+  				'0%': { backgroundPosition: '-200% 0' },
+  				'100%': { backgroundPosition: '200% 0' }
+  			},
+  			'page-enter': {
+  				'0%': { opacity: '0', transform: 'translateY(8px)' },
+  				'100%': { opacity: '1', transform: 'translateY(0)' }
   			}
   		},
   		animation: {
@@ -108,7 +116,9 @@ const config: Config = {
   			'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
   			'shimmer': 'shimmer 3s ease-in-out infinite',
   			'float': 'float 4s ease-in-out infinite',
-  			'glow-pulse': 'glow-pulse 3s ease-in-out infinite'
+  			'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+  			'skeleton': 'skeleton 1.8s ease-in-out infinite',
+  			'page-enter': 'page-enter 0.3s ease-out'
   		}
   	}
   },

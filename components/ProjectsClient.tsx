@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import ProjectCard from "@/components/ProjectCard";
-import LoaderSpinner from "@/components/LoaderSpinner";
+import { ProjectsGridSkeleton, CardSkeleton } from "@/components/Skeleton";
 import { useUser } from "@clerk/nextjs";
 import { useDebounce } from "@/lib/useDebounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -100,7 +100,14 @@ export default function ProjectsClient() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
+  if (!projectsWithFiles || !isLoaded) {
+    return (
+      <div className="p-4 md:p-6 max-w-5xl mx-auto relative z-10 space-y-6">
+        <CardSkeleton className="h-48" />
+        <ProjectsGridSkeleton count={4} />
+      </div>
+    );
+  }
 
   const normalizedSearch = (search || "").toLowerCase().trim();
 
@@ -156,10 +163,10 @@ export default function ProjectsClient() {
     : filteredProjects;
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto relative z-10">
       <div className="space-y-6">
         {/* Search Section */}
-        <div className="surface-elevated p-5 space-y-4">
+        <div className="glassmorphism rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
             <Search className="w-5 h-5 text-primary" />
             Find Active Projects

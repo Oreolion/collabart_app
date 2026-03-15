@@ -250,7 +250,7 @@ export default function ProjectActionsAndMeta({
         </Tabs>
 
         {/* --- Dialog Content for Details --- */}
-        <DialogContent className="max-w-4xl bg-card border-border">
+        <DialogContent className="max-w-4xl glassmorphism border-0">
           <DialogHeader>
             <DialogTitle>Update Project Details</DialogTitle>
             <DialogDescription>
@@ -301,7 +301,7 @@ export default function ProjectActionsAndMeta({
                 <AlertTriangle className="w-4 h-4 mr-1" /> Close Project
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-border">
+            <DialogContent className="glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>Close Project</DialogTitle>
                 <DialogDescription>
@@ -342,7 +342,7 @@ export default function ProjectActionsAndMeta({
                 <Settings className="w-4 h-4 mr-1" /> Settings
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-card border-border">
+            <DialogContent className="max-w-md glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>Project Settings</DialogTitle>
                 <DialogDescription>
@@ -418,7 +418,7 @@ export default function ProjectActionsAndMeta({
                 <FileText className="w-4 h-4 mr-1" /> Project Files
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-card border-border">
+            <DialogContent className="max-w-2xl glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>File Management</DialogTitle>
                 <DialogDescription>
@@ -426,7 +426,7 @@ export default function ProjectActionsAndMeta({
                 </DialogDescription>
               </DialogHeader>
               <div className="py-6 space-y-4">
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 flex flex-col items-center justify-center">
+                <div className="border-2 border-dashed border-border/30 rounded-lg p-8 flex flex-col items-center justify-center">
                   <p className="text-sm font-medium">
                     Drag and drop files here
                   </p>
@@ -479,7 +479,7 @@ export default function ProjectActionsAndMeta({
                   : "List for Audition"}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-card border-border">
+            <DialogContent className="max-w-md glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>Open for Audition</DialogTitle>
                 <DialogDescription>
@@ -544,7 +544,7 @@ export default function ProjectActionsAndMeta({
                 Send Invite
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-card border-border">
+            <DialogContent className="max-w-md glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>Send Collaboration Invite</DialogTitle>
                 <DialogDescription>
@@ -617,7 +617,7 @@ export default function ProjectActionsAndMeta({
                 {project?.isListed ? "Update Listing" : "List for Sell"} 
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-card border-border">
+            <DialogContent className="max-w-md glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>List Project for Sale</DialogTitle> 
                 <DialogDescription>
@@ -669,7 +669,7 @@ export default function ProjectActionsAndMeta({
                 <CheckCircle2 className="w-4 h-4 mr-1" /> Collab Agreement
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-card border-border">
+            <DialogContent className="max-w-2xl glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle>Collaboration Agreement</DialogTitle>s
                 <DialogDescription>

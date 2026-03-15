@@ -172,7 +172,7 @@ const ProjectPage = () => {
         <div className="space-y-4">
           {myProjects.length === 0 ? (
             <div className="max-w-3xl mx-auto">
-              <Card className="bg-card border-border">
+              <Card className="glassmorphism-subtle rounded-xl border-0">
                 <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
                   <div className="flex-shrink-0">
                     <div className="w-24 h-24 rounded-2xl bg-primary/10 flex items-center justify-center">

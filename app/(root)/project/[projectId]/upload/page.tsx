@@ -134,8 +134,8 @@ export default function ProjectUploadForm({
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto">
-      <Card className="bg-card border-border">
+    <div className="p-4 md:p-6 max-w-3xl mx-auto relative z-10">
+      <Card className="glassmorphism rounded-xl border-0">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-foreground">
             Upload Project File(s)

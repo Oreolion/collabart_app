@@ -158,7 +158,7 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
         className="w-full h-1"
         max={duration > 0 ? duration : 100}
       />
-      <section className="flex h-[80px] w-full items-center justify-between px-4 md:px-8 bg-card/95 backdrop-blur-md border-t border-border">
+      <section className="flex h-20 w-full items-center justify-between px-4 md:px-8 glassmorphism-black border-t border-border/10">
         <audio
           ref={audioRef}
           src={src || ""}
@@ -174,10 +174,10 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
               width={48}
               height={48}
               alt="player-img"
-              className="aspect-square rounded-lg object-cover"
+              className="aspect-square rounded-lg object-cover ring-1 ring-border/20"
             />
           </Link>
-          <div className="flex w-[140px] flex-col min-w-0">
+          <div className="flex w-36 flex-col min-w-0">
             <h2 className="text-sm truncate font-semibold text-foreground">
               {audio?.title || "Unknown Title"}
             </h2>
@@ -200,7 +200,7 @@ const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {
           <Button
             variant="default"
             size="icon"
-            className="h-10 w-10 rounded-full"
+            className="h-10 w-10 rounded-full glow-primary"
             onClick={togglePlayPause}
           >
             {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}

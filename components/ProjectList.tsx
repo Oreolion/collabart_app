@@ -81,7 +81,7 @@ export default function ProjectList() {
   return (
     <div className="space-y-4">
       {projects.map((project) => (
-        <Card key={project.id} className="bg-card border-border">
+        <Card key={project.id} className="surface-elevated glass-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {project.title}

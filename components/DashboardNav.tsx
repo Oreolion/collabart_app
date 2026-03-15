@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import NotificationsPanel from "@/components/NotificationsPanel";
 
 const navItems = [
   { route: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -43,17 +44,17 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
   return (
     <nav
       className={cn(
-        "fixed left-0 top-0 z-30 hidden md:flex h-screen flex-col border-r border-border bg-card transition-all duration-300",
-        collapsed ? "w-[4.5rem]" : "w-[15rem]"
+        "fixed left-0 top-0 z-30 hidden md:flex h-screen flex-col transition-all duration-300",
+        "glassmorphism-black border-r border-border/10",
+        collapsed ? "w-[4.5rem]" : "w-60"
       )}
     >
       {/* Logo */}
-      <div className="flex h-14 items-center px-4 border-b border-border">
-        <Link href="/" className="flex items-center gap-1">
+      <div className="flex h-14 items-center px-4 border-b border-border/10">
+        <Link href="/" className="flex items-center gap-0.5 group">
           <h3 className={cn("text-lg font-bold tracking-tight transition-all", collapsed && "text-base")}>
-            <span className="text-foreground">Collab</span>
-            <span className="text-primary font-black">@</span>
-            <span className="text-accent">RT</span>
+            <span className="text-primary font-black text-xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)]">e</span>
+            {!collapsed && <span className="text-foreground">Collabs</span>}
           </h3>
         </Link>
       </div>
@@ -69,10 +70,10 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
               <Link
                 href={item.route}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                   isActive(item.route)
-                    ? "bg-primary/10 text-primary border-l-2 border-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    ? "bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_0_0_12px_hsl(262,83%,58%,0.06)]"
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   collapsed && "justify-center px-2"
                 )}
                 title={collapsed ? item.label : undefined}
@@ -92,10 +93,10 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
             <Link
               href={`/my-profile/${user?.id}`}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                 pathname.includes("/my-profile")
                   ? "bg-primary/10 text-primary border-l-2 border-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 collapsed && "justify-center px-2"
               )}
               title={collapsed ? "My Profile" : undefined}
@@ -109,7 +110,7 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
               <button
                 onClick={() => signOut(() => router.push("/sign-in"))}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors",
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200",
                   collapsed && "justify-center px-2"
                 )}
                 title={collapsed ? "Log Out" : undefined}
@@ -122,8 +123,13 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
         </ul>
       </div>
 
+      {/* Notifications */}
+      <div className={cn("px-2 py-1", collapsed ? "flex justify-center" : "px-3")}>
+        <NotificationsPanel collapsed={collapsed} />
+      </div>
+
       {/* Collapse toggle */}
-      <div className="border-t border-border p-2">
+      <div className="border-t border-border/10 p-2">
         <Button
           variant="ghost"
           size="sm"

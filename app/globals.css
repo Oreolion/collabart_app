@@ -231,6 +231,18 @@ ul {
       0 0 20px hsl(var(--primary) / 0.15),
       0 0 60px hsl(var(--primary) / 0.05);
   }
+
+  /* Interactive button hover uplift */
+  .hover-lift {
+    @apply transition-all duration-200;
+  }
+  .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.2);
+  }
+  .hover-lift:active {
+    transform: translateY(0);
+  }
 }
 
 @layer base {

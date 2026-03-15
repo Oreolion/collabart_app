@@ -299,7 +299,7 @@ export default function ProjectCard({ project }: { project: any }) {
   return (
     <Card
       key={project._id}
-      className="relative bg-card mb-4 border border-border hover:border-primary/30 transition-all duration-200"
+      className="relative mb-4 surface-elevated glass-hover"
     >
       <CardHeader className="flex items-start justify-between gap-4 px-4 py-3">
         <div className="flex items-start gap-3 min-w-0">
@@ -387,7 +387,7 @@ export default function ProjectCard({ project }: { project: any }) {
                   <ShoppingCart className="h-5 w-5" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-sm bg-card border-border">
+              <DialogContent className="max-w-sm glassmorphism border-0">
                 <DialogHeader>
                   <DialogTitle className="text-foreground">
                     {project.price ? "Buy Project" : "Support / Buy Project"}
@@ -451,7 +451,7 @@ export default function ProjectCard({ project }: { project: any }) {
                   <Share2 className="h-5 w-5" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-card border-border">
+              <DialogContent className="glassmorphism border-0">
                 <DialogHeader>
                   <DialogTitle className="text-foreground">Share Project</DialogTitle>
                   <DialogDescription>
@@ -516,7 +516,7 @@ export default function ProjectCard({ project }: { project: any }) {
                     <span>List</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-sm bg-card border-border">
+                <DialogContent className="max-w-sm glassmorphism border-0">
                   <DialogHeader>
                     <DialogTitle className="text-foreground">List Project for Sale</DialogTitle>
                     <DialogDescription>
@@ -614,7 +614,7 @@ export default function ProjectCard({ project }: { project: any }) {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-md bg-card border-border">
+            <DialogContent className="max-w-md glassmorphism border-0">
               <DialogHeader>
                 <DialogTitle className="text-foreground">Project Kudos</DialogTitle>
                 <DialogDescription>
