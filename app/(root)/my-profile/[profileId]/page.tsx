@@ -37,7 +37,7 @@ const ProfilePage = ({
     profileId: string;
   };
 }) => {
-  const [activeTab, setActiveTab] = useState("account");
+  const [activeTab, setActiveTab] = useState("profile");
 
   const { user } = useUser();
   const userId = useQuery(api.users.getUserById, {
@@ -467,6 +467,60 @@ const ProfilePage = ({
         </TabsContent>
         <TabsContent value="genres">
           <FavoriteGenres />
+        </TabsContent>
+
+        {/* Banner Tab */}
+        <TabsContent value="banner">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
+            <CardHeader>
+              <CardTitle className="text-foreground">Profile Banner</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Upload a banner image to personalize your profile. Recommended size: 1200 x 300 pixels.
+              </p>
+              <div className="border-2 border-dashed border-border/40 rounded-xl h-48 flex items-center justify-center bg-muted/20">
+                <div className="text-center space-y-2">
+                  <p className="text-muted-foreground text-sm">Drag & drop your banner image here</p>
+                  <p className="text-muted-foreground text-xs">or</p>
+                  <Button variant="outline" size="sm">Choose File</Button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Accepted formats: JPG, PNG, WebP. Max file size: 5 MB.</span>
+              </div>
+              <Button>Upload Banner</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Picture Tab */}
+        <TabsContent value="picture">
+          <Card className="glassmorphism-subtle rounded-xl border-0">
+            <CardHeader>
+              <CardTitle className="text-foreground">Profile Picture</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Upload a profile picture. This will be visible to other members. Recommended: square image, at least 300 x 300 pixels.
+              </p>
+              <div className="flex items-center gap-6">
+                <div className="w-32 h-32 rounded-full border-2 border-dashed border-border/40 flex items-center justify-center bg-muted/20">
+                  <span className="text-muted-foreground text-xs text-center px-2">No image</span>
+                </div>
+                <div className="space-y-2">
+                  <Button variant="outline" size="sm">Choose File</Button>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, or WebP. Max 2 MB.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Your profile picture will be cropped to a circle.</span>
+              </div>
+              <Button>Upload Picture</Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

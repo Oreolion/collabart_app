@@ -53,7 +53,7 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
       <div className="flex h-14 items-center px-4 border-b border-border/10">
         <Link href="/" className="flex items-center gap-0.5 group">
           <h3 className={cn("text-lg font-bold tracking-tight transition-all", collapsed && "text-base")}>
-            <span className="text-primary font-black text-xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)]">e</span>
+            <span className="text-primary font-black text-xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(11,90%,58%,0.5)]">e</span>
             {!collapsed && <span className="text-foreground">Collabs</span>}
           </h3>
         </Link>
@@ -72,7 +72,7 @@ const DashboardNav = ({ collapsed, onToggle }: DashboardNavProps) => {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                   isActive(item.route)
-                    ? "bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_0_0_12px_hsl(262,83%,58%,0.06)]"
+                    ? "bg-primary/10 text-primary border-l-2 border-primary shadow-[inset_0_0_12px_hsl(11,90%,58%,0.06)]"
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   collapsed && "justify-center px-2"
                 )}

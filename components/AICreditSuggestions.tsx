@@ -129,7 +129,7 @@ export function AICreditSuggestions({ projectId }: AICreditSuggestionsProps) {
                 className="h-full"
                 style={{
                   width: `${s.suggestedSplit}%`,
-                  backgroundColor: `hsl(${(i * 60 + 262) % 360}, 70%, 55%)`,
+                  backgroundColor: `hsl(${(i * 60 + 11) % 360}, 70%, 55%)`,
                 }}
                 title={`${s.userName}: ${s.suggestedSplit}%`}
               />

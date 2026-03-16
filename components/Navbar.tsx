@@ -28,7 +28,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0.5 group">
           <h3 className="text-xl font-bold tracking-tight">
-            <span className="text-primary font-black text-2xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(262,83%,58%,0.5)]">e</span>
+            <span className="text-primary font-black text-2xl transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(11,90%,58%,0.5)]">e</span>
             <span className="text-foreground">Collabs</span>
           </h3>
         </Link>

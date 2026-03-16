@@ -47,7 +47,7 @@ const Carousel = ({ slides }: HeroCarouselProps) => {
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 max-w-3xl mx-auto">
-              <span className="text-primary font-bold text-sm uppercase tracking-[0.25em] mb-4 drop-shadow-[0_0_12px_hsl(262,83%,58%,0.3)]">
+              <span className="text-primary font-bold text-sm uppercase tracking-[0.25em] mb-4 drop-shadow-[0_0_12px_hsl(11,90%,58%,0.3)]">
                 {item.h1}
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-4 drop-shadow-lg">

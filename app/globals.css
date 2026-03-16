@@ -5,7 +5,6 @@
 
 html {
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
 ul {
@@ -199,7 +198,7 @@ ul {
   }
 
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(262,83%,58%)] to-[hsl(217,91%,60%)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(11,90%,58%)] to-[hsl(38,92%,50%)];
   }
 
   .surface-elevated {
@@ -253,7 +252,7 @@ ul {
     --card-foreground: 0 0% 95%;
     --popover: 240 5% 9%;
     --popover-foreground: 0 0% 95%;
-    --primary: 262 83% 58%;
+    --primary: 11 90% 58%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 95%;
@@ -267,8 +266,8 @@ ul {
     --warning: 38 92% 50%;
     --border: 240 4% 16%;
     --input: 240 4% 16%;
-    --ring: 262 83% 58%;
-    --chart-1: 262 83% 58%;
+    --ring: 11 90% 58%;
+    --chart-1: 11 90% 58%;
     --chart-2: 142 71% 45%;
     --chart-3: 217 91% 60%;
     --chart-4: 38 92% 50%;

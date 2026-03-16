@@ -52,7 +52,7 @@ const CONTRIBUTION_TYPES = [
 ] as const;
 
 const CONTRIBUTION_COLORS: Record<string, string> = {
-  composition: "hsl(262, 83%, 58%)",
+  composition: "hsl(11, 90%, 58%)",
   performance: "hsl(199, 89%, 48%)",
   production: "hsl(142, 71%, 45%)",
   visual: "hsl(330, 81%, 60%)",

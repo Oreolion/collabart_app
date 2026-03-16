@@ -27,7 +27,7 @@ import FavoriteGenres from "./Genres";
 
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("account");
+  const [activeTab, setActiveTab] = useState("profile");
   const [socialMediaLinks, setSocialMediaLinks] = useState<string[]>([]);
  
   const addSocialMediaLink = () => {
