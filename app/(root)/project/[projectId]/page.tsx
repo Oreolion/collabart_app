@@ -46,6 +46,16 @@ import { VisualSubmissionCard } from "@/components/VisualSubmissionCard";
 import { VisualUploadDialog } from "@/components/VisualUploadDialog";
 import { CoverArtSelector } from "@/components/CoverArtSelector";
 import { AILyricAssistant } from "@/components/AILyricAssistant";
+import { CollaboratorRecommendations } from "@/components/CollaboratorRecommendations";
+import { AIMixFeedback } from "@/components/AIMixFeedback";
+import { FeedbackTranslator } from "@/components/FeedbackTranslator";
+import { AICreditSuggestions } from "@/components/AICreditSuggestions";
+import { WaveformAnnotation } from "@/components/WaveformAnnotation";
+import { StemSeparator } from "@/components/StemSeparator";
+import { AIGenerateStem } from "@/components/AIGenerateStem";
+import { MasteringPreview } from "@/components/MasteringPreview";
+import { AIDesignFeedback } from "@/components/AIDesignFeedback";
+import { SocialMockupGenerator } from "@/components/SocialMockupGenerator";
 
 const ProjectPage = ({
   params: { projectId },
@@ -683,6 +693,28 @@ const ProjectPage = ({
               </div>
             )}
 
+            {/* AI Mix Feedback + Stem Suggestions + Mastering */}
+            {projectFiles && projectFiles.filter(f => f.audioUrl).length > 0 && (
+              <div className="mt-4 space-y-3">
+                <AIMixFeedback
+                  projectId={projectId}
+                  trackNames={projectFiles
+                    .filter((f) => f.audioUrl)
+                    .map((f) => f.projectFileTitle || f.projectFileLabel)}
+                />
+                <AIGenerateStem
+                  projectId={projectId}
+                  existingTracks={projectFiles
+                    .filter((f) => f.audioUrl)
+                    .map((f) => f.projectFileTitle || f.projectFileLabel)}
+                />
+                <MasteringPreview
+                  projectId={projectId}
+                  trackCount={projectFiles.filter(f => f.audioUrl).length}
+                />
+              </div>
+            )}
+
             {/* Visual Assets */}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -697,8 +729,18 @@ const ProjectPage = ({
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <VisualAssetGallery projectId={projectId} />
+                {/* Social Mockup Generator */}
+                {isOwner && (
+                  <SocialMockupGenerator
+                    projectTitle={project.projectTitle}
+                    artistName={project.author}
+                    genres={project.genres}
+                    moods={project.moods}
+                    coverArtUrl={project.coverArtUrl}
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -712,7 +754,18 @@ const ProjectPage = ({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {pendingVisuals.map((sub) => (
-                    <VisualSubmissionCard key={sub._id} submission={sub} />
+                    <div key={sub._id} className="space-y-2">
+                      <VisualSubmissionCard submission={sub} />
+                      {sub.imageUrl && (
+                        <AIDesignFeedback
+                          imageUrl={sub.imageUrl}
+                          title={sub.title}
+                          category={sub.category}
+                          projectGenres={project.genres}
+                          projectMoods={project.moods}
+                        />
+                      )}
+                    </div>
                   ))}
                 </CardContent>
               </Card>
@@ -731,37 +784,55 @@ const ProjectPage = ({
                     {projectFiles.map((file) => (
                       <div
                         key={file._id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-border/30"
+                        className="p-3 rounded-lg bg-card/30 border border-border/30 space-y-2"
                       >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium truncate">
-                              {file.projectFileTitle || file.projectFileLabel}
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium truncate">
+                                {file.projectFileTitle || file.projectFileLabel}
+                              </p>
+                              {file.version && (
+                                <Badge variant="outline" className="text-xs shrink-0">
+                                  v{file.version}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {file.username} &middot; {file.projectFileLabel}
                             </p>
-                            {file.version && (
-                              <Badge variant="outline" className="text-xs shrink-0">
-                                v{file.version}
-                              </Badge>
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            {isOwner && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-red-400 hover:text-red-300"
+                                onClick={async () => {
+                                  if (confirm("Archive this file?")) {
+                                    await deleteFile({ fileId: file._id });
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {file.username} &middot; {file.projectFileLabel}
-                          </p>
                         </div>
-                        {isOwner && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-red-400 hover:text-red-300 shrink-0"
-                            onClick={async () => {
-                              if (confirm("Archive this file?")) {
-                                await deleteFile({ fileId: file._id });
-                              }
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        {/* Stem Separator */}
+                        {file.audioUrl && isOwner && (
+                          <StemSeparator
+                            projectId={projectId}
+                            audioUrl={file.audioUrl}
+                            trackTitle={file.projectFileTitle || file.projectFileLabel}
+                          />
                         )}
+                        {/* Waveform Annotations */}
+                        <WaveformAnnotation
+                          fileId={file._id}
+                          projectId={projectId}
+                          duration={file.audioDuration}
+                        />
                       </div>
                     ))}
                   </div>
@@ -775,10 +846,13 @@ const ProjectPage = ({
               <CardHeader>
                 <CardTitle>Collaborators</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground">
                   No collaborators yet
                 </p>
+                {isOwner && (
+                  <CollaboratorRecommendations projectId={projectId} />
+                )}
               </CardContent>
             </Card>
 

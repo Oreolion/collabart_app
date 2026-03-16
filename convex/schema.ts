@@ -249,4 +249,16 @@ export default defineSchema({
     .index("by_project", ["projectId"])
     .index("by_project_and_status", ["projectId", "status"])
     .index("by_author", ["authorId"]),
+
+  // Phase 10: Waveform annotations / timestamped markers
+  fileAnnotations: defineTable({
+    fileId: v.id("projectFile"),
+    projectId: v.id("projects"),
+    userId: v.string(),
+    userName: v.string(),
+    timestamp: v.number(), // seconds into audio
+    content: v.string(),
+    color: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_file", ["fileId"]),
 });

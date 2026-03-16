@@ -50,6 +50,13 @@ export const getUserById = query({
 //   },
 // });
 
+export const getAllUsers = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("users").collect();
+  },
+});
+
 export const createUser = internalMutation({
   args: {
     clerkId: v.string(),

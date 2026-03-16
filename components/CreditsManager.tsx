@@ -40,6 +40,7 @@ import {
   FileText,
   CheckCircle2,
 } from "lucide-react";
+import { AICreditSuggestions } from "./AICreditSuggestions";
 
 const CONTRIBUTION_TYPES = [
   { value: "composition", label: "Composition", icon: Music },
@@ -488,6 +489,8 @@ export default function CreditsManager({ projectId }: CreditsManagerProps) {
             })}
           </div>
         )}
+        {/* AI Credit Suggestions */}
+        <AICreditSuggestions projectId={projectId} />
       </CardContent>
 
       {/* Edit dialog */}

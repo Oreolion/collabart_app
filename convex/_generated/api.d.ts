@@ -16,6 +16,7 @@ import type {
 import type * as actions from "../actions.js";
 import type * as activityLog from "../activityLog.js";
 import type * as ai from "../ai.js";
+import type * as annotations from "../annotations.js";
 import type * as collaborations from "../collaborations.js";
 import type * as credits from "../credits.js";
 import type * as file from "../file.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   activityLog: typeof activityLog;
   ai: typeof ai;
+  annotations: typeof annotations;
   collaborations: typeof collaborations;
   credits: typeof credits;
   file: typeof file;

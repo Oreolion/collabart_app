@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Doc } from "@/convex/_generated/dataModel";
 import { Pencil, Trash2 } from "lucide-react";
+import { FeedbackTranslator } from "./FeedbackTranslator";
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -53,6 +54,9 @@ export function ChatMessage({ message, isOwn, onEdit, onDelete }: ChatMessagePro
         >
           {message.content}
         </div>
+        {message.messageType !== "system" && (
+          <FeedbackTranslator feedback={message.content} />
+        )}
         {isOwn && (
           <div className="flex gap-1 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             {onEdit && (
