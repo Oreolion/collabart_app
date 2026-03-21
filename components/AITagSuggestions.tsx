@@ -22,7 +22,14 @@ export function AITagSuggestions({
   projectBrief,
 }: AITagSuggestionsProps) {
   const [loading, setLoading] = useState(false);
-  const [tags, setTags] = useState<Record<string, any> | null>(null);
+  const [tags, setTags] = useState<{
+    fileType?: string;
+    suggestedBPM?: string;
+    suggestedKey?: string;
+    suggestedInstruments?: string[];
+    suggestedTags?: string[];
+    error?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const suggestTags = useAction(api.ai.suggestAudioTags);
@@ -43,8 +50,8 @@ export function AITagSuggestions({
       } else {
         setTags(result);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to get suggestions");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to get suggestions");
     } finally {
       setLoading(false);
     }
@@ -113,7 +120,7 @@ export function AITagSuggestions({
               </div>
             )}
           </div>
-          {tags.suggestedInstruments?.length > 0 && (
+          {tags.suggestedInstruments && tags.suggestedInstruments.length > 0 && (
             <div>
               <span className="text-xs text-muted-foreground">Instruments:</span>
               <div className="flex flex-wrap gap-1 mt-1">
@@ -125,7 +132,7 @@ export function AITagSuggestions({
               </div>
             </div>
           )}
-          {tags.suggestedTags?.length > 0 && (
+          {tags.suggestedTags && tags.suggestedTags.length > 0 && (
             <div>
               <span className="text-xs text-muted-foreground">Tags:</span>
               <div className="flex flex-wrap gap-1 mt-1">

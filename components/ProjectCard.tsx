@@ -41,8 +41,14 @@ import { useRouter } from "next/navigation";
 import { AudioProps } from "@/types";
 import LoaderSpinner from "./LoaderSpinner";
 import { Textarea } from "@/components/ui/textarea";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
-export default function ProjectCard({ project }: { project: any }) {
+type ProjectWithFiles = Doc<"projects"> & {
+  projectFiles?: Doc<"projectFile">[];
+  imageUrl?: string;
+};
+
+export default function ProjectCard({ project }: { project: ProjectWithFiles }) {
   const { setAudio } = useAudio();
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -65,16 +71,16 @@ export default function ProjectCard({ project }: { project: any }) {
     projectId: project._id,
   });
   const [comments, setComments] = useState<
-    { user: string; date: string; text: string; _id?: any }[]
+    { user: string; date: string; text: string; _id?: Id<"comments"> }[]
   >([]);
 
   useEffect(() => {
     if (commentsQuery) {
       setComments(
-        commentsQuery.map((c: any) => ({
-          user: c.user ?? "Anonymous",
+        commentsQuery.map((c) => ({
+          user: c.username ?? "Anonymous",
           date: c.createdAt ? new Date(c.createdAt).toLocaleString() : "",
-          text: c.text,
+          text: c.content,
           _id: c._id,
         }))
       );
@@ -84,7 +90,7 @@ export default function ProjectCard({ project }: { project: any }) {
   const projectsWithFiles = useQuery(api.projects.getAllProjectsWithFiles);
 
   const addComment = useMutation(api.projects.addProjectComment);
-  const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction as unknown as any);
+  const createPublicLink = useAction(api.actions.createBlockradarPaymentLinkAction);
   const listProjectForSale = useMutation(api.projects.listProjectForSale);
 
   const isOwner =
@@ -95,17 +101,18 @@ export default function ProjectCard({ project }: { project: any }) {
 
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
-  const handlePlay = (projectFile: AudioProps | undefined) => {
+  const handlePlay = (projectFile: AudioProps | Doc<"projectFile"> | undefined) => {
     const file =
       projectFile ??
       project.projectFiles?.[0] ??
       projectsWithFiles.find((p) => p._id === project._id)?.projectFiles?.[0];
     if (file) {
+      const fileRecord = file as Record<string, unknown>;
       const audioUrl =
-        (file as any).audioUrl ??
-        (file as any).audio_url ??
-        (file as any).fileUrl ??
-        (file as any).url ??
+        (fileRecord.audioUrl as string) ??
+        (fileRecord.audio_url as string) ??
+        (fileRecord.fileUrl as string) ??
+        (fileRecord.url as string) ??
         "";
       if (!audioUrl) {
         console.warn(
@@ -116,10 +123,10 @@ export default function ProjectCard({ project }: { project: any }) {
       }
       setAudio({
         title:
-          (file as any).projectFileTitle ||
+          (fileRecord.projectFileTitle as string) ||
           project.projectTitle ||
           "Unknown Title",
-        audioUrl,
+        audioUrl: { audioUrl },
         projectId: project._id,
         author: project.author || "Unknown Author",
         imageUrl:
@@ -137,7 +144,7 @@ export default function ProjectCard({ project }: { project: any }) {
         .replace(/[^a-zA-Z0-9-]/g, "-")
         .slice(0, 250);
       const redirectUrl = `${window.location.origin}/project/${project._id}?paid=1`;
-      const payload = await createPublicLink({
+      const result = await createPublicLink({
         projectId: project._id,
         amount,
         slug,
@@ -151,12 +158,17 @@ export default function ProjectCard({ project }: { project: any }) {
           authorId: project.authorId,
         },
       });
+      const payload = result as Record<string, unknown>;
+
+      const nestedPayload = payload?.payload as Record<string, unknown> | undefined;
+      const nestedData = nestedPayload?.data as Record<string, unknown> | undefined;
+      const deepData = nestedData?.data as Record<string, unknown> | undefined;
 
       const url =
-        payload?.payload?.data?.url ??
-        payload?.payload?.data?.data?.url ??
-        payload?.payload?.url ??
-        payload?.url ??
+        (nestedData?.url as string) ??
+        (deepData?.url as string) ??
+        (nestedPayload?.url as string) ??
+        (payload?.url as string) ??
         null;
 
       if (!url) {
@@ -167,7 +179,7 @@ export default function ProjectCard({ project }: { project: any }) {
       }
 
       window.location.href = url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("create payment error", err);
       setSuccessMessage("Error creating payment link.");
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -223,18 +235,16 @@ export default function ProjectCard({ project }: { project: any }) {
       setCommentText("");
       setShowCommentForm(false);
 
-      const inserted: any = await addComment({
+      const insertedId = await addComment({
         projectId: project._id,
         text: optimistic.text,
       });
 
       const persisted = {
-        user: inserted.user ?? optimistic.user,
-        date: inserted.createdAt
-          ? new Date(inserted.createdAt).toLocaleString()
-          : optimistic.date,
-        text: inserted.text ?? optimistic.text,
-        _id: inserted._id,
+        user: optimistic.user,
+        date: optimistic.date,
+        text: optimistic.text,
+        _id: insertedId,
       };
 
       setComments((prev) => {

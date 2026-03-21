@@ -23,7 +23,7 @@ import {
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { Image as ImageIcon, Upload } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 
 const CATEGORIES = [
   { value: "cover_art", label: "Cover Art" },
@@ -96,9 +96,9 @@ export function VisualUploadDialog({ projectId }: VisualUploadDialogProps) {
       setPreview(null);
       if (fileRef.current) fileRef.current.value = "";
       setOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to upload visual:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }

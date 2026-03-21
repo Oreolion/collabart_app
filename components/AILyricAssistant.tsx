@@ -63,8 +63,8 @@ export function AILyricAssistant({ currentLyrics, context, onInsert }: AILyricAs
       } else {
         setResult(data.text ?? null);
       }
-    } catch (err: any) {
-      setError(err.message || "AI generation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "AI generation failed");
     } finally {
       setLoading(false);
     }

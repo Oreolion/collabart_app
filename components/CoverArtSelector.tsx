@@ -40,9 +40,9 @@ export function CoverArtSelector({ projectId, currentCoverUrl }: CoverArtSelecto
         coverArtStorageId: (selectedStorageId as Id<"_storage">) ?? undefined,
       });
       setOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to set cover art:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }

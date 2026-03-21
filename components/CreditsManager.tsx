@@ -149,9 +149,9 @@ export default function CreditsManager({ projectId }: CreditsManagerProps) {
       });
       resetAddForm();
       setAddDialogOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to add credit:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }
@@ -180,9 +180,9 @@ export default function CreditsManager({ projectId }: CreditsManagerProps) {
       });
       setEditDialogOpen(false);
       setEditCreditId(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update credit:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }
@@ -193,9 +193,9 @@ export default function CreditsManager({ projectId }: CreditsManagerProps) {
 
     try {
       await removeCredit({ creditId });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to remove credit:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     }
   };
 

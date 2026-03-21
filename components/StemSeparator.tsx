@@ -40,8 +40,8 @@ export function StemSeparator({ projectId, audioUrl, trackTitle }: StemSeparator
       }
       setPredictionId(result.predictionId);
       setStatus("polling");
-    } catch (err: any) {
-      setError(err.message || "Failed to start separation");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to start separation");
       setStatus("failed");
     }
   };

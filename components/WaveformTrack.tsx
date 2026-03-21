@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Volume2, VolumeX, Headphones, Sparkles } from "lucide-react";
+import type WaveSurfer from "wavesurfer.js";
 
 interface WaveformTrackProps {
   audioUrl: string;
@@ -32,7 +33,7 @@ export function WaveformTrack({
   onReady,
 }: WaveformTrackProps) {
   const waveformRef = useRef<HTMLDivElement>(null);
-  const wavesurferRef = useRef<any>(null);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [volume, setVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
   const [isSolo, setIsSolo] = useState(false);
@@ -41,7 +42,7 @@ export function WaveformTrack({
   useEffect(() => {
     if (!waveformRef.current || !audioUrl) return;
 
-    let ws: any;
+    let ws: WaveSurfer | undefined;
     const initWavesurfer = async () => {
       const WaveSurfer = (await import("wavesurfer.js")).default;
       ws = WaveSurfer.create({
@@ -61,11 +62,11 @@ export function WaveformTrack({
 
       ws.on("ready", () => {
         setIsReady(true);
-        onReady?.(ws.getDuration());
+        onReady?.(ws!.getDuration());
       });
 
-      ws.on("seek", (progress: number) => {
-        onSeek(progress * ws.getDuration());
+      ws.on("seeking", (progress: number) => {
+        onSeek(progress * ws!.getDuration());
       });
 
       wavesurferRef.current = ws;

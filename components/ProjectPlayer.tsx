@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatTime } from "@/lib/formatTime";
 import { cn } from "@/lib/utils";
 import { useAudio } from "@/app/providers/AudioProvider";
+import { AudioProps } from "@/types";
 import { Progress } from "./ui/progress";
 import { Button } from "./ui/button";
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X } from "lucide-react";
@@ -13,20 +14,23 @@ interface ProjectPlayerProps {
   onClose?: () => void;
 }
 
-const pickAudioSrc = (audio: any): string => {
+const pickAudioSrc = (audio: AudioProps | undefined): string => {
   if (!audio) return "";
-  if (typeof audio.audioUrl === "string" && audio.audioUrl.trim() !== "")
-    return audio.audioUrl;
-  if (audio.audioUrl && typeof audio.audioUrl === "object") {
+  const rawUrl: unknown = audio.audioUrl;
+  if (typeof rawUrl === "string" && rawUrl.trim() !== "")
+    return rawUrl;
+  if (rawUrl && typeof rawUrl === "object") {
+    const nested = rawUrl as Record<string, string | undefined>;
     return (
-      audio.audioUrl.audioUrl ??
-      audio.audioUrl.url ??
-      audio.audioUrl.fileUrl ??
-      audio.audioUrl.audio_url ??
+      nested.audioUrl ??
+      nested.url ??
+      nested.fileUrl ??
+      nested.audio_url ??
       ""
     );
   }
-  return audio.url ?? audio.fileUrl ?? audio.audio_url ?? "";
+  const record = audio as unknown as Record<string, unknown>;
+  return (record.url as string) ?? (record.fileUrl as string) ?? (record.audio_url as string) ?? "";
 };
 
 const ProjectPlayer = ({ onClose }: ProjectPlayerProps) => {

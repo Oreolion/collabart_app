@@ -12,9 +12,23 @@ interface AIMixFeedbackProps {
   trackNames: string[];
 }
 
+interface TrackSuggestion {
+  track: string;
+  suggestions?: string[];
+}
+
+interface MixFeedbackResult {
+  overallAssessment?: string;
+  trackSuggestions?: TrackSuggestion[];
+  mixTips?: string[];
+  missingElements?: string[];
+  referenceTrackStyle?: string;
+  error?: string;
+}
+
 export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState<Record<string, any> | null>(null);
+  const [feedback, setFeedback] = useState<MixFeedbackResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const getMixFeedback = useAction(api.ai.generateMixFeedback);
@@ -28,10 +42,10 @@ export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
       if (result.error) {
         setError(result.error);
       } else {
-        setFeedback(result);
+        setFeedback(result as MixFeedbackResult);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to get mix feedback");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to get mix feedback");
     } finally {
       setLoading(false);
     }
@@ -88,12 +102,12 @@ export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
             </p>
           )}
 
-          {feedback.trackSuggestions?.length > 0 && (
+          {feedback.trackSuggestions && feedback.trackSuggestions.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
                 <Music className="h-3 w-3" /> Per-Track Suggestions
               </p>
-              {feedback.trackSuggestions.map((ts: any, i: number) => (
+              {feedback.trackSuggestions.map((ts: TrackSuggestion, i: number) => (
                 <div key={i} className="text-xs space-y-1 pl-2 border-l-2 border-primary/30">
                   <p className="font-medium">{ts.track}</p>
                   <ul className="space-y-0.5">
@@ -106,7 +120,7 @@ export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
             </div>
           )}
 
-          {feedback.mixTips?.length > 0 && (
+          {feedback.mixTips && feedback.mixTips.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1 mb-1">
                 <Lightbulb className="h-3 w-3" /> Mix Tips
@@ -119,7 +133,7 @@ export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
             </div>
           )}
 
-          {feedback.missingElements?.length > 0 && (
+          {feedback.missingElements && feedback.missingElements.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1 mb-1">
                 <AlertCircle className="h-3 w-3" /> Missing Elements

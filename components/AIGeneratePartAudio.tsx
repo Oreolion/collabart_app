@@ -50,8 +50,8 @@ export function AIGeneratePartAudio({
       });
       setResult(res);
       setStatus("preview");
-    } catch (err: any) {
-      setError(err.message || "Generation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Generation failed");
       setStatus("error");
     }
   };
@@ -68,8 +68,8 @@ export function AIGeneratePartAudio({
       });
       setStatus("saved");
       onSaved();
-    } catch (err: any) {
-      setError(err.message || "Failed to save");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to save");
       setStatus("error");
     }
   };

@@ -38,8 +38,8 @@ export function CollaboratorRecommendations({ projectId }: CollaboratorRecommend
       } else {
         setRecommendations(result.recommendations ?? []);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to get recommendations");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to get recommendations");
     } finally {
       setLoading(false);
     }

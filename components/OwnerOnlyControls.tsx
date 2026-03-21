@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useAction, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -111,9 +111,9 @@ export default function ProjectActionsAndMeta({
 
       router.refresh();
       toggleModal("selling"); // Close modal
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("list for sale error", err);
-      alert("Failed to list project for sale: " + err.message);
+      alert("Failed to list project for sale: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }
@@ -135,9 +135,9 @@ export default function ProjectActionsAndMeta({
       });
       router.refresh();
       toggleModal("audition");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to list for audition:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }
@@ -159,9 +159,9 @@ export default function ProjectActionsAndMeta({
       });
       alert("Invite sent!");
       toggleModal("collaboration");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to send invite:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }

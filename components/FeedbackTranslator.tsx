@@ -12,8 +12,12 @@ interface FeedbackTranslatorProps {
 
 export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProps) {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<Record<string, any> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{
+    technicalTranslation?: string;
+    suggestedActions?: string[];
+    error?: string;
+  } | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const translate = useAction(api.ai.translateFeedback);
 
@@ -27,8 +31,8 @@ export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProp
       } else {
         setResult(data);
       }
-    } catch (err: any) {
-      setError(err.message || "Translation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Translation failed");
     } finally {
       setLoading(false);
     }
@@ -52,11 +56,11 @@ export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProp
           </Button>
         </div>
         <p className="text-foreground">{result.technicalTranslation}</p>
-        {result.suggestedActions?.length > 0 && (
+        {(result.suggestedActions?.length ?? 0) > 0 && (
           <div>
             <p className="text-muted-foreground font-medium">Actions:</p>
             <ul className="space-y-0.5 mt-0.5">
-              {result.suggestedActions.map((a: string, i: number) => (
+              {result.suggestedActions!.map((a: string, i: number) => (
                 <li key={i} className="text-muted-foreground">• {a}</li>
               ))}
             </ul>

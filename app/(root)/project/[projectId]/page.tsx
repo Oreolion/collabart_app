@@ -17,6 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
+import type { ProjectProps } from "@/types";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import { api } from "@/convex/_generated/api";
 import { useAction, useMutation, useQuery } from "convex/react";
@@ -48,8 +49,6 @@ import { CoverArtSelector } from "@/components/CoverArtSelector";
 import { AILyricAssistant } from "@/components/AILyricAssistant";
 import { CollaboratorRecommendations } from "@/components/CollaboratorRecommendations";
 import { AIMixFeedback } from "@/components/AIMixFeedback";
-import { FeedbackTranslator } from "@/components/FeedbackTranslator";
-import { AICreditSuggestions } from "@/components/AICreditSuggestions";
 import { WaveformAnnotation } from "@/components/WaveformAnnotation";
 import { StemSeparator } from "@/components/StemSeparator";
 import { AIGenerateStem } from "@/components/AIGenerateStem";
@@ -104,10 +103,10 @@ const ProjectPage = ({
   const [commentText, setCommentText] = useState("");
   const [busy, setBusy] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const [buyModalOpen, setBuyModalOpen] = useState(false);
-  const [buyAmount, setBuyAmount] = useState("");
+  const [, setBuyModalOpen] = useState(false);
+  const [, setBuyAmount] = useState("");
   const [lyricsText, setLyricsText] = useState("");
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("Project ID:", projectId);
@@ -184,11 +183,15 @@ const ProjectPage = ({
         },
       });
 
+      const p = payload as unknown as Record<string, unknown>;
+      const payloadObj = p?.payload as Record<string, unknown> | undefined;
+      const dataObj = payloadObj?.data as Record<string, unknown> | undefined;
+      const deepDataObj = dataObj?.data as Record<string, unknown> | undefined;
       const url =
-        (payload as any)?.payload?.data?.url ??
-        (payload as any)?.payload?.data?.data?.url ??
-        (payload as any)?.payload?.url ??
-        (payload as any)?.url ??
+        (dataObj?.url as string | undefined) ??
+        (deepDataObj?.url as string | undefined) ??
+        (payloadObj?.url as string | undefined) ??
+        (p?.url as string | undefined) ??
         null;
 
       if (!url) {
@@ -199,7 +202,7 @@ const ProjectPage = ({
       }
 
       window.location.href = url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("create payment error", err);
       setSuccessMessage("Error creating payment link.");
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -259,9 +262,9 @@ const ProjectPage = ({
         alert("Lyrics submitted for review!");
       }
       toggleModal("lyrics");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to save/submit lyrics:", err);
-      alert("Error: " + err.message);
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setBusy(false);
     }
@@ -485,7 +488,7 @@ const ProjectPage = ({
                     <strong>Started:</strong> {formatDate(project?._creationTime)}
                   </p>
                 </div>
-                <ProjectActionsAndMeta project={project as any} />
+                <ProjectActionsAndMeta project={project as unknown as ProjectProps} />
               </CardContent>
             </Card>
           </div>

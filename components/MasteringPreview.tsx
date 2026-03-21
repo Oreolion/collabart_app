@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2, Volume2, Disc3 } from "lucide-react";
+import { Loader2, Volume2, Disc3 } from "lucide-react";
 
 interface MasteringPreviewProps {
   projectId: Id<"projects">;
@@ -31,7 +31,12 @@ const typeIcons: Record<string, string> = {
 export function MasteringPreview({ projectId, trackCount }: MasteringPreviewProps) {
   const [loading, setLoading] = useState(false);
   const [chain, setChain] = useState<ChainStep[] | null>(null);
-  const [meta, setMeta] = useState<Record<string, any> | null>(null);
+  const [meta, setMeta] = useState<{
+    targetLUFS?: string;
+    headroom?: string;
+    tips?: string[];
+    referenceTrack?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const suggestMastering = useAction(api.ai.suggestMasteringChain);
@@ -52,8 +57,8 @@ export function MasteringPreview({ projectId, trackCount }: MasteringPreviewProp
           referenceTrack: result.referenceTrack,
         });
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to get mastering chain");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to get mastering chain");
     } finally {
       setLoading(false);
     }
@@ -146,11 +151,11 @@ export function MasteringPreview({ projectId, trackCount }: MasteringPreviewProp
                 )}
               </div>
 
-              {meta.tips?.length > 0 && (
+              {(meta.tips?.length ?? 0) > 0 && (
                 <div>
                   <p className="text-[10px] text-muted-foreground font-medium mb-0.5">Tips:</p>
                   <ul className="space-y-0.5">
-                    {meta.tips.map((tip: string, i: number) => (
+                    {meta.tips!.map((tip: string, i: number) => (
                       <li key={i} className="text-[10px] text-muted-foreground">• {tip}</li>
                     ))}
                   </ul>

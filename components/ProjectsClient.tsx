@@ -82,7 +82,7 @@ export default function ProjectsClient() {
 
   useEffect(() => {
     if (debouncedValue) {
-      const params = new URLSearchParams(searchParams as any);
+      const params = new URLSearchParams(searchParams.toString());
       params.set("search", debouncedValue);
       router.push(`${pathname}?${params.toString()}`);
     } else if (!debouncedValue && pathname === "/dashboard") {
@@ -103,7 +103,7 @@ export default function ProjectsClient() {
     setSearchFilters({ title: "", talent: "", genre: "", mood: "" });
     setListMostActive(false);
     setSearch("");
-    const params = new URLSearchParams(searchParams as any);
+    const params = new URLSearchParams(searchParams.toString());
     params.delete("search");
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -119,7 +119,7 @@ export default function ProjectsClient() {
 
   const normalizedSearch = (search || "").toLowerCase().trim();
 
-  const filteredProjects = projectsWithFiles.filter((project: any) => {
+  const filteredProjects = projectsWithFiles.filter((project) => {
     const matchesSearch = normalizedSearch
       ? [
           project.projectTitle || "",
@@ -150,7 +150,7 @@ export default function ProjectsClient() {
       : true;
 
     const matchesMood = searchFilters.mood
-      ? (project.mood || []).some((m: string) =>
+      ? (project.moods || []).some((m: string) =>
           m.toLowerCase().includes(searchFilters.mood.toLowerCase())
         )
       : true;
@@ -187,15 +187,15 @@ export default function ProjectsClient() {
 
   let finalProjects = listMostActive
     ? [...filteredProjects].sort(
-        (a: any, b: any) => (b.views || 0) - (a.views || 0)
+        (a, b) => (b.views || 0) - (a.views || 0)
       )
     : filteredProjects;
 
   // Apply dropdown sort
   if (dropdownFilters.sortBy === "views") {
-    finalProjects = [...finalProjects].sort((a: any, b: any) => (b.views || 0) - (a.views || 0));
+    finalProjects = [...finalProjects].sort((a, b) => (b.views || 0) - (a.views || 0));
   } else if (dropdownFilters.sortBy === "likes") {
-    finalProjects = [...finalProjects].sort((a: any, b: any) => (b.likes || 0) - (a.likes || 0));
+    finalProjects = [...finalProjects].sort((a, b) => (b.likes || 0) - (a.likes || 0));
   }
 
   return (
@@ -307,7 +307,7 @@ export default function ProjectsClient() {
         {/* Projects List */}
         <div className="space-y-4">
           {finalProjects?.length ? (
-            finalProjects.map((project: any) => (
+            finalProjects.map((project) => (
               <ProjectCard key={project._id} project={project} />
             ))
           ) : (

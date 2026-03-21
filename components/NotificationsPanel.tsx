@@ -12,24 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-const typeIcons: Record<string, string> = {
-  invite: "Users",
-  comment: "MessageCircle",
-  upload: "Upload",
-  audition: "Mic",
-  purchase: "ShoppingCart",
-  system: "Info",
-};
-
-const typeColors: Record<string, string> = {
-  invite: "text-accent",
-  comment: "text-primary",
-  upload: "text-[hsl(var(--success))]",
-  audition: "text-[hsl(var(--warning))]",
-  purchase: "text-[hsl(var(--success))]",
-  system: "text-muted-foreground",
-};
+import { Id } from "@/convex/_generated/dataModel";
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -53,7 +36,7 @@ export default function NotificationsPanel({ collapsed }: NotificationsPanelProp
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
 
-  const handleMarkAsRead = async (notificationId: any) => {
+  const handleMarkAsRead = async (notificationId: Id<"notifications">) => {
     try {
       await markAsRead({ notificationId });
     } catch (err) {

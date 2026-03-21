@@ -41,7 +41,7 @@ const ProjectPage = () => {
   });
   useEffect(() => {
     if (debouncedValue) {
-      const params = new URLSearchParams(searchParams as any);
+      const params = new URLSearchParams(searchParams.toString());
       params.set("search", debouncedValue);
       router.push(`${pathname}?${params.toString()}`);
     } else if (!debouncedValue && pathname === "/dashboard") {
@@ -74,7 +74,7 @@ const ProjectPage = () => {
 
   const myProjects = Array.isArray(projectsWithFiles)
     ? projectsWithFiles.filter(
-        (p: any) => p.authorId && user && String(p.authorId) === String(user.id)
+        (p) => p.authorId && user && String(p.authorId) === String(user.id)
       )
     : [];
 
@@ -213,7 +213,7 @@ const ProjectPage = () => {
               </Card>
             </div>
           ) : (
-            myProjects.map((project: any) => (
+            myProjects.map((project) => (
               <ProjectCard key={project._id} project={project} />
             ))
           )}

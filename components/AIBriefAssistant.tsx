@@ -30,7 +30,16 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<Record<string, any> | null>(null);
+  const [result, setResult] = useState<{
+    projectDescription?: string;
+    projectBrief?: string;
+    suggestedGenres?: string[];
+    suggestedMoods?: string[];
+    talentsNeeded?: string[];
+    tempo?: number;
+    key?: string;
+    error?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const generateBrief = useAction(api.ai.generateCreativeBrief);
@@ -47,8 +56,8 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
       } else {
         setResult(data);
       }
-    } catch (err: any) {
-      setError(err.message || "AI generation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "AI generation failed");
     } finally {
       setLoading(false);
     }
@@ -148,7 +157,7 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
                   </p>
                 </div>
               )}
-              {result.suggestedGenres?.length > 0 && (
+              {result.suggestedGenres && result.suggestedGenres.length > 0 && (
                 <div>
                   <p className="font-semibold text-xs text-muted-foreground mb-1">
                     Genres
@@ -162,7 +171,7 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
                   </div>
                 </div>
               )}
-              {result.suggestedMoods?.length > 0 && (
+              {result.suggestedMoods && result.suggestedMoods.length > 0 && (
                 <div>
                   <p className="font-semibold text-xs text-muted-foreground mb-1">
                     Moods
@@ -176,7 +185,7 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
                   </div>
                 </div>
               )}
-              {result.talentsNeeded?.length > 0 && (
+              {result.talentsNeeded && result.talentsNeeded.length > 0 && (
                 <div>
                   <p className="font-semibold text-xs text-muted-foreground mb-1">
                     Talents Needed

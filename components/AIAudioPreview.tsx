@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Sparkles, Play, Pause, RotateCcw, X, Save } from "lucide-react";
 import type { GenerationType } from "@/lib/elevenlabs-types";
 import type { Id } from "@/convex/_generated/dataModel";
+import type WaveSurfer from "wavesurfer.js";
 
 interface AIAudioPreviewProps {
   audioUrl: string;
@@ -28,7 +29,7 @@ export function AIAudioPreview({
   onDismiss,
 }: AIAudioPreviewProps) {
   const waveformRef = useRef<HTMLDivElement>(null);
-  const wavesurferRef = useRef<any>(null);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -38,7 +39,7 @@ export function AIAudioPreview({
   useEffect(() => {
     if (!waveformRef.current || !audioUrl) return;
 
-    let ws: any;
+    let ws: WaveSurfer | undefined;
     const init = async () => {
       const WaveSurfer = (await import("wavesurfer.js")).default;
       ws = WaveSurfer.create({
@@ -55,9 +56,9 @@ export function AIAudioPreview({
       ws.load(audioUrl);
       ws.on("ready", () => {
         setIsReady(true);
-        setDuration(ws.getDuration());
+        setDuration(ws!.getDuration());
       });
-      ws.on("audioprocess", () => setCurrentTime(ws.getCurrentTime()));
+      ws.on("audioprocess", () => setCurrentTime(ws!.getCurrentTime()));
       ws.on("finish", () => setIsPlaying(false));
       wavesurferRef.current = ws;
     };

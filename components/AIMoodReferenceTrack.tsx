@@ -61,8 +61,8 @@ export function AIMoodReferenceTrack({
       });
       setResult(res);
       setStatus("preview");
-    } catch (err: any) {
-      setError(err.message || "Generation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Generation failed");
       setStatus("error");
     }
   };

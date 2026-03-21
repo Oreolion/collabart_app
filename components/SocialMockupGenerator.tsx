@@ -85,8 +85,8 @@ export function SocialMockupGenerator({
       } else {
         setResult(res as MockupResult);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to generate mockups");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to generate mockups");
     } finally {
       setLoading(false);
     }

@@ -50,8 +50,8 @@ export function AIGenerateStem({ projectId, existingTracks, genres, moods, proje
         setSuggestions(result.suggestions ?? []);
         setArrangementNotes(result.arrangementNotes ?? null);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to get suggestions");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to get suggestions");
     } finally {
       setLoading(false);
     }

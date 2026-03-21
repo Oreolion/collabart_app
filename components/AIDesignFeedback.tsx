@@ -79,8 +79,8 @@ export function AIDesignFeedback({
       } else {
         setAnalysis(result as DesignAnalysis);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to analyze design");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to analyze design");
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,6 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Sparkles, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Dialog,
@@ -77,8 +76,8 @@ export function AIBeatGenerator({
       });
       setResult(res);
       setStatus("preview");
-    } catch (err: any) {
-      setError(err.message || "Generation failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Generation failed");
       setStatus("error");
     }
   };
@@ -97,8 +96,8 @@ export function AIBeatGenerator({
       setResult(null);
       // Reset for potential next generation
       setTimeout(() => setStatus("idle"), 1500);
-    } catch (err: any) {
-      setError(err.message || "Failed to save");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to save");
       setStatus("error");
     }
   };
