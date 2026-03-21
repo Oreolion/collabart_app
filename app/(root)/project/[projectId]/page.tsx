@@ -56,6 +56,8 @@ import { AIGenerateStem } from "@/components/AIGenerateStem";
 import { MasteringPreview } from "@/components/MasteringPreview";
 import { AIDesignFeedback } from "@/components/AIDesignFeedback";
 import { SocialMockupGenerator } from "@/components/SocialMockupGenerator";
+import { AIBeatGenerator } from "@/components/AIBeatGenerator";
+import { AILyricsPreview } from "@/components/AILyricsPreview";
 
 const ProjectPage = ({
   params: { projectId },
@@ -344,6 +346,18 @@ const ProjectPage = ({
                     Upload Track
                   </Button>
                 </Link>
+                {isOwner && (
+                  <AIBeatGenerator
+                    variant="compact"
+                    projectId={projectId}
+                    projectTitle={project.projectTitle}
+                    projectBrief={project.projectBrief}
+                    genres={project.genres ?? []}
+                    moods={project.moods ?? []}
+                    existingTrackCount={projectFiles?.filter(f => f.audioUrl).length ?? 0}
+                    isOwner={true}
+                  />
+                )}
                 <Button
                   variant="outline"
                   className="w-full bg-transparent text-sm"
@@ -581,6 +595,17 @@ const ProjectPage = ({
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
+                <div className="flex gap-2">
+                  {project.lyrics && (
+                    <AILyricsPreview
+                      projectId={projectId}
+                      lyrics={project.lyrics}
+                      genres={project.genres ?? []}
+                      moods={project.moods ?? []}
+                      projectBrief={project.projectBrief}
+                      isOwner={!!isOwner}
+                    />
+                  )}
                 <Dialog
                   open={openModals.lyrics}
                   onOpenChange={() => toggleModal("lyrics")}
@@ -648,6 +673,7 @@ const ProjectPage = ({
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 {project.lyrics ? (
@@ -676,6 +702,22 @@ const ProjectPage = ({
               </Card>
             )}
 
+            {/* AI Beat Generator Hero (empty projects) */}
+            {projectFiles && projectFiles.filter(f => f.audioUrl).length === 0 && isOwner && (
+              <div className="mt-6">
+                <AIBeatGenerator
+                  variant="hero"
+                  projectId={projectId}
+                  projectTitle={project.projectTitle}
+                  projectBrief={project.projectBrief}
+                  genres={project.genres ?? []}
+                  moods={project.moods ?? []}
+                  existingTrackCount={0}
+                  isOwner={true}
+                />
+              </div>
+            )}
+
             {/* Multi-Track Player */}
             {projectFiles && projectFiles.filter(f => f.audioUrl).length > 0 && (
               <div className="mt-6">
@@ -688,6 +730,7 @@ const ProjectPage = ({
                       title: f.projectFileTitle || f.projectFileLabel,
                       contributor: f.username || "Unknown",
                       version: f.version,
+                      isAIGenerated: f.isAIGenerated ?? false,
                     }))}
                 />
               </div>
@@ -707,6 +750,10 @@ const ProjectPage = ({
                   existingTracks={projectFiles
                     .filter((f) => f.audioUrl)
                     .map((f) => f.projectFileTitle || f.projectFileLabel)}
+                  genres={project.genres ?? undefined}
+                  moods={project.moods ?? undefined}
+                  projectBrief={project.projectBrief}
+                  isOwner={!!isOwner}
                 />
                 <MasteringPreview
                   projectId={projectId}

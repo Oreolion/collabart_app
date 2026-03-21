@@ -6,10 +6,15 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2 } from "lucide-react";
+import { AIGeneratePartAudio } from "./AIGeneratePartAudio";
 
 interface AIGenerateStemProps {
   projectId: Id<"projects">;
   existingTracks: string[];
+  genres?: string[];
+  moods?: string[];
+  projectBrief?: string;
+  isOwner?: boolean;
 }
 
 interface StemSuggestion {
@@ -25,7 +30,7 @@ const priorityColors: Record<string, string> = {
   optional: "bg-blue-500/20 text-blue-300",
 };
 
-export function AIGenerateStem({ projectId, existingTracks }: AIGenerateStemProps) {
+export function AIGenerateStem({ projectId, existingTracks, genres, moods, projectBrief, isOwner }: AIGenerateStemProps) {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<StemSuggestion[] | null>(null);
   const [arrangementNotes, setArrangementNotes] = useState<string | null>(null);
@@ -113,6 +118,17 @@ export function AIGenerateStem({ projectId, existingTracks }: AIGenerateStemProp
                 </div>
                 <p className="text-[10px] text-muted-foreground">{s.description}</p>
                 <p className="text-[10px] text-muted-foreground/60 italic">{s.reasoning}</p>
+                {isOwner && (
+                  <AIGeneratePartAudio
+                    projectId={projectId}
+                    instrument={s.instrument}
+                    description={s.description}
+                    genres={genres ?? []}
+                    moods={moods ?? []}
+                    projectBrief={projectBrief ?? ""}
+                    onSaved={() => { setSuggestions(null); setArrangementNotes(null); }}
+                  />
+                )}
               </div>
             ))}
           </div>

@@ -19,6 +19,8 @@ import type * as ai from "../ai.js";
 import type * as annotations from "../annotations.js";
 import type * as collaborations from "../collaborations.js";
 import type * as credits from "../credits.js";
+import type * as elevenlabs from "../elevenlabs.js";
+import type * as elevenlabsActions from "../elevenlabsActions.js";
 import type * as file from "../file.js";
 import type * as http from "../http.js";
 import type * as likes from "../likes.js";
@@ -44,6 +46,8 @@ declare const fullApi: ApiFromModules<{
   annotations: typeof annotations;
   collaborations: typeof collaborations;
   credits: typeof credits;
+  elevenlabs: typeof elevenlabs;
+  elevenlabsActions: typeof elevenlabsActions;
   file: typeof file;
   http: typeof http;
   likes: typeof likes;

@@ -31,6 +31,8 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import CollaborationAgreement from "./CollaborationAgreement";
 import { AIBriefAssistant } from "./AIBriefAssistant";
+import { AIMoodReferenceTrack } from "./AIMoodReferenceTrack";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export default function AddProject() {
   const [projectType, setProjectType] = useState<string | null>(null);
@@ -43,11 +45,15 @@ export default function AddProject() {
     null
   );
   const [collaborationAgreement, setCollaborationAgreement] = useState("");
+  const [moodRefStorageId, setMoodRefStorageId] = useState<string | null>(null);
+  const [moodRefAudioUrl, setMoodRefAudioUrl] = useState<string | null>(null);
+  const [moodRefDuration, setMoodRefDuration] = useState<number | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
   const createProject = useMutation(api.projects.createProject);
+  const saveMoodReference = useMutation(api.elevenlabs.saveMoodReferenceToProject);
 
   useEffect(() => {
     if (isDropdownOpen) {
@@ -131,6 +137,17 @@ export default function AddProject() {
       };
 
       const projectId = await createProject(projectData);
+
+      // Save mood reference track if generated
+      if (projectId && moodRefStorageId && moodRefAudioUrl && moodRefDuration) {
+        await saveMoodReference({
+          projectId: projectId as Id<"projects">,
+          audioStorageId: moodRefStorageId as Id<"_storage">,
+          audioUrl: moodRefAudioUrl,
+          durationMs: moodRefDuration,
+          prompt: data.projectBrief,
+        });
+      }
 
       toast({
         title: "Project Created Successfully",
@@ -339,6 +356,26 @@ export default function AddProject() {
               </FormItem>
             )}
           />
+
+          {/* AI Mood Reference Track */}
+          {form.watch("projectBrief")?.length > 20 && (
+            <AIMoodReferenceTrack
+              projectBrief={form.watch("projectBrief")}
+              projectDescription={form.watch("projectDescription")}
+              genres={[]}
+              moods={[]}
+              onGenerated={(sid, url, dur) => {
+                setMoodRefStorageId(sid);
+                setMoodRefAudioUrl(url);
+                setMoodRefDuration(dur);
+              }}
+              onRemoved={() => {
+                setMoodRefStorageId(null);
+                setMoodRefAudioUrl(null);
+                setMoodRefDuration(null);
+              }}
+            />
+          )}
 
           {/* Audition Privacy */}
           <div className="flex flex-col gap-2">

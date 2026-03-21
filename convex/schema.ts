@@ -88,6 +88,10 @@ export default defineSchema({
     imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
     dimensions: v.optional(v.object({ width: v.number(), height: v.number() })),
     format: v.optional(v.string()), // png/jpg/svg/psd/pdf
+    // ElevenLabs AI generation fields
+    isAIGenerated: v.optional(v.boolean()),
+    aiGenerationType: v.optional(v.string()), // "beat" | "arrangement" | "lyrics_preview" | "mood_reference"
+    aiPrompt: v.optional(v.string()),
   })
     .index("by_project", ["projectId"])
     .index("by_project_and_version", ["projectId", "version"]),
@@ -249,6 +253,22 @@ export default defineSchema({
     .index("by_project", ["projectId"])
     .index("by_project_and_status", ["projectId", "status"])
     .index("by_author", ["authorId"]),
+
+  // ElevenLabs AI generations
+  aiGenerations: defineTable({
+    projectId: v.optional(v.id("projects")),
+    userId: v.string(),
+    type: v.string(), // "beat" | "arrangement" | "lyrics_preview" | "mood_reference"
+    prompt: v.string(),
+    status: v.string(), // "generating" | "completed" | "failed" | "saved"
+    audioStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    audioUrl: v.optional(v.string()),
+    durationMs: v.optional(v.number()),
+    metadata: v.optional(v.string()), // JSON: seed, quality, etc.
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"]),
 
   // Phase 10: Waveform annotations / timestamped markers
   fileAnnotations: defineTable({

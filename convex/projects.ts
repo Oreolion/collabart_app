@@ -77,6 +77,10 @@ export const addProjectFile = mutation({
     hasExplicitLyrics: v.boolean(),
     containsLoops: v.boolean(),
     confirmCopyright: v.boolean(),
+    // ElevenLabs AI generation fields
+    isAIGenerated: v.optional(v.boolean()),
+    aiGenerationType: v.optional(v.string()),
+    aiPrompt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (!ctx.auth) {
@@ -119,7 +123,10 @@ export const addProjectFile = mutation({
       confirmCopyright: args.confirmCopyright,
       createdAt: Date.now(),
       version: maxVersion + 1,
-      fileType: "audio",
+      fileType: args.isAIGenerated ? "ai_generated" : "audio",
+      isAIGenerated: args.isAIGenerated,
+      aiGenerationType: args.aiGenerationType,
+      aiPrompt: args.aiPrompt,
     });
 
     // Notify project owner if uploader is a collaborator (not the owner)

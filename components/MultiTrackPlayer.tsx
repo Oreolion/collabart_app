@@ -12,6 +12,7 @@ interface Track {
   title: string;
   contributor: string;
   version?: number;
+  isAIGenerated?: boolean;
 }
 
 interface MultiTrackPlayerProps {
@@ -110,6 +111,7 @@ export function MultiTrackPlayer({ tracks }: MultiTrackPlayerProps) {
               title={track.title}
               contributor={track.contributor}
               version={track.version}
+              isAIGenerated={track.isAIGenerated}
               isPlaying={isPlaying}
               currentTime={currentTime}
               onPlayPause={handlePlayPause}

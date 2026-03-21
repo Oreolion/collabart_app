@@ -108,3 +108,5 @@ This project uses the `.ai-sync/` protocol for cross-platform AI agent handoff (
 - **Adapter files**: `AGENTS.md` (Codex), `.cursorrules` (Cursor), `.clinerules` (Cline)
 
 Use `/handoff` to write handoff state before switching agents. Use `/sync-status` to check current state.
+
+think creative on how to integrate eleven labs creative music studio api best in the app.

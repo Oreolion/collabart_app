@@ -103,9 +103,10 @@ export interface ProjectFileType {
   hasExplicitLyrics: boolean;
   containsLoops: boolean;
   confirmCopyright: boolean;
-  // newContent: string;
-  //   content: string;
-  // commentUserImage: string;
+  // AI generation fields
+  isAIGenerated?: boolean;
+  aiGenerationType?: string;
+  aiPrompt?: string;
 }
 
 export type ProjectFilesArrayType = ProjectFileType[];
