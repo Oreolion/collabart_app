@@ -19,7 +19,14 @@ export const generateCreativeBrief = action({
   args: {
     description: v.string(),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -52,7 +59,15 @@ Use talents from: Vocalist, Rapper, Guitarist, Bassist, Drummer, Pianist, Produc
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "creative_brief",
+        prompt: args.description,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -66,7 +81,14 @@ export const assistLyricWriting = action({
     input: v.string(),
     context: v.optional(v.string()), // genre, mood, theme context
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -111,6 +133,13 @@ Return ONLY the lyrics. No explanations, no titles.`,
     }
 
     const result = await model.generateContent(prompt);
+    await ctx.runMutation(api.elevenlabs.insertGeneration, {
+      userId: identity.subject,
+      type: "lyric_assist",
+      prompt: args.input.slice(0, 200),
+      status: "completed",
+      createdAt: Date.now(),
+    });
     return { text: result.response.text().trim() };
   },
 });
@@ -124,7 +153,14 @@ export const suggestAudioTags = action({
     projectMoods: v.optional(v.array(v.string())),
     projectBrief: v.optional(v.string()),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -150,7 +186,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "tag_suggest",
+        prompt: args.fileName,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -162,7 +206,14 @@ export const semanticProjectSearch = action({
   args: {
     query: v.string(),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -189,7 +240,15 @@ Use moods from: Energetic, Melancholic, Uplifting, Dark, Romantic, Aggressive, C
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "semantic_search",
+        prompt: args.query,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -206,6 +265,13 @@ export const generateCollaboratorRecommendations = action({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const project = await ctx.runQuery(api.projects.getProjectById, {
       projectId: args.projectId,
     });
@@ -264,6 +330,13 @@ If no candidates match well, return [].`;
         const user = candidates.find((u: any) => u.clerkId === rec.userId);
         return { ...rec, userImage: user?.imageUrl, talents: user?.talents ?? [] };
       });
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "collaborator_recommend",
+        prompt: `Recommendations for project ${args.projectId}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
       return { recommendations: enriched };
     } catch {
       return { error: "Failed to parse AI response", recommendations: [], raw: cleaned };
@@ -278,6 +351,13 @@ export const generateMixFeedback = action({
     trackNames: v.array(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const project = await ctx.runQuery(api.projects.getProjectById, {
       projectId: args.projectId,
     });
@@ -313,7 +393,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "mix_feedback",
+        prompt: `Mix feedback for ${args.trackNames.join(", ")}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -326,7 +414,14 @@ export const translateFeedback = action({
     feedback: v.string(),
     context: v.optional(v.string()),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -347,7 +442,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "feedback_translate",
+        prompt: args.feedback.slice(0, 200),
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -360,6 +463,13 @@ export const suggestCreditSplits = action({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const activity = await ctx.runQuery(api.activityLog.getProjectActivity, {
       projectId: args.projectId,
     });
@@ -419,7 +529,15 @@ Splits must total 100%.`;
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "credit_suggest",
+        prompt: `Credit splits for project ${args.projectId}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -437,7 +555,14 @@ export const separateStems = action({
     projectId: v.id("projects"),
     trackTitle: v.string(),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const apiToken = process.env.REPLICATE_API_TOKEN;
     if (!apiToken) {
       return {
@@ -468,6 +593,14 @@ export const separateStems = action({
     }
 
     const prediction = await response.json();
+    await ctx.runMutation(api.elevenlabs.insertGeneration, {
+      userId: identity.subject,
+      projectId: args.projectId,
+      type: "stem_separate",
+      prompt: `Stem separation for ${args.trackTitle}`,
+      status: "completed",
+      createdAt: Date.now(),
+    });
     return {
       predictionId: prediction.id,
       status: prediction.status,
@@ -516,6 +649,13 @@ export const suggestComplementaryStem = action({
     existingTracks: v.array(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const project = await ctx.runQuery(api.projects.getProjectById, {
       projectId: args.projectId,
     });
@@ -552,7 +692,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "stem_suggest",
+        prompt: `Stem suggestions for ${args.existingTracks.join(", ")}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -566,6 +714,13 @@ export const suggestMasteringChain = action({
     trackCount: v.number(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const project = await ctx.runQuery(api.projects.getProjectById, {
       projectId: args.projectId,
     });
@@ -605,7 +760,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "mastering_chain",
+        prompt: `Mastering chain for project ${args.projectId}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -622,7 +785,14 @@ export const analyzeDesign = action({
     projectGenres: v.optional(v.array(v.string())),
     projectMoods: v.optional(v.array(v.string())),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -670,7 +840,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "design_analyze",
+        prompt: `Design analysis for ${args.title}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }
@@ -685,7 +863,14 @@ export const generateSocialMockups = action({
     moods: v.optional(v.array(v.string())),
     coverArtUrl: v.optional(v.string()),
   },
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "gemini" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -757,7 +942,15 @@ Return ONLY valid JSON (no markdown, no code fences):
     const cleaned = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
     try {
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      await ctx.runMutation(api.elevenlabs.insertGeneration, {
+        userId: identity.subject,
+        type: "social_mockup",
+        prompt: `Social mockups for ${args.projectTitle}`,
+        status: "completed",
+        createdAt: Date.now(),
+      });
+      return parsed;
     } catch {
       return { error: "Failed to parse AI response", raw: cleaned };
     }

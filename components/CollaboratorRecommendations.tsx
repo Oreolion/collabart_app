@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, UserPlus } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface CollaboratorRecommendationsProps {
   projectId: Id<"projects">;
@@ -75,7 +76,7 @@ export function CollaboratorRecommendations({ projectId }: CollaboratorRecommend
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
       {recommendations && recommendations.length === 0 && (
         <p className="text-xs text-muted-foreground text-center py-2">
@@ -123,7 +124,7 @@ export function CollaboratorRecommendations({ projectId }: CollaboratorRecommend
                 {rec.talents && rec.talents.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-1">
                     {rec.talents.slice(0, 3).map((t) => (
-                      <Badge key={t} variant="outline" className="text-[9px] py-0 px-1">
+                      <Badge key={t} variant="outline" className="text-[10px] md:text-[9px] py-0 px-1">
                         {t}
                       </Badge>
                     ))}
@@ -133,7 +134,7 @@ export function CollaboratorRecommendations({ projectId }: CollaboratorRecommend
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 shrink-0 text-primary hover:text-primary/80"
+                className="h-9 w-9 md:h-7 md:w-7 shrink-0 text-primary hover:text-primary/80"
                 title="Invite"
               >
                 <UserPlus className="h-3.5 w-3.5" />

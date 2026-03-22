@@ -6,6 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Volume2, Disc3 } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface MasteringPreviewProps {
   projectId: Id<"projects">;
@@ -88,10 +89,10 @@ export function MasteringPreview({ projectId, trackCount }: MasteringPreviewProp
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
       {chain && chain.length > 0 && (
-        <div className="p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold flex items-center gap-1.5">
               <Volume2 className="h-4 w-4 text-primary" />
@@ -119,7 +120,7 @@ export function MasteringPreview({ projectId, trackCount }: MasteringPreviewProp
                     {i + 1}
                   </span>
                   <Badge
-                    className={`text-[9px] py-0 px-1.5 ${typeIcons[step.type] ?? "bg-muted text-muted-foreground"}`}
+                    className={`text-[10px] md:text-[9px] py-0 px-1.5 ${typeIcons[step.type] ?? "bg-muted text-muted-foreground"}`}
                   >
                     {step.type}
                   </Badge>

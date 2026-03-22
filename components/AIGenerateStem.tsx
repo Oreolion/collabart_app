@@ -6,6 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2 } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 import { AIGeneratePartAudio } from "./AIGeneratePartAudio";
 
 interface AIGenerateStemProps {
@@ -83,10 +84,10 @@ export function AIGenerateStem({ projectId, existingTracks, genres, moods, proje
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleSuggest} />}
 
       {suggestions && suggestions.length > 0 && (
-        <div className="p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -111,7 +112,7 @@ export function AIGenerateStem({ projectId, existingTracks, genres, moods, proje
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium">{s.instrument}</span>
                   <Badge
-                    className={`text-[9px] py-0 px-1.5 ${priorityColors[s.priority] ?? "bg-muted text-muted-foreground"}`}
+                    className={`text-[10px] md:text-[9px] py-0 px-1.5 ${priorityColors[s.priority] ?? "bg-muted text-muted-foreground"}`}
                   >
                     {s.priority}
                   </Badge>

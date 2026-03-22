@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2 } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface AITagSuggestionsProps {
   fileName: string;
@@ -60,7 +61,7 @@ export function AITagSuggestions({
   if (!fileName) return null;
 
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-card/30 border border-border/30">
+    <div className="space-y-3 p-2.5 md:p-3 rounded-lg bg-card/30 border border-border/30">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
@@ -90,7 +91,7 @@ export function AITagSuggestions({
         )}
       </div>
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleSuggest} />}
 
       {tags && (
         <div className="space-y-2 text-sm">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 import { AIAudioPreview } from "./AIAudioPreview";
 import { AIGenerationLoader } from "./AIGenerationLoader";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 import type { GenerationStatus, GenerationResult } from "@/lib/elevenlabs-types";
 
 interface AIGeneratePartAudioProps {
@@ -80,14 +81,14 @@ export function AIGeneratePartAudio({
         <Button
           variant="ghost"
           size="sm"
-          className="text-[10px] h-6 gap-1 text-violet-400 hover:text-violet-300"
+          className="text-xs md:text-[10px] h-9 md:h-6 gap-1 text-violet-400 hover:text-violet-300"
           onClick={handleGenerate}
         >
           <Wand2 className="h-2.5 w-2.5" /> Generate This Part
         </Button>
       )}
 
-      {error && <p className="text-[10px] text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} compact />}
 
       <AIGenerationLoader
         status={status}

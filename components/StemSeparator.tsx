@@ -5,7 +5,8 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Scissors, Music, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, Scissors, Music, CheckCircle2 } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface StemSeparatorProps {
   projectId: Id<"projects">;
@@ -90,7 +91,7 @@ export function StemSeparator({ projectId, audioUrl, trackTitle }: StemSeparator
       )}
 
       {(status === "processing" || status === "polling") && (
-        <div className="p-3 rounded-lg bg-card/30 border border-primary/20 text-center space-y-2">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20 text-center space-y-2">
           <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
           <p className="text-xs text-muted-foreground">
             {status === "processing"
@@ -108,7 +109,7 @@ export function StemSeparator({ projectId, audioUrl, trackTitle }: StemSeparator
       )}
 
       {status === "succeeded" && output && (
-        <div className="p-3 rounded-lg bg-card/30 border border-[hsl(var(--success))]/30 space-y-2">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-[hsl(var(--success))]/30 space-y-2">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
             <p className="text-xs font-semibold">Stems Ready</p>
@@ -142,28 +143,12 @@ export function StemSeparator({ projectId, audioUrl, trackTitle }: StemSeparator
         </div>
       )}
 
-      {status === "failed" && (
-        <div className="p-2 rounded-lg bg-destructive/10 border border-destructive/20 space-y-1">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-3.5 w-3.5 text-destructive" />
-            <p className="text-xs text-destructive">{error}</p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[10px] h-6"
-            onClick={() => {
-              setStatus("idle");
-              setError(null);
-            }}
-          >
-            Retry
-          </Button>
-        </div>
+      {status === "failed" && error && (
+        <AIErrorDisplay error={error} onRetry={() => { setStatus("idle"); setError(null); }} />
       )}
 
       {error && status === "idle" && (
-        <p className="text-[10px] text-muted-foreground">{error}</p>
+        <AIErrorDisplay error={error} compact />
       )}
     </div>
   );

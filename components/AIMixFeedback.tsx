@@ -6,6 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Music, Lightbulb, AlertCircle } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface AIMixFeedbackProps {
   projectId: Id<"projects">;
@@ -77,10 +78,10 @@ export function AIMixFeedback({ projectId, trackNames }: AIMixFeedbackProps) {
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
       {feedback && (
-        <div className="space-y-3 p-3 rounded-lg bg-card/30 border border-primary/20">
+        <div className="space-y-3 p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-primary" />

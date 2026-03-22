@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { AIAudioPreview } from "./AIAudioPreview";
 import { AIGenerationLoader } from "./AIGenerationLoader";
+import { AIErrorDisplay } from "./AIErrorDisplay";
+import { AIQuotaDisplay } from "./AIQuotaDisplay";
 import type { GenerationStatus, GenerationResult } from "@/lib/elevenlabs-types";
 
 interface AIMoodReferenceTrackProps {
@@ -94,7 +96,7 @@ export function AIMoodReferenceTrack({
   }
 
   return (
-    <div className="p-4 rounded-lg border border-dashed border-border/40 space-y-3">
+    <div className="p-4 md:p-4 rounded-lg border border-dashed border-border/40 space-y-3">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-violet-400" />
         <span className="text-sm font-medium">Set the Sonic Direction</span>
@@ -110,9 +112,9 @@ export function AIMoodReferenceTrack({
           <div className="space-y-3">
             <div>
               <p className="text-xs text-muted-foreground mb-1.5">Duration:</p>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-1 text-xs cursor-pointer">
+                  <label key={opt.value} className="flex items-center gap-1.5 text-xs cursor-pointer py-1">
                     <input
                       type="radio"
                       name="mood-duration"
@@ -137,15 +139,16 @@ export function AIMoodReferenceTrack({
             </label>
           </div>
 
-          {error && <p className="text-xs text-destructive">{error}</p>}
+          {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
           <Button
             size="sm"
-            className="text-xs gap-1.5"
+            className="text-xs gap-1.5 h-9 md:h-8"
             onClick={handleGenerate}
           >
             <Sparkles className="h-3 w-3" /> Generate Vibe Demo
           </Button>
+          <AIQuotaDisplay />
         </>
       )}
 

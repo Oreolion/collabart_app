@@ -1,6 +1,58 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+const ELEVENLABS_DAILY_LIMIT = 10;
+const GEMINI_DAILY_LIMIT = 50;
+
+const ELEVENLABS_TYPES = new Set(["beat", "arrangement", "lyrics_preview", "mood_reference"]);
+
+// --- Rate limiting ---
+export const checkRateLimit = query({
+  args: { category: v.union(v.literal("elevenlabs"), v.literal("gemini")) },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { allowed: false, used: 0, limit: 0 };
+
+    const now = new Date();
+    const utcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+
+    const generations = await ctx.db
+      .query("aiGenerations")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
+    const todayGens = generations.filter((g) => g.createdAt >= utcMidnight);
+    const used = todayGens.filter((g) =>
+      args.category === "elevenlabs" ? ELEVENLABS_TYPES.has(g.type) : !ELEVENLABS_TYPES.has(g.type)
+    ).length;
+    const limit = args.category === "elevenlabs" ? ELEVENLABS_DAILY_LIMIT : GEMINI_DAILY_LIMIT;
+
+    return { allowed: used < limit, used, limit };
+  },
+});
+
+export const getUserDailyGenerationCounts = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { elevenlabs: 0, gemini: 0, elevenlabsLimit: ELEVENLABS_DAILY_LIMIT, geminiLimit: GEMINI_DAILY_LIMIT };
+
+    const now = new Date();
+    const utcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+
+    const generations = await ctx.db
+      .query("aiGenerations")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
+    const todayGens = generations.filter((g) => g.createdAt >= utcMidnight);
+    const elevenlabs = todayGens.filter((g) => ELEVENLABS_TYPES.has(g.type)).length;
+    const gemini = todayGens.filter((g) => !ELEVENLABS_TYPES.has(g.type)).length;
+
+    return { elevenlabs, gemini, elevenlabsLimit: ELEVENLABS_DAILY_LIMIT, geminiLimit: GEMINI_DAILY_LIMIT };
+  },
+});
+
 // --- Internal mutations for generation records ---
 export const insertGeneration = mutation({
   args: {
@@ -50,15 +102,15 @@ export const getUserDailyGenerationCount = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return 0;
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const utcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
     const generations = await ctx.db
       .query("aiGenerations")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .collect();
 
-    return generations.filter((g) => g.createdAt >= startOfDay.getTime()).length;
+    return generations.filter((g) => g.createdAt >= utcMidnight).length;
   },
 });
 

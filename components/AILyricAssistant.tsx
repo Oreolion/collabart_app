@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Loader2, Copy, PenLine, Mic, RefreshCw } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface AILyricAssistantProps {
   currentLyrics: string;
@@ -85,7 +86,7 @@ export function AILyricAssistant({ currentLyrics, context, onInsert }: AILyricAs
   };
 
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-card/30 border border-border/30">
+    <div className="space-y-3 p-2.5 md:p-3 rounded-lg bg-card/30 border border-border/30">
       <div className="flex items-center gap-2 mb-1">
         <Sparkles className="h-4 w-4 text-primary" />
         <span className="text-sm font-semibold">AI Lyric Workshop</span>
@@ -143,7 +144,7 @@ export function AILyricAssistant({ currentLyrics, context, onInsert }: AILyricAs
         )}
       </Button>
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
       {result && (
         <div className="space-y-2">

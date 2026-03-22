@@ -12,7 +12,7 @@ export function AIGenerationLoader({ status, label }: AIGenerationLoaderProps) {
   if (status !== "generating") return null;
 
   return (
-    <div className="glassmorphism-subtle rounded-lg p-4 flex items-center gap-4">
+    <div className="glassmorphism-subtle rounded-lg p-3 md:p-4 flex items-center gap-4">
       <Sparkles className="h-5 w-5 text-violet-400 animate-pulse shrink-0" />
       <div className="flex items-end gap-[3px] h-[48px]">
         {[0, 1, 2, 3, 4].map((i) => (

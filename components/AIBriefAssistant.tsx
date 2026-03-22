@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Sparkles, Loader2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface AIBriefAssistantProps {
   onApply: (data: {
@@ -90,7 +91,7 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
           AI Assist
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg glassmorphism border-0">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg glassmorphism border-0">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -131,9 +132,7 @@ export function AIBriefAssistant({ onApply }: AIBriefAssistantProps) {
             </Button>
           )}
 
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+          {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
           {result && (
             <div className="space-y-3 text-sm">

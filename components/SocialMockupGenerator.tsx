@@ -13,6 +13,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface SocialMockupGeneratorProps {
   projectTitle: string;
@@ -123,10 +124,10 @@ export function SocialMockupGenerator({
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
       {result && !result.error && (
-        <div className="p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-primary" />
@@ -177,7 +178,7 @@ export function SocialMockupGenerator({
                   </span>
                   <span className="text-xs font-medium flex-1">{mockup.platform}</span>
                   <Badge
-                    className={`text-[9px] py-0 px-1.5 ${platformColors[mockup.platform] ?? "bg-muted text-muted-foreground"}`}
+                    className={`text-[10px] md:text-[9px] py-0 px-1.5 ${platformColors[mockup.platform] ?? "bg-muted text-muted-foreground"}`}
                   >
                     {mockup.dimensions}
                   </Badge>

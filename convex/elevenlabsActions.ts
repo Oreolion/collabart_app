@@ -27,6 +27,12 @@ export const generateTrack = action({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
+    // Rate limit check
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "elevenlabs" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
     const apiKey = getApiKey();
 
     // Fetch project metadata if projectId provided

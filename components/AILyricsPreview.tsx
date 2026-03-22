@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Play, Sparkles } from "lucide-react";
 import { AIAudioPreview } from "./AIAudioPreview";
 import { AIGenerationLoader } from "./AIGenerationLoader";
+import { AIErrorDisplay } from "./AIErrorDisplay";
+import { AIQuotaDisplay } from "./AIQuotaDisplay";
 import type { GenerationStatus, GenerationResult } from "@/lib/elevenlabs-types";
 
 interface AILyricsPreviewProps {
@@ -93,7 +95,7 @@ export function AILyricsPreview({
   }
 
   return (
-    <div className="p-3 rounded-lg bg-card/30 border border-violet-500/20 space-y-3">
+    <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-violet-500/20 space-y-3">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-violet-400" />
         <span className="text-sm font-medium">Hear Your Lyrics</span>
@@ -116,12 +118,12 @@ export function AILyricsPreview({
             </label>
           </div>
 
-          {error && <p className="text-xs text-destructive">{error}</p>}
+          {error && <AIErrorDisplay error={error} onRetry={handleGenerate} />}
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               size="sm"
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 h-9 md:h-8"
               onClick={handleGenerate}
             >
               <Sparkles className="h-3 w-3" /> Generate Song Preview
@@ -129,12 +131,13 @@ export function AILyricsPreview({
             <Button
               size="sm"
               variant="ghost"
-              className="text-xs text-muted-foreground"
+              className="text-xs text-muted-foreground h-9 md:h-8"
               onClick={() => setExpanded(false)}
             >
               Cancel
             </Button>
           </div>
+          <AIQuotaDisplay />
         </>
       )}
 

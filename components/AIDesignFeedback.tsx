@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Palette, Type, Layout, Music } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface AIDesignFeedbackProps {
   imageUrl: string;
@@ -123,10 +124,10 @@ export function AIDesignFeedback({
         </Button>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <AIErrorDisplay error={error} onRetry={handleAnalyze} />}
 
       {analysis && !analysis.error && (
-        <div className="p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
+        <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-primary/20 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-primary" />

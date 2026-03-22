@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { AIAudioPreview } from "./AIAudioPreview";
 import { AIGenerationLoader } from "./AIGenerationLoader";
+import { AIErrorDisplay } from "./AIErrorDisplay";
+import { AIQuotaDisplay } from "./AIQuotaDisplay";
 import type { GenerationStatus, GenerationResult } from "@/lib/elevenlabs-types";
 
 interface AIBeatGeneratorProps {
@@ -134,13 +136,13 @@ export function AIBeatGenerator({
             <div className="space-y-3 pl-2 border-l-2 border-violet-500/20">
               <div>
                 <p className="text-xs text-muted-foreground mb-2">Duration:</p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {DURATION_OPTIONS.map((opt) => (
                     <Button
                       key={opt.value}
                       size="sm"
                       variant={durationMs === opt.value ? "default" : "outline"}
-                      className={`text-xs h-7 ${durationMs === opt.value ? "" : "bg-transparent"}`}
+                      className={`text-xs h-9 md:h-7 ${durationMs === opt.value ? "" : "bg-transparent"}`}
                       onClick={() => setDurationMs(opt.value)}
                     >
                       {opt.label}
@@ -169,9 +171,9 @@ export function AIBeatGenerator({
             </div>
           )}
 
-          {error && <p className="text-xs text-destructive">{error}</p>}
+          {error && <AIErrorDisplay error={error} onRetry={() => handleGenerate(false)} />}
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               className="flex-1 gap-1.5 text-sm"
               onClick={() => handleGenerate(false)}
@@ -186,6 +188,7 @@ export function AIBeatGenerator({
               <Zap className="h-4 w-4" /> Quick Generate
             </Button>
           </div>
+          <AIQuotaDisplay />
         </>
       ) : null}
 
@@ -217,10 +220,10 @@ export function AIBeatGenerator({
   // Hero variant: large card for empty projects
   if (variant === "hero") {
     return (
-      <div className="p-6 rounded-xl glassmorphism-subtle border border-violet-500/20 space-y-4">
+      <div className="p-4 md:p-6 rounded-xl glassmorphism-subtle border border-violet-500/20 space-y-4">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-violet-400" />
-          <h3 className="text-lg font-semibold">Bring Your Project to Life</h3>
+          <h3 className="text-base md:text-lg font-semibold">Bring Your Project to Life</h3>
         </div>
         <p className="text-sm text-muted-foreground">
           Generate a starter track so collaborators instantly hear your creative vision.
@@ -241,7 +244,7 @@ export function AIBeatGenerator({
           <Sparkles className="h-4 w-4 text-violet-400" /> AI Generate Track
         </Button>
       </DialogTrigger>
-      <DialogContent className="glassmorphism-subtle rounded-xl border-0 max-w-lg">
+      <DialogContent className="glassmorphism-subtle rounded-xl border-0 max-w-[95vw] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-violet-400" />

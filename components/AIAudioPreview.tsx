@@ -79,9 +79,9 @@ export function AIAudioPreview({
   };
 
   return (
-    <div className="p-3 rounded-lg bg-card/30 border border-violet-500/30 space-y-3">
+    <div className="p-2.5 md:p-3 rounded-lg bg-card/30 border border-violet-500/30 space-y-3">
       <div className="flex items-center gap-2">
-        <Badge className="bg-violet-500/20 text-violet-300 text-[10px] py-0 px-1.5">
+        <Badge className="bg-violet-500/20 text-violet-300 text-xs md:text-[10px] py-0 px-1.5">
           <Sparkles className="h-2.5 w-2.5 mr-0.5" /> AI
         </Badge>
         <span className="text-xs text-muted-foreground">
@@ -93,7 +93,7 @@ export function AIAudioPreview({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0"
+          className="h-10 w-10 md:h-8 md:w-8 shrink-0"
           onClick={togglePlay}
           disabled={!isReady}
         >
@@ -111,7 +111,7 @@ export function AIAudioPreview({
         />
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         {showSaveButton && onSave && (
           <Button
             size="sm"

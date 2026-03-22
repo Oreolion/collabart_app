@@ -4,6 +4,7 @@ import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Languages, Loader2, X } from "lucide-react";
+import { AIErrorDisplay } from "./AIErrorDisplay";
 
 interface FeedbackTranslatorProps {
   feedback: string;
@@ -17,7 +18,7 @@ export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProp
     suggestedActions?: string[];
     error?: string;
   } | null>(null);
-  const [, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const translate = useAction(api.ai.translateFeedback);
 
@@ -38,6 +39,10 @@ export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProp
     }
   };
 
+  if (error) {
+    return <AIErrorDisplay error={error} onRetry={handleTranslate} compact />;
+  }
+
   if (result) {
     return (
       <div className="mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/20 text-xs space-y-2">
@@ -49,7 +54,7 @@ export function FeedbackTranslator({ feedback, context }: FeedbackTranslatorProp
           <Button
             variant="ghost"
             size="icon"
-            className="h-5 w-5"
+            className="h-8 w-8 md:h-5 md:w-5"
             onClick={() => setResult(null)}
           >
             <X className="h-3 w-3" />
