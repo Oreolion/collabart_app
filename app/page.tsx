@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import AIFeaturesSection from "@/components/AIFeaturesSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import ForthSection from "@/components/ForthSection";
@@ -17,6 +18,7 @@ export default function Home() {
       <About />
       <HowItWorks />
       <ThirdSection />
+      <AIFeaturesSection />
       <Testimonials />
       <PricingSection />
       <FAQSection />

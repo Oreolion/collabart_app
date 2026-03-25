@@ -45,6 +45,21 @@ const faqs = [
     answer:
       "The Free plan allows up to 5 collaborators per project. Pro and Studio plans allow up to 15 and unlimited collaborators respectively, so you can build full bands and production teams.",
   },
+  {
+    question: "What AI features are available on eCollabs?",
+    answer:
+      "eCollabs includes a full AI suite: generate beats and arrangements with ElevenLabs, get lyric writing assistance, auto-tag audio files, find matching collaborators, receive professional mix feedback, separate audio stems, get mastering chain suggestions, analyze cover art designs, and generate social media mockup specs. All powered by ElevenLabs and Google Gemini.",
+  },
+  {
+    question: "Are there limits on AI usage?",
+    answer:
+      "Yes, AI features have daily quotas that reset at midnight UTC. Free plans include 5 music generations and 20 AI assists per day. Pro plans get 10 music generations and 50 AI assists. Studio plans have unlimited access to all AI features.",
+  },
+  {
+    question: "Who owns the AI-generated music and content?",
+    answer:
+      "You do. Any beats, arrangements, lyrics, or other content generated using AI tools on eCollabs belong to you and your project collaborators. AI-generated files are clearly marked in your project workspace so everyone knows the origin of each contribution.",
+  },
 ];
 
 const FAQSection = () => {

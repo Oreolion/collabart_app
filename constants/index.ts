@@ -45,6 +45,15 @@ export const mySlides = [
 
     imageUrl: "/assets/images/caught-in-joy-ptVBlniJi50-unsplash.jpg",
   },
+  {
+    id: 6,
+    h1: "AI-POWERED",
+    h3: "Create music with intelligent AI tools",
+    p: "Generate beats, write lyrics, separate stems, get mix feedback, and find collaborators — all powered by AI",
+    btn1: "SIGN UP FOR FREE",
+    btn2: "LEARN MORE",
+    imageUrl: "/assets/images/producer.webp",
+  },
 ];
 
 export const fourthSection = [
@@ -109,6 +118,42 @@ export const fourthSection = [
     h4: "Session Artists",
     p: "Earn money as an artist, musician, engineer or producer by selling your unique musical skills and talents to project owners and songwriters.",
     svgUrl: "/assets/icons/dollar-svgrepo-com.svg",
+  },
+  {
+    id: 13,
+    h4: "AI Beat Generator",
+    p: "Generate beats, arrangements, and mood reference tracks instantly using AI. Preview, tweak, and save directly to your project.",
+    svgUrl: "/assets/icons/music-svgrepo-com.svg",
+  },
+  {
+    id: 14,
+    h4: "AI Lyric Assistant",
+    p: "Get AI-powered help writing lyrics — complete verses, find rhymes, rewrite lines, or generate full lyrics from a prompt.",
+    svgUrl: "/assets/icons/file-check-svgrepo-com.svg",
+  },
+  {
+    id: 15,
+    h4: "Smart Collaborator Matching",
+    p: "AI analyzes your project needs and recommends the best-fit collaborators based on genre, talent, and activity.",
+    svgUrl: "/assets/icons/group-svgrepo-com.svg",
+  },
+  {
+    id: 16,
+    h4: "AI Mix Feedback",
+    p: "Get professional mixing feedback powered by AI — track-by-track suggestions, balance analysis, and genre-specific tips.",
+    svgUrl: "/assets/icons/like-shapes-svgrepo-com.svg",
+  },
+  {
+    id: 17,
+    h4: "Stem Separation",
+    p: "Split any audio file into vocals, drums, bass, and other stems using AI. Perfect for remixing and production.",
+    svgUrl: "/assets/icons/chart-pie-svgrepo-com.svg",
+  },
+  {
+    id: 18,
+    h4: "AI Design Critique",
+    p: "Upload cover art and get scored AI feedback on composition, color theory, typography, and genre fit.",
+    svgUrl: "/assets/icons/discover.svg",
   },
 ];
 

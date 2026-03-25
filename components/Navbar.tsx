@@ -44,6 +44,9 @@ const Navbar = () => {
           <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Features
           </Link>
+          <Link href="#ai-features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            AI
+          </Link>
           <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Sign in
           </Link>
@@ -75,6 +78,9 @@ const Navbar = () => {
             </Link>
             <Link href="#features" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               Features
+            </Link>
+            <Link href="#ai-features" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
+              AI
             </Link>
             <Link href="/sign-in" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
               Sign in

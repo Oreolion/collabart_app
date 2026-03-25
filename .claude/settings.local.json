@@ -10,7 +10,8 @@
       "Read(//c/Users/HP 240 G9/Desktop/nextJSApps/collabArtApp/collabart_app/$HOME/.claude/plugins/marketplaces/claude-plugins-official/plugins/example-plugin/skills/example-skill/**)",
       "Read(//c/Users/HP 240 G9/Desktop/nextJSApps/collabArtApp/collabart_app/$HOME/Desktop/nextJSApps/collabArtApp/**)",
       "Bash(npx convex:*)",
-      "WebFetch(domain:elevenlabs.io)"
+      "WebFetch(domain:elevenlabs.io)",
+      "Bash(cd C:/Users/HP 240 G9/Desktop/nextJSApps/collabArtApp/collabart_app)"
     ]
   }
 }
