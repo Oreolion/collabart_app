@@ -121,7 +121,6 @@
 ## Phase 12: README & Documentation — COMPLETE
 - [x] Full `README.md` rewrite (comprehensive eCollabs docs — tech stack, features, architecture, schema, design system, deployment)
 - [x] Type errors fixed across project (http.ts, CoverArtSelector, project page, projects.ts, profile pages)
-- [ ] Update `CLAUDE.md` with all new tables/functions/components (optional — README covers this)
 
 ---
 
@@ -151,6 +150,7 @@
 - [x] AI save paths already set `origin="ai_generated"`, `reviewState="draft"`, `provenance` from Phase 8
 - [x] `npx tsc --noEmit` clean
 - [x] `npm run build` clean
+
 ## Phase 10 (new): Studio Pipeline board — COMPLETE
 - [x] `convex/projects.ts` — `handoffFileStage` mutation with auth guard, stage validation, activity logging
 - [x] `components/StudioPipelineBoard.tsx` — kanban-style board with 9 stage columns (Beat → Topline → Lyrics → Vocal Take → Edit → Mix → Master → Artwork → Reference)
@@ -162,6 +162,7 @@
 - [x] MultiTrackPlayer now filters to pipeline-visible audio only
 - [x] `npx tsc --noEmit` clean
 - [x] `npm run build` clean
+
 ## Phase 11 (new): ElevenLabs Tier B (SFX, Composition Plan) — COMPLETE
 - [x] `convex/elevenlabsSfxActions.ts` — `generateSoundEffect` action calling `POST /v1/sound-generation` (`eleven_text_to_sound_v2`)
 - [x] `convex/elevenlabsActions.ts` — `generateCompositionPlan` action for >60s structured arrangements with plan JSON persisted in metadata
@@ -174,6 +175,7 @@
 - [x] `saveGenerationAsFile` stage mapping updated for `sfx` → `edit`, `composition_plan` → `beat`
 - [x] `npx tsc --noEmit` clean
 - [x] `npm run build` clean
+
 ## Phase 12 (new): Publishing (ElevenLabs Marketplace + DistroKid + Audiomack) — COMPLETE
 - [x] `convex/elevenlabsMarketplace.ts` — `checkPublishEligibility` query (status, master, credits, cover art, splits, mutual-exclusivity)
 - [x] `convex/elevenlabsMarketplace.ts` — `publishToElevenLabsMarketplace` action with server-side eligibility re-check, AI-license guard, split validation, mock/live API call, local persistence
@@ -190,6 +192,7 @@
 - [x] Mutual-exclusivity guards: `listProjectForSale` rejects if `elevenlabsMarketplace.status === "live"`; `transferOwnership` rejects if `elevenlabsMarketplace.status === "live"`; publish action forces `isListed=false`
 - [x] `npx tsc --noEmit` clean
 - [x] `npm run build` clean
+
 ## Phase 13 (stretch): Real C2PA signer — COMPLETE
 - [x] `lib/c2paManifestBuilder.ts` — generates C2PA 2.2 spec-compliant manifest JSON from eCollabs provenance metadata (origin, model, prompt, contributors, parent chain, digital source type)
 - [x] `convex/c2paSigner.ts` — `signProjectFile` action with dual-path architecture:
@@ -206,3 +209,14 @@
 - [x] `convex/elevenlabsMarketplace.ts` — auto-signs master file after Marketplace publish (best-effort, non-blocking)
 - [x] `npx tsc --noEmit` clean
 - [x] `npm run build` clean
+
+## Phase 14 (new): Testing Infrastructure — COMPLETE
+- [x] Installed Vitest + React Testing Library + convex-test + Playwright
+- [x] Configured `vitest.config.ts`, `vitest.setup.ts`, `playwright.config.ts`
+- [x] Added test scripts to `package.json`
+- [x] Created GitHub Actions CI workflow (`.github/workflows/test.yml`)
+- [x] **Unit tests** (32 tests): `cn()`, `formatTime`, `formatDate`, `getAiDisclosureTag`, `projectAggregateOrigin`, `passesAiVisibility`, `buildManifestDefinition`, `buildManifestWithBuilder`
+- [x] **Backend tests** (22 tests): `addCredit`, `updateCredit`, `removeCredit`, `confirmCredit`, `getProjectCredits`, `promoteAiFileToPipeline`, `handoffFileStage`, `listProjectForSale`, `transferOwnership`, `_setC2paMeta`, `checkC2paCredentials`
+- [x] **Component tests** (25 tests): `OriginBadge`, `C2PABadge`, `AiVisibilityPills`, `PublishChecklist`, `C2PAVerifyDialog`
+- [x] **E2E smoke test**: homepage load, navigation
+- [x] `npx vitest run` — 79 tests passing across 13 test files

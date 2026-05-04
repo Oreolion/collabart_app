@@ -8,6 +8,9 @@
 
 # testing
 /coverage
+test-results/
+playwright-report/
+*.test.ts.snap
 
 # next.js
 /.next/

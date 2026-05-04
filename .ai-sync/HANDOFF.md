@@ -1,63 +1,76 @@
 ---
 last_agent: kimi-code-cli
-timestamp: 2026-05-01T04:11:00Z
+timestamp: 2026-05-04T06:52:00Z
 status: paused
-current_phase: "Phase 13 (C2PA signer) — COMPLETE"
-current_task: "All planned phases (8-13) complete. Ready for user-directed next work."
+current_phase: "Phase 14 (Testing Infrastructure) — COMPLETE"
+current_task: "Testing framework installed, 79 tests written and passing across utilities, backend, and components."
 stop_reason: phase-complete
 ---
 
 ## Active plan
 
-`.claude/plans/human-first-elevenlabs-marketplace.md` — all phases (8-13) are now complete.
+`.kimi/plans/spider-gwen-green-arrow-nova.md` — Testing setup & implementation plan (Phases 1–6).
 
-## What Was Completed This Session (Phase 13 — Real C2PA Signer)
+## What Was Completed This Session (Testing Infrastructure)
 
-- **`lib/c2paManifestBuilder.ts`** — builds C2PA 2.2 spec-compliant manifests from eCollabs provenance:
-  - Digital source types: `trainedAlgorithmicMedia` (AI-generated), `compositeWithTrainedAlgorithmicMedia` (AI-assisted), `digitalCapture` (human)
-  - Assertions: `c2pa.actions`, `c2pa.creative-work` (contributors + splits), `ecollabs.ai-provenance` (model, prompt hash, generatedAt, humanEdited)
-  - Parent chain mapped to C2PA ingredients
+### Phase 1 — Install & Configure Testing Infrastructure
+- **Dependencies**: `vitest`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `convex-test`, `@playwright/test`
+- **Configs**: `vitest.config.ts`, `vitest.setup.ts`, `playwright.config.ts`
+- **Scripts**: `test`, `test:run`, `test:coverage`, `test:e2e`, `test:e2e:ui` added to `package.json`
+- **CI**: `.github/workflows/test.yml` — type check, build, unit tests, E2E
+- **Gitignore**: added `test-results/`, `playwright-report/`, `coverage/`, `*.test.ts.snap`
+- **Path alias fix**: `@/*` mapped correctly in Vitest for component imports
 
-- **`convex/c2paSigner.ts`** — dual-path signing architecture:
-  - **Embedded path**: uses `@contentauth/c2pa-node` `Builder.sign()` + `LocalSigner` when `C2PA_CERT_PEM` / `C2PA_KEY_PEM` env vars are configured with a valid CA-signed cert
-  - **Sidecar path** (auto-fallback): when cert is missing, self-signed, or invalid, creates a JWS-signed JSON sidecar manifest stored in Convex storage
-  - `verifyC2pa` action: reads embedded manifests via C2PA Reader, or verifies sidecar JWS signatures
-  - `checkC2paCredentials` query
+### Phase 2 — Unit Tests for Pure Utilities (5 files, 32 tests)
+- `lib/utils.test.ts` — `cn()` merges, falsy handling, Tailwind conflict resolution
+- `lib/formatTime.test.ts` — edge cases (0, under-minute, hours)
+- `lib/aiDisclosureMap.test.ts` — DSP tag mappings, default fallbacks
+- `lib/projectOrigin.test.ts` — aggregate origin logic, AI visibility filtering
+- `lib/c2paManifestBuilder.test.ts` — manifest JSON structure, digital source types, assertions, builder mock
 
-- **Certificate tooling**:
-  - `scripts/generate-c2pa-cert-chain.js` — OpenSSL script that generates a Root CA + end-entity P-256 chain for testing
-  - Note: `@contentauth/c2pa-node` strictly requires CA-signed certs for embedded signing; self-signed certs trigger automatic sidecar fallback
+### Phase 3 — Convex Backend Tests (3 files, 22 tests)
+- `convex/__test__/setup.ts` — `convexTest` factory (fresh DB per test)
+- `convex/__test__/fixtures.ts` — `seedUser()`, `seedProject()` helpers
+- `convex/credits.test.ts` — addCredit (auth, split validation), updateCredit, removeCredit, confirmCredit, getProjectCredits
+- `convex/projects.test.ts` — promoteAiFileToPipeline (in-place, vocal_take guard, invalid stage), handoffFileStage, listProjectForSale (marketplace guard, price validation), transferOwnership (marketplace guard)
+- `convex/c2paSigner.test.ts` — `_setC2paMeta` patching, `checkC2paCredentials` unconfigured state
 
-- **Schema** (`convex/schema.ts`): added to `projectFile`:
-  - `c2paManifestStorageId`
-  - `c2paMode` ("embedded" | "sidecar")
-  - `c2paManifestJson`
+### Phase 4 — Component Tests (5 files, 25 tests)
+- `components/OriginBadge.test.tsx` — rendering per origin, showHuman toggle, custom className
+- `components/C2PABadge.test.tsx` — embedded/sidecar/null modes, C2PAStatusIcon
+- `components/AiVisibilityPills.test.tsx` — option rendering, active state, onChange calls
+- `components/PublishChecklist.test.tsx` — pass/fail styling, ready banner
+- `components/C2PAVerifyDialog.test.tsx` — dialog open, success/failure states, useAction mocking
 
-- **UI**:
-  - `components/C2PABadge.tsx` — embedded=green `ShieldCheck`, sidecar=amber `ShieldAlert`
-  - `components/C2PAVerifyDialog.tsx` — runs verification, shows manifest JSON, reports signature validity
-  - `components/StudioPipelineBoard.tsx` — badges on pipeline cards, "Verify" and "Sign C2PA" buttons
-  - `components/PromoteToPipelineDialog.tsx` — auto-signs after promotion (best-effort)
-
-- **Integration**:
-  - `convex/elevenlabsMarketplace.ts` — auto-signs master file after successful Marketplace publish
-
-## Files Created
-- `lib/c2paManifestBuilder.ts`
-- `convex/c2paSigner.ts`
-- `components/C2PABadge.tsx`
-- `components/C2PAVerifyDialog.tsx`
-- `scripts/generate-c2pa-cert-chain.js`
-- `scripts/generate-c2pa-cert.js`
-
-## Files Modified
-- `convex/schema.ts` — C2PA fields on `projectFile`
-- `convex/elevenlabsMarketplace.ts` — auto-sign on publish
-- `components/StudioPipelineBoard.tsx` — C2PA badges + buttons
-- `components/PromoteToPipelineDialog.tsx` — auto-sign on promote
-- `.ai-sync/PROGRESS.md`
-- `.ai-sync/HANDOFF.md`
+### Phase 5 — E2E (started)
+- `e2e/smoke.spec.ts` — homepage load test, sign-in navigation
+- Playwright Chromium browser installed
 
 ## Build Status
-✅ `npx tsc --noEmit` clean
-✅ `npm run build` clean
+✅ `npx vitest run` — 79 tests passing across 13 test files
+⚠️ `npx tsc --noEmit` — 1 pre-existing type error in `app/providers/ConvexClerkProvider.tsx` (Clerk `UseAuth` type mismatch, unrelated to testing work)
+⏹️ `npm run build` — not run (known to pass from prior sessions)
+
+## Files Created
+- `vitest.config.ts`
+- `vitest.setup.ts`
+- `playwright.config.ts`
+- `.github/workflows/test.yml`
+- `__tests__/convex/setup.ts`
+- `__tests__/convex/fixtures.ts`
+- `__tests__/lib/*.test.ts` (5 files)
+- `__tests__/convex/*.test.ts` (3 files)
+- `__tests__/components/*.test.tsx` (5 files)
+- `__tests__/e2e/smoke.spec.ts`
+
+## Files Modified
+- `package.json` — test scripts
+- `.gitignore` — test artifacts
+- `tsconfig.json` — exclude `vitest.config.ts` and `playwright.config.ts`
+- `vitest.config.ts` — `include` pattern updated to `__tests__/**/*.test.{ts,tsx}`
+
+## Next Steps (from plan)
+1. **Expand E2E coverage**: auth flow, project creation, file upload, AI Lab, pipeline handoff, publishing
+2. **Increase backend coverage**: `elevenlabsMarketplace.ts`, `distributionActions.ts`, `annotations.ts`, `messages.ts`
+3. **Add coverage reporting**: install `@vitest/coverage-v8`, run `npm run test:coverage`
+4. **CI verification**: push to GitHub, verify Actions workflow runs green
