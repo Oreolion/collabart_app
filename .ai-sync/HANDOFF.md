@@ -1,77 +1,63 @@
 ---
-last_agent: claude-code
-timestamp: 2026-03-15T20:45:00Z
-status: completed
-current_phase: "All Phases Complete"
-current_task: "None — all 12 phases done"
-stop_reason: completed
+last_agent: kimi-code-cli
+timestamp: 2026-05-01T04:11:00Z
+status: paused
+current_phase: "Phase 13 (C2PA signer) — COMPLETE"
+current_task: "All planned phases (8-13) complete. Ready for user-directed next work."
+stop_reason: phase-complete
 ---
 
-## What Was Completed This Session
+## Active plan
 
-### Phase 11: AI Tier 4 — Visual AI — COMPLETE
-- Added `analyzeDesign` action to `convex/ai.ts` — Gemini-powered design critique with scores for composition, color theory, typography, and genre fit
-- Added `generateSocialMockups` action to `convex/ai.ts` — generates 4-platform mockup specs (Instagram Post/Story, Twitter/X, Facebook) with captions, hashtags, layout descriptions, color palettes, font suggestions
-- Created `components/AIDesignFeedback.tsx` — score bars with color coding, expandable category details with suggestions, strengths, technical notes, summary
-- Created `components/SocialMockupGenerator.tsx` — expandable platform cards, copy-to-clipboard captions with hashtags, color palette swatches, release copy variants
-- Integrated AIDesignFeedback below each VisualSubmissionCard in Pending Visual Submissions (owner only)
-- Integrated SocialMockupGenerator in Visual Assets card (owner only)
-- Skipped AICoverArtGenerator per user direction — users choose their own art path
-- Ran Convex codegen, tsc clean, build clean
+`.claude/plans/human-first-elevenlabs-marketplace.md` — all phases (8-13) are now complete.
 
-### Cross-Agent Sync Infrastructure — COMPLETE
-- Created `~/.ai-sync/templates/` (HANDOFF.md, PROGRESS.md, PLAN.md, AGENTS.md)
-- Created `~/.ai-sync/config.yaml` — global config with agent registry, verification commands, recovery strategy
-- Created `~/.codex/instructions.md` — global Codex instructions pointing to ai-sync protocol
-- Created `~/.codex/skills/ai-sync/SKILL.md` — Codex skill for auto-triggering on .ai-sync/ detection
-- Created `~/.opencode/instructions.md` — global OpenCode instructions
-- Enhanced `~/.claude/CLAUDE.md` — expanded Cross-Agent Synchronization section with mandatory start/stop behavior, stale handoff recovery, agent config table
+## What Was Completed This Session (Phase 13 — Real C2PA Signer)
 
-### README Update — COMPLETE
-- Full README rewrite reflecting all 11 phases of work (AI features, new components, schema, architecture)
+- **`lib/c2paManifestBuilder.ts`** — builds C2PA 2.2 spec-compliant manifests from eCollabs provenance:
+  - Digital source types: `trainedAlgorithmicMedia` (AI-generated), `compositeWithTrainedAlgorithmicMedia` (AI-assisted), `digitalCapture` (human)
+  - Assertions: `c2pa.actions`, `c2pa.creative-work` (contributors + splits), `ecollabs.ai-provenance` (model, prompt hash, generatedAt, humanEdited)
+  - Parent chain mapped to C2PA ingredients
 
-## Work In Progress
-None — all phases complete.
+- **`convex/c2paSigner.ts`** — dual-path signing architecture:
+  - **Embedded path**: uses `@contentauth/c2pa-node` `Builder.sign()` + `LocalSigner` when `C2PA_CERT_PEM` / `C2PA_KEY_PEM` env vars are configured with a valid CA-signed cert
+  - **Sidecar path** (auto-fallback): when cert is missing, self-signed, or invalid, creates a JWS-signed JSON sidecar manifest stored in Convex storage
+  - `verifyC2pa` action: reads embedded manifests via C2PA Reader, or verifies sidecar JWS signatures
+  - `checkC2paCredentials` query
 
-## Next Steps (for the next agent)
-All planned phases are complete. Potential future work:
-1. End-to-end testing of AI features with live API keys
-2. Rate limiting / error handling improvements for AI actions
-3. User-facing AI usage analytics or cost tracking
-4. Mobile responsiveness testing of new AI panels
+- **Certificate tooling**:
+  - `scripts/generate-c2pa-cert-chain.js` — OpenSSL script that generates a Root CA + end-entity P-256 chain for testing
+  - Note: `@contentauth/c2pa-node` strictly requires CA-signed certs for embedded signing; self-signed certs trigger automatic sidecar fallback
 
-## Files Modified This Session
-- `convex/ai.ts` — Added `analyzeDesign` and `generateSocialMockups` actions (Phase 11)
-- `app/(root)/project/[projectId]/page.tsx` — Integrated AIDesignFeedback + SocialMockupGenerator
-- `README.md` — Full update with all completed phases
-- `.ai-sync/PROGRESS.md` — Phase 11 marked complete
-- `~/.claude/CLAUDE.md` — Enhanced cross-agent sync section
+- **Schema** (`convex/schema.ts`): added to `projectFile`:
+  - `c2paManifestStorageId`
+  - `c2paMode` ("embedded" | "sidecar")
+  - `c2paManifestJson`
 
-## Files Created This Session
-- `components/AIDesignFeedback.tsx` — Design critique with score bars
-- `components/SocialMockupGenerator.tsx` — Social media mockup specs
-- `~/.ai-sync/templates/HANDOFF.md` — Bootstrap template
-- `~/.ai-sync/templates/PROGRESS.md` — Bootstrap template
-- `~/.ai-sync/templates/PLAN.md` — Bootstrap template
-- `~/.ai-sync/templates/AGENTS.md` — Bootstrap template
-- `~/.ai-sync/config.yaml` — Global config
-- `~/.codex/instructions.md` — Codex global instructions
-- `~/.codex/skills/ai-sync/SKILL.md` — Codex ai-sync skill
-- `~/.opencode/instructions.md` — OpenCode global instructions
+- **UI**:
+  - `components/C2PABadge.tsx` — embedded=green `ShieldCheck`, sidecar=amber `ShieldAlert`
+  - `components/C2PAVerifyDialog.tsx` — runs verification, shows manifest JSON, reports signature validity
+  - `components/StudioPipelineBoard.tsx` — badges on pipeline cards, "Verify" and "Sign C2PA" buttons
+  - `components/PromoteToPipelineDialog.tsx` — auto-signs after promotion (best-effort)
 
-## Blockers / Warnings
-- `GEMINI_API_KEY` must be set in Convex dashboard for AI features to work
-- `REPLICATE_API_TOKEN` must be set for stem separation
-- All AI actions return `{ error: "..." }` if API key is missing — graceful degradation
+- **Integration**:
+  - `convex/elevenlabsMarketplace.ts` — auto-signs master file after successful Marketplace publish
 
-## Key Decisions Made
-- Skipped AICoverArtGenerator — users decide their own art path (hire designers, upload, or external AI tools)
-- `analyzeDesign` uses text-based analysis from metadata rather than vision API (no image bytes sent to Gemini)
-- SocialMockupGenerator produces specs/copy, not actual images — designed for users to create in Canva/Figma using the specs
-- Cross-agent sync infrastructure set up globally across Claude Code, Codex, and OpenCode
+## Files Created
+- `lib/c2paManifestBuilder.ts`
+- `convex/c2paSigner.ts`
+- `components/C2PABadge.tsx`
+- `components/C2PAVerifyDialog.tsx`
+- `scripts/generate-c2pa-cert-chain.js`
+- `scripts/generate-c2pa-cert.js`
+
+## Files Modified
+- `convex/schema.ts` — C2PA fields on `projectFile`
+- `convex/elevenlabsMarketplace.ts` — auto-sign on publish
+- `components/StudioPipelineBoard.tsx` — C2PA badges + buttons
+- `components/PromoteToPipelineDialog.tsx` — auto-sign on promote
+- `.ai-sync/PROGRESS.md`
+- `.ai-sync/HANDOFF.md`
 
 ## Build Status
-- TypeScript: CLEAN (zero errors, `npx tsc --noEmit` passes)
-- Build: CLEAN (`npm run build` passes, all routes compile)
-- Convex: DEPLOYED (all functions deployed including Phase 11)
-- Tests: not-run (no test suite configured)
+✅ `npx tsc --noEmit` clean
+✅ `npm run build` clean

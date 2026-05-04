@@ -27,10 +27,10 @@ export const generateTrack = action({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    // Rate limit check
-    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "elevenlabs" });
+    // Rate limit check (music bucket)
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "music" });
     if (!rateCheck.allowed) {
-      throw new Error(`RATE_LIMIT:Daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+      throw new Error(`RATE_LIMIT: Music daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
     }
 
     const apiKey = getApiKey();
@@ -220,6 +220,123 @@ export const generateMoodReference = action({
   },
 });
 
+// --- Composition Plan: structured long-form arrangement (>60s) ---
+export const generateCompositionPlan = action({
+  args: {
+    projectId: v.id("projects"),
+    brief: v.string(),
+    targetDurationSeconds: v.number(),
+  },
+  handler: async (ctx, args): Promise<{
+    generationId: string;
+    audioUrl: string;
+    storageId: string;
+    durationMs: number;
+    plan: Record<string, unknown>;
+  }> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    // Rate limit check (music bucket)
+    const rateCheck = await ctx.runQuery(api.elevenlabs.checkRateLimit, { category: "music" });
+    if (!rateCheck.allowed) {
+      throw new Error(`RATE_LIMIT: Music daily limit reached (${rateCheck.used}/${rateCheck.limit}). Resets at midnight UTC.`);
+    }
+
+    const apiKey = getApiKey();
+
+    const project = await ctx.runQuery(api.projects.getProjectById, {
+      projectId: args.projectId,
+    });
+
+    const genres = project?.genres?.join(", ") || "";
+    const moods = project?.moods?.join(", ") || "";
+
+    // Build a structured composition plan prompt
+    const plan = {
+      structure: [
+        { section: "Intro", durationSeconds: Math.round(args.targetDurationSeconds * 0.1), description: "Atmospheric build" },
+        { section: "Verse A", durationSeconds: Math.round(args.targetDurationSeconds * 0.15), description: "Main theme introduction" },
+        { section: "Chorus", durationSeconds: Math.round(args.targetDurationSeconds * 0.2), description: "Peak energy section" },
+        { section: "Verse B", durationSeconds: Math.round(args.targetDurationSeconds * 0.15), description: "Theme variation" },
+        { section: "Bridge", durationSeconds: Math.round(args.targetDurationSeconds * 0.15), description: "Tension build" },
+        { section: "Outro", durationSeconds: Math.round(args.targetDurationSeconds * 0.1), description: "Resolution and fade" },
+      ],
+      brief: args.brief,
+      genres,
+      moods,
+      targetDurationSeconds: args.targetDurationSeconds,
+    };
+
+    const structuredPrompt = `Composition plan for a ${args.targetDurationSeconds}s track. ${args.brief}. Genres: ${genres}. Moods: ${moods}. Structured arrangement with clear sections: intro, verse, chorus, bridge, outro. Cohesive and polished.`;
+
+    const generationId = await ctx.runMutation(api.elevenlabs.insertGeneration, {
+      projectId: args.projectId,
+      userId: identity.subject,
+      type: "composition_plan",
+      prompt: structuredPrompt,
+      status: "generating",
+      createdAt: Date.now(),
+    });
+
+    try {
+      const clampedDuration = Math.min(300, Math.max(30, args.targetDurationSeconds));
+
+      const response = await fetch("https://api.elevenlabs.io/v1/music/generate", {
+        method: "POST",
+        headers: {
+          "xi-api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: structuredPrompt,
+          duration_seconds: clampedDuration,
+          instrumental: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
+      }
+
+      const audioBuffer = await response.arrayBuffer();
+      const blob = new Blob([audioBuffer], { type: "audio/mpeg" });
+
+      const storageId = await ctx.storage.store(blob);
+      const audioUrl = await ctx.storage.getUrl(storageId);
+
+      if (!audioUrl) throw new Error("Failed to get audio URL from storage");
+
+      const durationMs = clampedDuration * 1000;
+
+      await ctx.runMutation(api.elevenlabs.updateGeneration, {
+        generationId,
+        status: "completed",
+        audioStorageId: storageId,
+        audioUrl,
+        durationMs,
+        metadata: JSON.stringify({ plan }),
+      });
+
+      return {
+        generationId: generationId as string,
+        audioUrl,
+        storageId: storageId as string,
+        durationMs,
+        plan,
+      };
+    } catch (error: any) {
+      await ctx.runMutation(api.elevenlabs.updateGeneration, {
+        generationId,
+        status: "failed",
+        metadata: JSON.stringify({ error: error.message, plan }),
+      });
+      throw error;
+    }
+  },
+});
+
 // --- Save a previewed generation as a project file ---
 export const saveGenerationAsFile = action({
   args: {
@@ -240,7 +357,35 @@ export const saveGenerationAsFile = action({
       throw new Error("Generation has no audio");
     }
 
-    // Create project file via the existing mutation
+    // Map ElevenLabs generation type to canonical pipeline stage (Phase 8 taxonomy)
+    const stageByType: Record<string, string> = {
+      beat: "beat",
+      arrangement: "reference",
+      lyrics_preview: "lyrics",
+      mood_reference: "reference",
+      sfx: "edit",
+      composition_plan: "beat",
+    };
+    const stage = stageByType[generation.type] ?? "reference";
+
+    const provenance = {
+      model: "elevenlabs:music_v1",
+      prompt: generation.prompt,
+      generatedAt: generation.createdAt,
+      humanEdited: false,
+      parentChain: [],
+      c2paClaim: JSON.stringify({
+        v: 1,
+        producer: "ecollabs",
+        model: "elevenlabs:music_v1",
+        type: generation.type,
+        promptHash: undefined,
+        ts: generation.createdAt,
+      }),
+    };
+
+    // Create project file via the existing mutation. Land as a draft in the AI Lab —
+    // a human must Promote-to-pipeline before it appears in the main project view.
     await ctx.runMutation(api.projects.addProjectFile, {
       projectId: args.projectId,
       audioStorageId: generation.audioStorageId as any,
@@ -255,6 +400,10 @@ export const saveGenerationAsFile = action({
       isAIGenerated: true,
       aiGenerationType: generation.type,
       aiPrompt: generation.prompt,
+      origin: "ai_generated",
+      stage,
+      reviewState: "draft",
+      provenance,
     });
 
     // Update generation status to saved

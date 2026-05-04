@@ -39,6 +39,15 @@ export default defineSchema({
     // Phase 5: Visual Artists & Designers Ecosystem
     coverArtUrl: v.optional(v.string()),
     coverArtStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    // Phase 12: ElevenLabs Music Marketplace publication
+    elevenlabsMarketplace: v.optional(
+      v.object({
+        trackId: v.string(),
+        tier: v.string(), // "social" | "paid_marketing" | "offline"
+        publishedAt: v.number(),
+        status: v.string(), // "pending" | "live" | "removed"
+      })
+    ),
   })
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "projectTitle" })
@@ -88,13 +97,33 @@ export default defineSchema({
     imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
     dimensions: v.optional(v.object({ width: v.number(), height: v.number() })),
     format: v.optional(v.string()), // png/jpg/svg/psd/pdf
-    // ElevenLabs AI generation fields
+    // ElevenLabs AI generation fields (legacy — read-only; superseded by origin/stage below)
     isAIGenerated: v.optional(v.boolean()),
     aiGenerationType: v.optional(v.string()), // "beat" | "arrangement" | "lyrics_preview" | "mood_reference"
     aiPrompt: v.optional(v.string()),
+    // Phase 8: Human-first pipeline — stage + origin + provenance
+    stage: v.optional(v.string()), // "beat"|"topline"|"lyrics"|"vocal_take"|"edit"|"mix"|"master"|"artwork"|"reference"
+    origin: v.optional(v.string()), // "human"|"ai_generated"|"ai_assisted"
+    reviewState: v.optional(v.string()), // "draft"|"in_pipeline"|"rejected"
+    provenance: v.optional(
+      v.object({
+        model: v.string(),
+        prompt: v.optional(v.string()),
+        generatedAt: v.number(),
+        humanEdited: v.boolean(),
+        parentChain: v.array(v.id("projectFile")),
+        c2paClaim: v.optional(v.string()),
+      })
+    ),
+    // Phase 13: C2PA provenance signing
+    c2paManifestStorageId: v.optional(v.union(v.id("_storage"), v.null())),
+    c2paMode: v.optional(v.string()), // "embedded" | "sidecar"
+    c2paManifestJson: v.optional(v.string()),
   })
     .index("by_project", ["projectId"])
-    .index("by_project_and_version", ["projectId", "version"]),
+    .index("by_project_and_version", ["projectId", "version"])
+    .index("by_project_and_stage", ["projectId", "stage"])
+    .index("by_project_and_origin", ["projectId", "origin"]),
 
   // comment tables
   comments: defineTable({
@@ -269,6 +298,49 @@ export default defineSchema({
   })
     .index("by_project", ["projectId"])
     .index("by_user", ["userId"]),
+
+  // Phase 12: External distribution targets (DistroKid, Audiomack, future)
+  distributionTargets: defineTable({
+    projectId: v.id("projects"),
+    provider: v.string(), // "distrokid" | "audiomack"
+    status: v.string(), // "pending" | "submitted" | "live" | "rejected" | "removed"
+    externalId: v.optional(v.string()),
+    submittedAt: v.optional(v.number()),
+    payload: v.optional(v.string()), // JSON request snapshot
+    lastError: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_and_provider", ["projectId", "provider"])
+    .index("by_provider_and_status", ["provider", "status"]),
+
+  // Phase 12: Royalty ledger fed by Marketplace + DSP webhooks
+  royaltyLedger: defineTable({
+    projectId: v.id("projects"),
+    userId: v.string(),
+    source: v.string(), // "elevenlabs_marketplace" | "distrokid" | "audiomack"
+    period: v.string(), // e.g. "2026-04"
+    amountCents: v.number(),
+    currency: v.string(),
+    paidOut: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"])
+    .index("by_project_and_period", ["projectId", "period"]),
+
+  // Phase 12: Per-tier credit overrides for Marketplace splits when base credits don't fit
+  creditOverrides: defineTable({
+    projectId: v.id("projects"),
+    tier: v.string(), // "social" | "paid_marketing" | "offline"
+    splits: v.array(
+      v.object({
+        userId: v.string(),
+        percentage: v.number(),
+      })
+    ),
+    createdAt: v.number(),
+  }).index("by_project_and_tier", ["projectId", "tier"]),
 
   // Phase 10: Waveform annotations / timestamped markers
   fileAnnotations: defineTable({

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.4.1",
+    "@contentauth/c2pa-node": "^0.5.4",
     "@elevenlabs/elevenlabs-js": "^2.39.0",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.9.0",

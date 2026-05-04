@@ -122,3 +122,87 @@
 - [x] Full `README.md` rewrite (comprehensive eCollabs docs — tech stack, features, architecture, schema, design system, deployment)
 - [x] Type errors fixed across project (http.ts, CoverArtSelector, project page, projects.ts, profile pages)
 - [ ] Update `CLAUDE.md` with all new tables/functions/components (optional — README covers this)
+
+---
+
+# NEW PLAN: human-first-elevenlabs-marketplace.md (supersedes AI Tier rollout)
+
+## Phase 8 (new): Foundation — stage + origin + provenance — COMPLETE
+- [x] Schema: `stage`, `origin`, `reviewState`, `provenance` added to `projectFile` with new indexes
+- [x] Schema: `elevenlabsMarketplace` added to `projects`
+- [x] Schema: `distributionTargets`, `royaltyLedger`, `creditOverrides` tables added
+- [x] `convex/migrations.ts` — `backfillOriginAndStage` mutation (admin-gated, dry-run capable)
+- [x] `components/OriginBadge.tsx` — canonical badge + `originFromLegacy` helper
+- [x] `components/AiVisibilityPills.tsx` — Human only / + AI-assisted / + AI-generated toggle
+- [x] `lib/projectOrigin.ts` — `projectAggregateOrigin`, `passesAiVisibility` helpers
+- [x] `components/WaveformTrack.tsx` — replaced ad-hoc AI badge with OriginBadge
+- [x] `components/ProjectsClient.tsx` + `components/MyProjectsClient.tsx` — AI visibility filter (default Human only)
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean
+
+## Phase 9 (new): AI Lab surface — COMPLETE
+- [x] `app/(root)/ai-lab/page.tsx` — global AI Lab landing page with project list + draft counts
+- [x] `app/(root)/project/[projectId]/ai-lab/page.tsx` — project-specific AI Lab with all AI tools
+- [x] Navigation: AI Lab added to `DashboardNav.tsx` + `MobileDashBoardNav.tsx` with violet active state
+- [x] `middleware.ts` — `/ai-lab` added to dashboard route matcher
+- [x] Project detail page cleaned: removed `AIMixFeedback`, `AIGenerateStem`, `MasteringPreview`, `StemSeparator`, `AIDesignFeedback`, `SocialMockupGenerator`, `CollaboratorRecommendations`, `AILyricAssistant`
+- [x] `PromoteToPipelineDialog.tsx` — already existed; wired into project AI Lab draft list
+- [x] `convex/projects.ts` — `promoteAiFileToPipeline` + `getAiLabDrafts` already existed from prior session
+- [x] AI save paths already set `origin="ai_generated"`, `reviewState="draft"`, `provenance` from Phase 8
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean
+## Phase 10 (new): Studio Pipeline board — COMPLETE
+- [x] `convex/projects.ts` — `handoffFileStage` mutation with auth guard, stage validation, activity logging
+- [x] `components/StudioPipelineBoard.tsx` — kanban-style board with 9 stage columns (Beat → Topline → Lyrics → Vocal Take → Edit → Mix → Master → Artwork → Reference)
+- [x] Pipeline filters: only shows files where `origin="human"` OR `reviewState="in_pipeline"` (hides raw AI drafts by default)
+- [x] Stage filter pills showing file count per stage
+- [x] Per-card: title, version badge, origin badge, contributor, waveform annotations, "Hand off to next stage" button
+- [x] `computePipelineProgress` — derives % from 8 core stages (excludes reference)
+- [x] Project page: replaced flat Project Files list with Studio Pipeline Board
+- [x] MultiTrackPlayer now filters to pipeline-visible audio only
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean
+## Phase 11 (new): ElevenLabs Tier B (SFX, Composition Plan) — COMPLETE
+- [x] `convex/elevenlabsSfxActions.ts` — `generateSoundEffect` action calling `POST /v1/sound-generation` (`eleven_text_to_sound_v2`)
+- [x] `convex/elevenlabsActions.ts` — `generateCompositionPlan` action for >60s structured arrangements with plan JSON persisted in metadata
+- [x] Rate-limit bucket split: `music: 8/day`, `sfx: 20/day`, `gemini: 50/day` in `convex/elevenlabs.ts`
+- [x] `components/SfxPanel.tsx` — prompt, duration slider, prompt-influence slider, preview, save
+- [x] `components/CompositionPlanPanel.tsx` — brief input, target-duration slider, plan JSON display, preview, save
+- [x] Both panels added to project AI Lab page under Audio Generation card
+- [x] `lib/elevenlabs-types.ts` — added `sfx` and `composition_plan` to `GenerationType`
+- [x] `components/AIQuotaDisplay.tsx` — updated to show 3 buckets (Music / SFX / AI assists)
+- [x] `saveGenerationAsFile` stage mapping updated for `sfx` → `edit`, `composition_plan` → `beat`
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean
+## Phase 12 (new): Publishing (ElevenLabs Marketplace + DistroKid + Audiomack) — COMPLETE
+- [x] `convex/elevenlabsMarketplace.ts` — `checkPublishEligibility` query (status, master, credits, cover art, splits, mutual-exclusivity)
+- [x] `convex/elevenlabsMarketplace.ts` — `publishToElevenLabsMarketplace` action with server-side eligibility re-check, AI-license guard, split validation, mock/live API call, local persistence
+- [x] `convex/elevenlabsMarketplace.ts` — `syncMarketplaceRoyalties` cron-ready action with creditOverrides support
+- [x] `convex/elevenlabsMarketplace.ts` — `setCreditOverride` mutation for per-tier split overrides
+- [x] `convex/distribution/index.ts` — `DistributionAdapter` interface + `validateSplits` helper
+- [x] `convex/distribution/distrokid.ts` — DistroKid adapter (`validate`, `submit`, `pollStatus`) with AI disclosure tags
+- [x] `convex/distribution/audiomack.ts` — Audiomack adapter (`validate`, `submit`, `pollStatus`) with AI disclosure tags
+- [x] `convex/distributionActions.ts` — `submitToDistroKid`, `submitToAudiomack`, `pollDistributionStatus` actions + internal helpers
+- [x] `lib/aiDisclosureMap.ts` — DSP-specific AI disclosure tag mappings
+- [x] `components/PublishChecklist.tsx` — eligibility checklist UI with pass/warn states
+- [x] `app/(root)/project/[projectId]/publish/page.tsx` — full publish page: checklist, tier picker, splits preview, territories, explicit toggle, AI disclosure block, DistroKid + Audiomack distribution cards
+- [x] `app/(root)/project/[projectId]/page.tsx` — added "Publish" button links (owner only) alongside AI Lab
+- [x] Mutual-exclusivity guards: `listProjectForSale` rejects if `elevenlabsMarketplace.status === "live"`; `transferOwnership` rejects if `elevenlabsMarketplace.status === "live"`; publish action forces `isListed=false`
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean
+## Phase 13 (stretch): Real C2PA signer — COMPLETE
+- [x] `lib/c2paManifestBuilder.ts` — generates C2PA 2.2 spec-compliant manifest JSON from eCollabs provenance metadata (origin, model, prompt, contributors, parent chain, digital source type)
+- [x] `convex/c2paSigner.ts` — `signProjectFile` action with dual-path architecture:
+  - **Embedded path**: uses `@contentauth/c2pa-node` `Builder.sign()` + `LocalSigner` when a valid CA-signed cert is configured (`C2PA_CERT_PEM` / `C2PA_KEY_PEM` env vars)
+  - **Sidecar path**: when cert is missing/self-signed/invalid, generates a JWS-signed JSON sidecar manifest stored in Convex storage; auto-fallback from embedded on cert error
+  - `verifyC2pa` action — reads embedded manifests via C2PA Reader or verifies sidecar JWS signature
+  - `checkC2paCredentials` query — reports whether signing credentials are configured
+- [x] `scripts/generate-c2pa-cert-chain.js` — OpenSSL-based CA + end-entity cert generator for testing
+- [x] Schema: `c2paManifestStorageId`, `c2paMode` ("embedded" | "sidecar"), `c2paManifestJson` added to `projectFile`
+- [x] `components/C2PABadge.tsx` — shows embedded (green) vs sidecar (amber) status
+- [x] `components/C2PAVerifyDialog.tsx` — runs verification, displays manifest JSON, shows signature validity
+- [x] `components/StudioPipelineBoard.tsx` — C2PA badge on cards, "Verify" button, "Sign C2PA" button for owner on unsigned files
+- [x] `components/PromoteToPipelineDialog.tsx` — auto-signs file after successful promotion (best-effort, non-blocking)
+- [x] `convex/elevenlabsMarketplace.ts` — auto-signs master file after Marketplace publish (best-effort, non-blocking)
+- [x] `npx tsc --noEmit` clean
+- [x] `npm run build` clean

@@ -8,8 +8,16 @@ export function AIQuotaDisplay() {
   if (!counts) return null;
 
   return (
-    <p className="text-[10px] text-muted-foreground/60">
-      {counts.elevenlabs}/{counts.elevenlabsLimit} music | {counts.gemini}/{counts.geminiLimit} AI assists
-    </p>
+    <div className="flex flex-wrap gap-x-3 gap-y-1">
+      <p className="text-[10px] text-muted-foreground/60">
+        Music: {counts.music}/{counts.musicLimit}
+      </p>
+      <p className="text-[10px] text-muted-foreground/60">
+        SFX: {counts.sfx}/{counts.sfxLimit}
+      </p>
+      <p className="text-[10px] text-muted-foreground/60">
+        AI assists: {counts.gemini}/{counts.geminiLimit}
+      </p>
+    </div>
   );
 }

@@ -2,9 +2,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Headphones, Sparkles } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Headphones } from "lucide-react";
 import type WaveSurfer from "wavesurfer.js";
+import { OriginBadge, originFromLegacy } from "@/components/OriginBadge";
 
 interface WaveformTrackProps {
   audioUrl: string;
@@ -13,6 +13,9 @@ interface WaveformTrackProps {
   version?: number;
   isMaster?: boolean;
   isAIGenerated?: boolean;
+  origin?: string;
+  aiPrompt?: string;
+  fileType?: string;
   isPlaying: boolean;
   currentTime: number;
   onPlayPause: () => void;
@@ -26,6 +29,9 @@ export function WaveformTrack({
   contributor,
   version,
   isAIGenerated,
+  origin,
+  aiPrompt,
+  fileType,
   isPlaying,
   currentTime,
   onPlayPause,
@@ -129,11 +135,9 @@ export function WaveformTrack({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm font-medium truncate">{title}</span>
-          {isAIGenerated && (
-            <Badge className="text-[9px] py-0 px-1.5 bg-violet-500/20 text-violet-300">
-              <Sparkles className="h-2.5 w-2.5 mr-0.5" /> AI
-            </Badge>
-          )}
+          <OriginBadge
+            origin={originFromLegacy({ origin, isAIGenerated, aiPrompt, fileType })}
+          />
           {version && (
             <span className="text-xs text-muted-foreground">v{version}</span>
           )}

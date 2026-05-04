@@ -109,4 +109,7 @@ This project uses the `.ai-sync/` protocol for cross-platform AI agent handoff (
 
 Use `/handoff` to write handoff state before switching agents. Use `/sync-status` to check current state.
 
-think creative on how to integrate eleven labs creative music studio api best in the app.
+- think creative on how to integrate eleven labs creative music studio and their new techs through api best in the app.
+- can these arts be published to elevenlabs marketplace
+- i think its best we seperate concerns and clarify, in the sense that ai creeated or assisted art is different from the main goal of this app to solve and serve as a platform where multiple creators of different talents can put a fully made songs together, where artist can download beats uploaded by producer and also record and reupload for producers feedback, also soundengineer can download and make edits that are needed and reupload for the next person in that trend, designers can also create arts too into a full and complete songs that can be uploaded to tidal, deno, audiomack or other music publishing platforms
+- we can then think seperately about how AI can help in this process and integrated, but AI content and creations have to be labeled.

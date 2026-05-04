@@ -14,7 +14,8 @@ import {
   Music,
   Upload,
   Send,
-  Trash2,
+  Sparkles,
+  Radio,
 } from "lucide-react";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { ProjectProps } from "@/types";
@@ -46,24 +47,16 @@ import { VisualAssetGallery } from "@/components/VisualAssetGallery";
 import { VisualSubmissionCard } from "@/components/VisualSubmissionCard";
 import { VisualUploadDialog } from "@/components/VisualUploadDialog";
 import { CoverArtSelector } from "@/components/CoverArtSelector";
-import { AILyricAssistant } from "@/components/AILyricAssistant";
-import { CollaboratorRecommendations } from "@/components/CollaboratorRecommendations";
-import { AIMixFeedback } from "@/components/AIMixFeedback";
-import { WaveformAnnotation } from "@/components/WaveformAnnotation";
-import { StemSeparator } from "@/components/StemSeparator";
-import { AIGenerateStem } from "@/components/AIGenerateStem";
-import { MasteringPreview } from "@/components/MasteringPreview";
-import { AIDesignFeedback } from "@/components/AIDesignFeedback";
-import { SocialMockupGenerator } from "@/components/SocialMockupGenerator";
-import { AIBeatGenerator } from "@/components/AIBeatGenerator";
-import { AILyricsPreview } from "@/components/AILyricsPreview";
+import {
+  StudioPipelineBoard,
+  computePipelineProgress,
+} from "@/components/StudioPipelineBoard";
 
 const ProjectPage = ({
   params: { projectId },
 }: {
   params: { projectId: Id<"projects"> };
 }) => {
-  const [projectStatus] = useState(10);
   const { user, isLoaded: isUserLoaded } = useUser();
   const router = useRouter();
   const project = useQuery(api.projects.getProjectById, {
@@ -83,6 +76,7 @@ const ProjectPage = ({
   const updateLyricSubmission = useMutation(api.lyrics.updateLyricSubmission);
   // File management
   const projectFiles = useQuery(api.projects.getProjectFile, { projectId });
+  const pipelineProgress = computePipelineProgress(projectFiles ?? []);
   const deleteFile = useMutation(api.projects.deleteProjectFile);
   // Visual submissions (owner only)
   const pendingVisuals = useQuery(api.visuals.getPendingVisualSubmissions, { projectId });
@@ -328,7 +322,10 @@ const ProjectPage = ({
                 Collaboration Phase: This is a work in progress. Collaborators
                 are busy now!
               </p>
-              <Progress value={projectStatus} className="mb-4" />
+              <Progress value={pipelineProgress} className="mb-4" />
+              <p className="text-xs text-muted-foreground mb-2">
+                Pipeline: {pipelineProgress}% complete
+              </p>
               <Badge className="bg-[hsl(var(--success))]">Open</Badge>
             </CardContent>
           </Card>
@@ -350,16 +347,26 @@ const ProjectPage = ({
                   </Button>
                 </Link>
                 {isOwner && (
-                  <AIBeatGenerator
-                    variant="compact"
-                    projectId={projectId}
-                    projectTitle={project.projectTitle}
-                    projectBrief={project.projectBrief}
-                    genres={project.genres ?? []}
-                    moods={project.moods ?? []}
-                    existingTrackCount={projectFiles?.filter(f => f.audioUrl).length ?? 0}
-                    isOwner={true}
-                  />
+                  <Link href={`/project/${projectId}/ai-lab`} className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full text-sm border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 text-violet-200"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Open AI Lab
+                    </Button>
+                  </Link>
+                )}
+                {isOwner && (
+                  <Link href={`/project/${projectId}/publish`} className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full text-sm border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-200"
+                    >
+                      <Radio className="w-4 h-4 mr-2" />
+                      Publish
+                    </Button>
+                  </Link>
                 )}
                 <Button
                   variant="outline"
@@ -599,15 +606,17 @@ const ProjectPage = ({
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Lyrics</CardTitle>
                 <div className="flex gap-2">
-                  {project.lyrics && (
-                    <AILyricsPreview
-                      projectId={projectId}
-                      lyrics={project.lyrics}
-                      genres={project.genres ?? []}
-                      moods={project.moods ?? []}
-                      projectBrief={project.projectBrief}
-                      isOwner={!!isOwner}
-                    />
+                  {project.lyrics && isOwner && (
+                    <Link href={`/project/${projectId}/ai-lab`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 text-violet-200"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                        Preview in AI Lab
+                      </Button>
+                    </Link>
                   )}
                 <Dialog
                   open={openModals.lyrics}
@@ -644,18 +653,16 @@ const ProjectPage = ({
                           }
                         />
                       </div>
-                      <AILyricAssistant
-                        currentLyrics={lyricsText}
-                        context={[
-                          ...(project.genres ?? []),
-                          ...(project.moods ?? []),
-                        ].join(", ") || undefined}
-                        onInsert={(text) => {
-                          setLyricsText((prev) =>
-                            prev ? prev + "\n\n" + text : text
-                          );
-                        }}
-                      />
+                      <p className="text-xs text-muted-foreground">
+                        Need help writing? Use the{" "}
+                        <Link
+                          href={`/project/${projectId}/ai-lab`}
+                          className="text-violet-300 hover:underline"
+                        >
+                          AI Lab
+                        </Link>{" "}
+                        for AI-assisted lyric writing.
+                      </p>
                     </div>
                     <DialogFooter>
                       <Button
@@ -705,19 +712,38 @@ const ProjectPage = ({
               </Card>
             )}
 
-            {/* AI Beat Generator Hero (empty projects) */}
+            {/* Empty project CTA — point at AI Lab as a creative starting block */}
             {projectFiles && projectFiles.filter(f => f.audioUrl).length === 0 && isOwner && (
-              <div className="mt-6">
-                <AIBeatGenerator
-                  variant="hero"
-                  projectId={projectId}
-                  projectTitle={project.projectTitle}
-                  projectBrief={project.projectBrief}
-                  genres={project.genres ?? []}
-                  moods={project.moods ?? []}
-                  existingTrackCount={0}
-                  isOwner={true}
-                />
+              <div className="mt-6 rounded-xl border border-dashed border-violet-500/30 bg-violet-500/5 p-6 text-center">
+                <Sparkles className="h-5 w-5 text-violet-400 mx-auto mb-2" />
+                <h3 className="text-base font-medium text-violet-100 mb-1">
+                  No tracks yet
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Upload a beat to start collaborating, or use the AI Lab to
+                  sketch a reference. AI drafts are labeled and never enter the
+                  pipeline without your approval.
+                </p>
+                <div className="flex justify-center gap-2">
+                  <Link href={`/project/${projectId}/upload`}>
+                    <Button>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload track
+                    </Button>
+                  </Link>
+                  <Link href={`/project/${projectId}/ai-lab`}>
+                    <Button variant="outline" className="border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 text-violet-200">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Open AI Lab
+                    </Button>
+                  </Link>
+                  <Link href={`/project/${projectId}/publish`}>
+                    <Button variant="outline" className="border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-200">
+                      <Radio className="w-4 h-4 mr-2" />
+                      Publish
+                    </Button>
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -726,7 +752,11 @@ const ProjectPage = ({
               <div className="mt-6">
                 <MultiTrackPlayer
                   tracks={projectFiles
-                    .filter((f) => f.audioUrl)
+                    .filter(
+                      (f) =>
+                        f.audioUrl &&
+                        (f.origin === "human" || f.reviewState === "in_pipeline")
+                    )
                     .map((f) => ({
                       id: f._id,
                       audioUrl: f.audioUrl!,
@@ -739,29 +769,15 @@ const ProjectPage = ({
               </div>
             )}
 
-            {/* AI Mix Feedback + Stem Suggestions + Mastering */}
+            {/* AI tools moved to AI Lab — link below when tracks exist */}
             {projectFiles && projectFiles.filter(f => f.audioUrl).length > 0 && (
-              <div className="mt-4 space-y-3">
-                <AIMixFeedback
-                  projectId={projectId}
-                  trackNames={projectFiles
-                    .filter((f) => f.audioUrl)
-                    .map((f) => f.projectFileTitle || f.projectFileLabel)}
-                />
-                <AIGenerateStem
-                  projectId={projectId}
-                  existingTracks={projectFiles
-                    .filter((f) => f.audioUrl)
-                    .map((f) => f.projectFileTitle || f.projectFileLabel)}
-                  genres={project.genres ?? undefined}
-                  moods={project.moods ?? undefined}
-                  projectBrief={project.projectBrief}
-                  isOwner={!!isOwner}
-                />
-                <MasteringPreview
-                  projectId={projectId}
-                  trackCount={projectFiles.filter(f => f.audioUrl).length}
-                />
+              <div className="mt-4 rounded-lg border border-dashed border-violet-500/20 bg-violet-500/5 p-3 text-center">
+                <p className="text-sm text-violet-100/80">
+                  AI mix feedback, stem suggestions, and mastering tools are now in the{" "}
+                  <Link href={`/project/${projectId}/ai-lab`} className="text-violet-300 hover:underline font-medium">
+                    AI Lab
+                  </Link>.
+                </p>
               </div>
             )}
 
@@ -781,16 +797,6 @@ const ProjectPage = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 <VisualAssetGallery projectId={projectId} />
-                {/* Social Mockup Generator */}
-                {isOwner && (
-                  <SocialMockupGenerator
-                    projectTitle={project.projectTitle}
-                    artistName={project.author}
-                    genres={project.genres}
-                    moods={project.moods}
-                    coverArtUrl={project.coverArtUrl}
-                  />
-                )}
               </CardContent>
             </Card>
 
@@ -804,88 +810,34 @@ const ProjectPage = ({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {pendingVisuals.map((sub) => (
-                    <div key={sub._id} className="space-y-2">
-                      <VisualSubmissionCard submission={sub} />
-                      {sub.imageUrl && (
-                        <AIDesignFeedback
-                          imageUrl={sub.imageUrl}
-                          title={sub.title}
-                          category={sub.category}
-                          projectGenres={project.genres}
-                          projectMoods={project.moods}
-                        />
-                      )}
-                    </div>
+                    <VisualSubmissionCard key={sub._id} submission={sub} />
                   ))}
                 </CardContent>
               </Card>
             )}
 
-            {/* Project Files with version badges and delete */}
+            {/* Studio Pipeline Board */}
             <Card className="mt-6 glassmorphism-subtle rounded-xl border-0">
-              <CardHeader>
-                <CardTitle>Project Files</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Studio Pipeline</CardTitle>
+                <Badge variant="outline" className="text-xs">
+                  {pipelineProgress}%
+                </Badge>
               </CardHeader>
               <CardContent>
                 {!projectFiles || projectFiles.length === 0 ? (
                   <p>No tracks posted to this project...yet!</p>
                 ) : (
-                  <div className="space-y-3">
-                    {projectFiles.map((file) => (
-                      <div
-                        key={file._id}
-                        className="p-3 rounded-lg bg-card/30 border border-border/30 space-y-2"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-medium truncate">
-                                {file.projectFileTitle || file.projectFileLabel}
-                              </p>
-                              {file.version && (
-                                <Badge variant="outline" className="text-xs shrink-0">
-                                  v{file.version}
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              {file.username} &middot; {file.projectFileLabel}
-                            </p>
-                          </div>
-                          <div className="flex gap-1 shrink-0">
-                            {isOwner && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-red-400 hover:text-red-300"
-                                onClick={async () => {
-                                  if (confirm("Archive this file?")) {
-                                    await deleteFile({ fileId: file._id });
-                                  }
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        {/* Stem Separator */}
-                        {file.audioUrl && isOwner && (
-                          <StemSeparator
-                            projectId={projectId}
-                            audioUrl={file.audioUrl}
-                            trackTitle={file.projectFileTitle || file.projectFileLabel}
-                          />
-                        )}
-                        {/* Waveform Annotations */}
-                        <WaveformAnnotation
-                          fileId={file._id}
-                          projectId={projectId}
-                          duration={file.audioDuration}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <StudioPipelineBoard
+                    projectId={projectId}
+                    files={projectFiles}
+                    isOwner={!!isOwner}
+                    onDelete={async (fileId) => {
+                      if (confirm("Archive this file?")) {
+                        await deleteFile({ fileId });
+                      }
+                    }}
+                  />
                 )}
               </CardContent>
             </Card>
@@ -901,7 +853,12 @@ const ProjectPage = ({
                   No collaborators yet
                 </p>
                 {isOwner && (
-                  <CollaboratorRecommendations projectId={projectId} />
+                  <Link href={`/project/${projectId}/ai-lab`}>
+                    <Button variant="outline" size="sm" className="w-full text-xs bg-transparent border-violet-500/30 text-violet-200 hover:bg-violet-500/10">
+                      <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                      Find collaborators in AI Lab
+                    </Button>
+                  </Link>
                 )}
               </CardContent>
             </Card>

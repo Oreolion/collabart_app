@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ const navItems = [
   { route: "/create-project", label: "Create Project", icon: PlusCircle },
   { route: "/my-projects", label: "My Projects", icon: Bookmark },
   { route: "/my-balance", label: "Funds", icon: Wallet },
+  { route: "/ai-lab", label: "AI Lab", icon: Sparkles },
 ];
 
 interface DashboardNavProps {

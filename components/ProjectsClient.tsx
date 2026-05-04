@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SearchFilters } from "@/components/SearchFilters";
+import { AiVisibilityPills } from "@/components/AiVisibilityPills";
+import { passesAiVisibility, type AiVisibility } from "@/lib/projectOrigin";
 
 const Pagination = ({
   currentPage,
@@ -73,6 +75,7 @@ export default function ProjectsClient() {
   }>({});
   const [currentPage] = useState(1);
   const [listMostActive, setListMostActive] = useState(false);
+  const [aiVisibility, setAiVisibility] = useState<AiVisibility>("human_only");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -172,6 +175,11 @@ export default function ProjectsClient() {
       ? project.projectType === dropdownFilters.projectType
       : true;
 
+    const matchesAiVisibility = passesAiVisibility(
+      (project as { projectFiles?: unknown[] }).projectFiles as never,
+      aiVisibility
+    );
+
     return (
       matchesSearch &&
       matchesTitle &&
@@ -181,7 +189,8 @@ export default function ProjectsClient() {
       matchesDropdownGenre &&
       matchesDropdownMood &&
       matchesDropdownTalent &&
-      matchesDropdownType
+      matchesDropdownType &&
+      matchesAiVisibility
     );
   });
 
@@ -300,6 +309,9 @@ export default function ProjectsClient() {
           }
           onClearFilters={() => setDropdownFilters({})}
         />
+
+        {/* AI visibility */}
+        <AiVisibilityPills value={aiVisibility} onChange={setAiVisibility} />
 
         {/* Pagination */}
         <Pagination currentPage={currentPage} totalPages={5} />

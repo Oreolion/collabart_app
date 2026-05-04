@@ -22,10 +22,13 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/lib/useDebounce";
 import ProjectCard from "@/components/ProjectCard";
+import { AiVisibilityPills } from "@/components/AiVisibilityPills";
+import { passesAiVisibility, type AiVisibility } from "@/lib/projectOrigin";
 
 const ProjectPage = () => {
   const { isLoaded, user } = useUser();
   const [listMostActive, setListMostActive] = useState(false);
+  const [aiVisibility, setAiVisibility] = useState<AiVisibility>("human_only");
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -73,9 +76,16 @@ const ProjectPage = () => {
   if (!projectsWithFiles || !isLoaded) return <LoaderSpinner />;
 
   const myProjects = Array.isArray(projectsWithFiles)
-    ? projectsWithFiles.filter(
-        (p) => p.authorId && user && String(p.authorId) === String(user.id)
-      )
+    ? projectsWithFiles
+        .filter(
+          (p) => p.authorId && user && String(p.authorId) === String(user.id)
+        )
+        .filter((p) =>
+          passesAiVisibility(
+            (p as { projectFiles?: unknown[] }).projectFiles as never,
+            aiVisibility
+          )
+        )
     : [];
 
   return (
@@ -164,6 +174,10 @@ const ProjectPage = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      <div className="mb-4">
+        <AiVisibilityPills value={aiVisibility} onChange={setAiVisibility} />
       </div>
 
       <h1 className="text-2xl font-bold mb-6 text-foreground">My Projects</h1>

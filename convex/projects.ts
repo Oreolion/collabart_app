@@ -77,10 +77,25 @@ export const addProjectFile = mutation({
     hasExplicitLyrics: v.boolean(),
     containsLoops: v.boolean(),
     confirmCopyright: v.boolean(),
-    // ElevenLabs AI generation fields
+    // ElevenLabs AI generation fields (legacy — populate alongside origin)
     isAIGenerated: v.optional(v.boolean()),
     aiGenerationType: v.optional(v.string()),
     aiPrompt: v.optional(v.string()),
+    // Phase 8/9: provenance + stage + review state
+    origin: v.optional(v.string()),
+    stage: v.optional(v.string()),
+    reviewState: v.optional(v.string()),
+    parentFileId: v.optional(v.id("projectFile")),
+    provenance: v.optional(
+      v.object({
+        model: v.string(),
+        prompt: v.optional(v.string()),
+        generatedAt: v.number(),
+        humanEdited: v.boolean(),
+        parentChain: v.array(v.id("projectFile")),
+        c2paClaim: v.optional(v.string()),
+      })
+    ),
   },
   handler: async (ctx, args) => {
     if (!ctx.auth) {
@@ -108,6 +123,11 @@ export const addProjectFile = mutation({
       .collect();
     const maxVersion = existingFiles.reduce((max, f) => Math.max(max, f.version ?? 0), 0);
 
+    const resolvedOrigin = args.origin
+      ?? (args.isAIGenerated ? "ai_generated" : "human");
+    const resolvedReviewState = args.reviewState
+      ?? (resolvedOrigin === "human" ? "in_pipeline" : "draft");
+
     const fileId = await ctx.db.insert("projectFile", {
       projectId: args.projectId,
       userId: user._id,
@@ -127,6 +147,11 @@ export const addProjectFile = mutation({
       isAIGenerated: args.isAIGenerated,
       aiGenerationType: args.aiGenerationType,
       aiPrompt: args.aiPrompt,
+      origin: resolvedOrigin,
+      stage: args.stage,
+      reviewState: resolvedReviewState,
+      parentFileId: args.parentFileId,
+      provenance: args.provenance,
     });
 
     // Notify project owner if uploader is a collaborator (not the owner)
@@ -350,6 +375,11 @@ export const listProjectForSale = mutation({
       throw new ConvexError("Only project owner can list for sale");
     }
 
+    // Mutual-exclusivity: cannot list for sale if already on ElevenLabs Marketplace
+    if (project.elevenlabsMarketplace?.status === "live") {
+      throw new ConvexError("Cannot list for internal sale while published on ElevenLabs Marketplace.");
+    }
+
     // Validate price
     if (!/^\d+(\.\d+)?$/.test(args.price) || Number(args.price) <= 0) {
       throw new ConvexError("Invalid price. Must be a number > 0");
@@ -417,6 +447,11 @@ export const transferOwnership = mutation({
     
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new ConvexError("Project not found");
+
+    // Mutual-exclusivity: cannot transfer ownership if published on Marketplace
+    if (project.elevenlabsMarketplace?.status === "live") {
+      throw new ConvexError("Cannot transfer ownership while published on ElevenLabs Marketplace.");
+    }
 
     const newOwner = await ctx.db
       .query("users")
@@ -707,6 +742,278 @@ export const getFileVersionHistory = query({
       .sort((a, b) => (a.version ?? 0) - (b.version ?? 0));
 
     return versions;
+  },
+});
+
+// Phase 9: Promote an AI Lab draft into the human collaboration pipeline.
+// If a `humanReuploadStorageId` is provided, treat as ai_assisted (a human re-recorded
+// or edited the AI output) and create a child file with parentChain populated.
+// Otherwise the original draft is patched in-place to reviewState="in_pipeline".
+export const promoteAiFileToPipeline = mutation({
+  args: {
+    fileId: v.id("projectFile"),
+    stage: v.string(),
+    humanReuploadStorageId: v.optional(v.id("_storage")),
+    humanReuploadUrl: v.optional(v.string()),
+    humanReuploadDuration: v.optional(v.number()),
+    newTitle: v.optional(v.string()),
+    newLabel: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file) throw new Error("File not found");
+
+    const project = await ctx.db.get(file.projectId);
+    if (!project) throw new Error("Project not found");
+
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email))
+      .first();
+    if (!user) throw new Error("User not found");
+
+    const isOwner = project.authorId === identity.subject;
+    const isUploader = file.userId === user._id;
+    if (!isOwner && !isUploader) {
+      throw new Error("Only the project owner or original uploader can promote this draft");
+    }
+
+    const ALLOWED_STAGES = new Set([
+      "beat",
+      "topline",
+      "lyrics",
+      "vocal_take",
+      "edit",
+      "mix",
+      "master",
+      "artwork",
+      "reference",
+    ]);
+    if (!ALLOWED_STAGES.has(args.stage)) {
+      throw new Error(`Invalid stage: ${args.stage}`);
+    }
+
+    // Voice-take guard: an AI draft may never become a vocal_take without a human re-record.
+    if (args.stage === "vocal_take" && !args.humanReuploadStorageId) {
+      throw new Error(
+        "AI drafts cannot be promoted directly to vocal_take. Re-record the take with a human voice and upload it to promote as ai_assisted."
+      );
+    }
+
+    if (args.humanReuploadStorageId && args.humanReuploadUrl) {
+      // Create a child file representing the human edit; original remains as draft history.
+      const existingFiles = await ctx.db
+        .query("projectFile")
+        .withIndex("by_project", (q) => q.eq("projectId", file.projectId))
+        .collect();
+      const maxVersion = existingFiles.reduce(
+        (max, f) => Math.max(max, f.version ?? 0),
+        0
+      );
+
+      const parentChain = [
+        ...(file.provenance?.parentChain ?? []),
+        file._id,
+      ];
+
+      const childId = await ctx.db.insert("projectFile", {
+        projectId: file.projectId,
+        userId: user._id,
+        username: user.name,
+        projectFileTitle: args.newTitle ?? file.projectFileTitle,
+        projectFileLabel: args.newLabel ?? file.projectFileLabel,
+        audioStorageId: args.humanReuploadStorageId,
+        audioUrl: args.humanReuploadUrl,
+        audioDuration: args.humanReuploadDuration,
+        createdAt: Date.now(),
+        isProjectOwner: isOwner,
+        hasExplicitLyrics: file.hasExplicitLyrics,
+        containsLoops: file.containsLoops,
+        confirmCopyright: true,
+        version: maxVersion + 1,
+        parentFileId: file._id,
+        fileType: "audio",
+        origin: "ai_assisted",
+        stage: args.stage,
+        reviewState: "in_pipeline",
+        provenance: {
+          model: file.provenance?.model ?? "elevenlabs:music_v1",
+          prompt: file.provenance?.prompt ?? file.aiPrompt,
+          generatedAt: file.provenance?.generatedAt ?? file.createdAt,
+          humanEdited: true,
+          parentChain,
+          c2paClaim: file.provenance?.c2paClaim,
+        },
+      });
+
+      await ctx.db.insert("activityLog", {
+        projectId: file.projectId,
+        userId: identity.subject,
+        userName: user.name,
+        userImage: user.imageUrl,
+        action: "ai_promoted_with_edit",
+        metadata: JSON.stringify({
+          fromFileId: file._id,
+          toFileId: childId,
+          stage: args.stage,
+        }),
+        createdAt: Date.now(),
+      });
+
+      return { fileId: childId, mode: "ai_assisted_child" as const };
+    }
+
+    // No reupload — promote the draft in-place.
+    await ctx.db.patch(file._id, {
+      stage: args.stage,
+      reviewState: "in_pipeline",
+    });
+
+    await ctx.db.insert("activityLog", {
+      projectId: file.projectId,
+      userId: identity.subject,
+      userName: user.name,
+      userImage: user.imageUrl,
+      action: "ai_promoted",
+      metadata: JSON.stringify({ fileId: file._id, stage: args.stage }),
+      createdAt: Date.now(),
+    });
+
+    return { fileId: file._id, mode: "ai_generated_in_place" as const };
+  },
+});
+
+// Phase 10: Hand off a file to the next pipeline stage.
+export const handoffFileStage = mutation({
+  args: {
+    fileId: v.id("projectFile"),
+    stage: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const file = await ctx.db.get(args.fileId);
+    if (!file) throw new Error("File not found");
+
+    const project = await ctx.db.get(file.projectId);
+    if (!project) throw new Error("Project not found");
+
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email))
+      .first();
+    if (!user) throw new Error("User not found");
+
+    const isOwner = project.authorId === identity.subject;
+    const isUploader = file.userId === user._id;
+    if (!isOwner && !isUploader) {
+      throw new Error("Only the project owner or original uploader can hand off this file");
+    }
+
+    const ALLOWED_STAGES = new Set([
+      "beat",
+      "topline",
+      "lyrics",
+      "vocal_take",
+      "edit",
+      "mix",
+      "master",
+      "artwork",
+      "reference",
+    ]);
+    if (!ALLOWED_STAGES.has(args.stage)) {
+      throw new Error(`Invalid stage: ${args.stage}`);
+    }
+
+    await ctx.db.patch(args.fileId, { stage: args.stage });
+
+    await ctx.db.insert("activityLog", {
+      projectId: file.projectId,
+      userId: identity.subject,
+      userName: user.name,
+      userImage: user.imageUrl,
+      action: "handoff",
+      metadata: JSON.stringify({
+        fileId: file._id,
+        fromStage: file.stage,
+        toStage: args.stage,
+      }),
+      createdAt: Date.now(),
+    });
+
+    return { ok: true };
+  },
+});
+
+// --- Internal helpers for Marketplace ---
+export const _patchProjectMarketplace = mutation({
+  args: {
+    projectId: v.id("projects"),
+    trackId: v.string(),
+    tier: v.string(),
+    status: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.projectId, {
+      elevenlabsMarketplace: {
+        trackId: args.trackId,
+        tier: args.tier,
+        publishedAt: Date.now(),
+        status: args.status,
+      },
+    });
+  },
+});
+
+export const _forceDelist = mutation({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.projectId, {
+      isListed: false,
+      price: undefined,
+      currency: undefined,
+    });
+  },
+});
+
+export const _getMarketplaceProjects = query({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("projects").collect();
+    return all.filter(
+      (p) =>
+        p.elevenlabsMarketplace?.status === "live" ||
+        p.elevenlabsMarketplace?.status === "pending"
+    );
+  },
+});
+
+// Get a single project file by ID
+export const getProjectFileById = query({
+  args: { fileId: v.id("projectFile") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.fileId);
+  },
+});
+
+// Phase 9: List AI Lab drafts for a project (reviewState="draft" + origin="ai_generated").
+export const getAiLabDrafts = query({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, args) => {
+    const files = await ctx.db
+      .query("projectFile")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+
+    return files.filter(
+      (f) =>
+        !f.isArchived &&
+        (f.reviewState === "draft" || (f.origin === "ai_generated" && !f.reviewState))
+    );
   },
 });
 

@@ -14,6 +14,7 @@ import {
   User,
   LogOut,
   Menu,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NotificationsPanel from "@/components/NotificationsPanel";
@@ -24,6 +25,7 @@ const navItems = [
   { route: "/create-project", label: "Create Project", icon: PlusCircle },
   { route: "/my-projects", label: "My Projects", icon: Bookmark },
   { route: "/my-balance", label: "Funds", icon: Wallet },
+  { route: "/ai-lab", label: "AI Lab", icon: Sparkles },
 ];
 
 const MobileDashBoardNav = () => {
@@ -65,7 +67,9 @@ const MobileDashBoardNav = () => {
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                       isActive(item.route)
-                        ? "bg-primary/10 text-primary shadow-[inset_0_0_12px_hsl(11,90%,58%,0.06)]"
+                        ? item.route === "/ai-lab"
+                          ? "bg-violet-500/10 text-violet-300 shadow-[inset_0_0_12px_hsla(260,90%,65%,0.08)]"
+                          : "bg-primary/10 text-primary shadow-[inset_0_0_12px_hsl(11,90%,58%,0.06)]"
                         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                     )}
                   >
