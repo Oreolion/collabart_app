@@ -1,5 +1,5 @@
 "use node";
-import { action, query, mutation } from "./_generated/server";
+import { action } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { api } from "./_generated/api";
 
@@ -8,89 +8,6 @@ function getApiKey(): string {
   if (!key) throw new Error("ELEVENLABS_API_KEY not configured. Set it in Convex dashboard.");
   return key;
 }
-
-/* ------------------------------------------------------------------ */
-/*  Publish Eligibility Checklist                                      */
-/* ------------------------------------------------------------------ */
-
-export const checkPublishEligibility = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw new ConvexError("Project not found");
-
-    const files = await ctx.db
-      .query("projectFile")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    const credits = await ctx.db
-      .query("credits")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    const masterFile = files.find((f) => f.stage === "master" && !f.isArchived);
-
-    const hasMasterFile = !!masterFile;
-    const masterIsHumanOrAssisted = hasMasterFile
-      ? masterFile.origin !== "ai_generated"
-      : false;
-    const aiInMasterChain = hasMasterFile && masterFile.origin === "ai_generated";
-
-    const allCreditsConfirmed = credits.length > 0 && credits.every((c) => c.confirmedByUser === true);
-    const splitTotal = credits.reduce((sum, c) => sum + (c.splitPercentage ?? 0), 0);
-    const splitsSumTo100 = splitTotal === 100;
-
-    const hasCoverArt = !!project.coverArtUrl;
-    const isNotListedForSale = project.isListed !== true;
-    const statusComplete = project.status === "complete";
-
-    const aiFilesInProject = files.filter(
-      (f) => f.origin === "ai_generated" || f.origin === "ai_assisted"
-    );
-
-    const eligibility = {
-      statusComplete,
-      hasMasterFile,
-      masterIsHumanOrAssisted,
-      aiInMasterChain,
-      allCreditsConfirmed,
-      splitsSumTo100,
-      hasCoverArt,
-      isNotListedForSale,
-      // composite
-      ready:
-        statusComplete &&
-        hasMasterFile &&
-        (masterIsHumanOrAssisted /* AI license accepted handled in UI */) &&
-        allCreditsConfirmed &&
-        splitsSumTo100 &&
-        hasCoverArt &&
-        isNotListedForSale,
-    };
-
-    return {
-      eligibility,
-      masterFileId: masterFile?._id ?? null,
-      credits: credits.map((c) => ({
-        _id: c._id,
-        userId: c.userId,
-        userName: c.userName,
-        role: c.role,
-        splitPercentage: c.splitPercentage ?? 0,
-        confirmed: c.confirmedByUser ?? false,
-      })),
-      aiFiles: aiFilesInProject.map((f) => ({
-        _id: f._id,
-        title: f.projectFileTitle || f.projectFileLabel,
-        origin: f.origin,
-        stage: f.stage,
-        provenance: f.provenance,
-      })),
-      splitTotal,
-    };
-  },
-});
 
 /* ------------------------------------------------------------------ */
 /*  Publish to ElevenLabs Music Marketplace                             */
@@ -126,7 +43,7 @@ export const publishToElevenLabsMarketplace = action({
     }
 
     // --- Re-run eligibility server-side ---
-    const eligibility = await ctx.runQuery(api.elevenlabsMarketplace.checkPublishEligibility, {
+    const eligibility = await ctx.runQuery(api.marketplaceMeta.checkPublishEligibility, {
       projectId: args.projectId,
     });
 
@@ -217,7 +134,7 @@ export const publishToElevenLabsMarketplace = action({
     }
 
     // --- Persist locally ---
-    await ctx.runMutation(api.elevenlabsMarketplace._setMarketplaceMeta, {
+    await ctx.runMutation(api.marketplaceMeta._setMarketplaceMeta, {
       projectId: args.projectId,
       trackId,
       tier: args.licenseTier,
@@ -257,29 +174,6 @@ export const publishToElevenLabsMarketplace = action({
     });
 
     return { trackId, status: publishStatus };
-  },
-});
-
-/* ------------------------------------------------------------------ */
-/*  Internal helper mutations                                          */
-/* ------------------------------------------------------------------ */
-
-export const _setMarketplaceMeta = mutation({
-  args: {
-    projectId: v.id("projects"),
-    trackId: v.string(),
-    tier: v.string(),
-    status: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.projectId, {
-      elevenlabsMarketplace: {
-        trackId: args.trackId,
-        tier: args.tier,
-        publishedAt: Date.now(),
-        status: args.status,
-      },
-    });
   },
 });
 
@@ -327,7 +221,7 @@ export const syncMarketplaceRoyalties = action({
       }
 
       const credits = await ctx.runQuery(api.credits.getProjectCredits, { projectId: p._id });
-      const overrides = await ctx.runQuery(api.elevenlabsMarketplace._getCreditOverrides, {
+      const overrides = await ctx.runQuery(api.marketplaceMeta._getCreditOverrides, {
         projectId: p._id,
         tier: p.elevenlabsMarketplace.tier,
       });
@@ -344,7 +238,7 @@ export const syncMarketplaceRoyalties = action({
           const shareCents = Math.round(e.amountCents * (s.percentage / 100));
           if (shareCents <= 0) continue;
 
-          await ctx.runMutation(api.elevenlabsMarketplace._insertRoyaltyRow, {
+          await ctx.runMutation(api.marketplaceMeta._insertRoyaltyRow, {
             projectId: p._id,
             userId: s.userId,
             source: "elevenlabs_marketplace",
@@ -367,89 +261,4 @@ export const syncMarketplaceRoyalties = action({
   },
 });
 
-/* ------------------------------------------------------------------ */
-/*  Credit override helpers                                             */
-/* ------------------------------------------------------------------ */
 
-export const _getCreditOverrides = query({
-  args: { projectId: v.id("projects"), tier: v.string() },
-  handler: async (ctx, args) => {
-    const row = await ctx.db
-      .query("creditOverrides")
-      .withIndex("by_project_and_tier", (q) =>
-        q.eq("projectId", args.projectId).eq("tier", args.tier)
-      )
-      .unique();
-    return row?.splits ?? [];
-  },
-});
-
-export const setCreditOverride = mutation({
-  args: {
-    projectId: v.id("projects"),
-    tier: v.union(v.literal("social"), v.literal("paid_marketing"), v.literal("offline")),
-    splits: v.array(v.object({ userId: v.string(), percentage: v.number() })),
-  },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError("Not authenticated");
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw new ConvexError("Project not found");
-    if (project.authorId !== identity.subject) {
-      throw new ConvexError("Only the project owner can set credit overrides.");
-    }
-
-    const total = args.splits.reduce((s, x) => s + x.percentage, 0);
-    if (total !== 100) {
-      throw new ConvexError(`Override splits must total 100% (got ${total}%).`);
-    }
-
-    const existing = await ctx.db
-      .query("creditOverrides")
-      .withIndex("by_project_and_tier", (q) =>
-        q.eq("projectId", args.projectId).eq("tier", args.tier)
-      )
-      .unique();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, { splits: args.splits });
-    } else {
-      await ctx.db.insert("creditOverrides", {
-        projectId: args.projectId,
-        tier: args.tier,
-        splits: args.splits,
-        createdAt: Date.now(),
-      });
-    }
-
-    return { ok: true };
-  },
-});
-
-/* ------------------------------------------------------------------ */
-/*  Internal royalty mutation                                           */
-/* ------------------------------------------------------------------ */
-
-export const _insertRoyaltyRow = mutation({
-  args: {
-    projectId: v.id("projects"),
-    userId: v.string(),
-    source: v.string(),
-    period: v.string(),
-    amountCents: v.number(),
-    currency: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("royaltyLedger", {
-      projectId: args.projectId,
-      userId: args.userId,
-      source: args.source,
-      period: args.period,
-      amountCents: args.amountCents,
-      currency: args.currency,
-      paidOut: false,
-      createdAt: Date.now(),
-    });
-  },
-});

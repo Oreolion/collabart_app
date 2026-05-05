@@ -1,5 +1,5 @@
 "use node";
-import { action, query, mutation } from "./_generated/server";
+import { action } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { api } from "./_generated/api";
 import { buildManifestWithBuilder, buildManifestDefinition } from "@/lib/c2paManifestBuilder";
@@ -199,7 +199,7 @@ export const signProjectFile = action({
       const { storageId } = (await uploadRes.json()) as { storageId: string };
 
       // Update projectFile with C2PA metadata
-      await ctx.runMutation(api.c2paSigner._setC2paMeta, {
+      await ctx.runMutation(api.c2paMeta._setC2paMeta, {
         fileId: file._id,
         c2paManifestStorageId: storageId as any,
         c2paMode: mode,
@@ -330,34 +330,4 @@ export const verifyC2pa = action({
   },
 });
 
-/* ------------------------------------------------------------------ */
-/*  Internal helpers                                                   */
-/* ------------------------------------------------------------------ */
 
-export const _setC2paMeta = mutation({
-  args: {
-    fileId: v.id("projectFile"),
-    c2paManifestStorageId: v.optional(v.id("_storage")),
-    c2paMode: v.optional(v.string()),
-    c2paManifestJson: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const patch: Record<string, unknown> = {};
-    if (args.c2paManifestStorageId) patch.c2paManifestStorageId = args.c2paManifestStorageId;
-    if (args.c2paMode) patch.c2paMode = args.c2paMode;
-    if (args.c2paManifestJson) patch.c2paManifestJson = args.c2paManifestJson;
-    await ctx.db.patch(args.fileId, patch);
-  },
-});
-
-export const checkC2paCredentials = query({
-  args: {},
-  handler: async () => {
-    const creds = getCertAndKey();
-    return {
-      configured: !!creds,
-      hasCert: !!process.env.C2PA_CERT_PEM,
-      hasKey: !!process.env.C2PA_KEY_PEM,
-    };
-  },
-});

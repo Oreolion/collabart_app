@@ -56,8 +56,8 @@ export default function ProjectPublishPage() {
   const { toast } = useToast();
 
   const project = useQuery(api.projects.getProjectById, { projectId });
-  const eligibility = useQuery(api.elevenlabsMarketplace.checkPublishEligibility, { projectId });
-  const distributionTargets = useQuery(api.distributionActions.getDistributionTargets, { projectId });
+  const eligibility = useQuery(api.marketplaceMeta.checkPublishEligibility, { projectId });
+  const distributionTargets = useQuery(api.distributionMeta.getDistributionTargets, { projectId });
 
   const publish = useAction(api.elevenlabsMarketplace.publishToElevenLabsMarketplace);
   const submitDistroKid = useAction(api.distributionActions.submitToDistroKid);

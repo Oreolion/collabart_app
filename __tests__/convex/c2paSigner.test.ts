@@ -24,7 +24,7 @@ describe("c2paSigner", () => {
         return fid;
       });
 
-      await t.mutation(api.c2paSigner._setC2paMeta, {
+      await t.mutation(api.c2paMeta._setC2paMeta, {
         fileId,
         c2paMode: "sidecar",
         c2paManifestJson: JSON.stringify({ test: true }),
@@ -55,7 +55,7 @@ describe("c2paSigner", () => {
         return fid;
       });
 
-      await t.mutation(api.c2paSigner._setC2paMeta, {
+      await t.mutation(api.c2paMeta._setC2paMeta, {
         fileId,
         c2paManifestJson: JSON.stringify({ updated: true }),
       });
@@ -70,7 +70,7 @@ describe("c2paSigner", () => {
     it("returns configured: false when env vars are not set", async () => {
       const t = testWithDb();
 
-      const result = await t.query(api.c2paSigner.checkC2paCredentials);
+      const result = await t.query(api.c2paMeta.checkC2paCredentials);
 
       expect(result.configured).toBe(false);
       expect(result.hasCert).toBe(false);

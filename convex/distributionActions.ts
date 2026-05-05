@@ -71,7 +71,7 @@ export const submitToDistroKid = action({
     const result = await distrokidAdapter.submit(payload);
 
     // Persist target
-    await ctx.runMutation(api.distributionActions._insertDistributionTarget, {
+    await ctx.runMutation(api.distributionMeta._insertDistributionTarget, {
       projectId: args.projectId,
       provider: "distrokid",
       status: result.status,
@@ -142,7 +142,7 @@ export const submitToAudiomack = action({
 
     const result = await audiomackAdapter.submit(payload);
 
-    await ctx.runMutation(api.distributionActions._insertDistributionTarget, {
+    await ctx.runMutation(api.distributionMeta._insertDistributionTarget, {
       projectId: args.projectId,
       provider: "audiomack",
       status: result.status,
@@ -164,7 +164,7 @@ export const pollDistributionStatus = action({
     targetId: v.id("distributionTargets"),
   },
   handler: async (ctx, args) => {
-    const target = await ctx.runQuery(api.distributionActions._getDistributionTarget, {
+    const target = await ctx.runQuery(api.distributionMeta._getDistributionTarget, {
       targetId: args.targetId,
     });
     if (!target) throw new ConvexError("Distribution target not found");
@@ -179,7 +179,7 @@ export const pollDistributionStatus = action({
       throw new ConvexError(`Unknown provider: ${target.provider}`);
     }
 
-    await ctx.runMutation(api.distributionActions._updateDistributionTarget, {
+    await ctx.runMutation(api.distributionMeta._updateDistributionTarget, {
       targetId: args.targetId,
       status: result.status,
       lastError: result.status === "error" ? result.message : undefined,
@@ -189,80 +189,4 @@ export const pollDistributionStatus = action({
   },
 });
 
-/* ------------------------------------------------------------------ */
-/*  Internal helpers                                                   */
-/* ------------------------------------------------------------------ */
 
-import { query, mutation } from "./_generated/server";
-
-export const getDistributionTargets = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("distributionTargets")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .order("desc")
-      .collect();
-  },
-});
-
-export const _getDistributionTarget = query({
-  args: { targetId: v.id("distributionTargets") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.targetId);
-  },
-});
-
-export const _insertDistributionTarget = mutation({
-  args: {
-    projectId: v.id("projects"),
-    provider: v.string(),
-    status: v.string(),
-    externalId: v.optional(v.string()),
-    payload: v.optional(v.string()),
-    lastError: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("distributionTargets")
-      .withIndex("by_project_and_provider", (q) =>
-        q.eq("projectId", args.projectId).eq("provider", args.provider)
-      )
-      .unique();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        status: args.status,
-        externalId: args.externalId,
-        payload: args.payload,
-        lastError: args.lastError,
-        submittedAt: Date.now(),
-      });
-      return existing._id;
-    }
-
-    return await ctx.db.insert("distributionTargets", {
-      projectId: args.projectId,
-      provider: args.provider,
-      status: args.status,
-      externalId: args.externalId,
-      payload: args.payload,
-      lastError: args.lastError,
-      createdAt: Date.now(),
-    });
-  },
-});
-
-export const _updateDistributionTarget = mutation({
-  args: {
-    targetId: v.id("distributionTargets"),
-    status: v.string(),
-    lastError: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.targetId, {
-      status: args.status,
-      lastError: args.lastError,
-    });
-  },
-});
